@@ -281,6 +281,54 @@ export type TokenInfoList = {
 	price: number;
 	availableAmount: number;
 };
+export type Loyalty = {
+	badges: Array<string>;
+	tier: number;
+};
+export enum ChangeType {
+	extend = "extend",
+	expire = "expire",
+	increment = "increment",
+	convert = "convert",
+	buy = "buy",
+	recover = "recover",
+	sell = "sell",
+	offset = "offset"
+}
+export type RpChange = {
+	changeDate: string;
+	changeType: ChangeType;
+	expiry: string;
+	amount: number;
+	earningEvent: string;
+};
+export type TierChange = {
+	changeDate: string;
+	prevTier: number;
+	newTier: number;
+};
+export type PositionChange = {
+	changeDate: string;
+	changeType: ChangeType;
+	amount: number;
+};
+export type ClientProfile = {
+	userID: string;
+	walletAddress: string;
+	uniqueReferralCode: string;
+	active: boolean;
+	referrerID: string | null;
+	loyalty: Loyalty;
+	bridgingBonusPaid: boolean;
+	offsetBonusPaid: boolean;
+	outstandingReferrals: Record<string, number>;
+	currentRpBalance: Record<string, number>;
+	historicRpChanges: Array<RpChange>;
+	historicTierChanges: Array<TierChange>;
+	historicPositionChanges: Array<PositionChange> | null;
+	totalRetiredAmount: number;
+	invitations: number;
+};
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";

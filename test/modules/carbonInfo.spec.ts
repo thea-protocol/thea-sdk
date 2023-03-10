@@ -20,6 +20,7 @@ import {
 	theaERC1155Balances,
 	tokenizationHistory,
 	tokenizationStats,
+	userProfile,
 	WALLET_ADDRESS
 } from "../mocks";
 import * as utils from "../../src/utils/utils";
@@ -290,6 +291,16 @@ describe("Carbon info", () => {
 			await expect(carbonInfo.queryTokenPrice(2)).rejects.toThrow(
 				new TheaError({ type: "INVALID_TOKEN_ID", message: "Token ID must be valid" })
 			);
+		});
+	});
+
+	describe("get user profile", () => {
+		it("should return user profile", async () => {
+			const apiClient = jest.spyOn(carbonInfo.apiClient, "get").mockResolvedValueOnce(userProfile);
+			const result = await carbonInfo.getUsersProfile();
+
+			expect(apiClient).toBeCalledWith("/myprofile");
+			expect(result).toEqual(userProfile);
 		});
 	});
 });

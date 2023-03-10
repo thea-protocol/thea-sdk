@@ -1,4 +1,6 @@
 import {
+	ClientProfile,
+	HttpResponseIn,
 	OffsetHistory,
 	OffsetStats,
 	PriceListings,
@@ -390,3 +392,30 @@ export const theaERC1155Balances: TheaERC1155Balance[] = [
 		}
 	}
 ];
+
+export const userProfile: HttpResponseIn<ClientProfile> = {
+	result: {
+		userID: "00000186c48bc47f1778c129a9bdb0a2",
+		walletAddress: WALLET_ADDRESS,
+		uniqueReferralCode: "ZL6IY2",
+		active: true,
+		referrerID: null,
+		loyalty: {
+			badges: [],
+			tier: 1
+		},
+		bridgingBonusPaid: false,
+		offsetBonusPaid: false,
+		outstandingReferrals: {},
+		currentRpBalance: {
+			"20230310Z": 0
+		},
+		historicRpChanges: [],
+		historicTierChanges: [],
+		historicPositionChanges: null,
+		totalRetiredAmount: 0,
+		invitations: 0
+	},
+	error: null,
+	errorMessage: null
+};

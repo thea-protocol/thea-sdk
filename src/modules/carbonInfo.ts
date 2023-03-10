@@ -1,6 +1,7 @@
 import { consts, getERC20ContractAddress, ISO_CODES, TheaError, TheaSubgraphError } from "../utils";
 import co2dataset from "../co2dataset.json";
 import {
+	ClientProfile,
 	Co2DataSet,
 	EstimatedFootprint,
 	FootprintDetail,
@@ -214,6 +215,14 @@ export class CarbonInfo {
 		const token = tokenList.result.find(({ id }) => id === tokenId);
 		if (!token) throw new TheaError({ type: "INVALID_TOKEN_ID", message: "Token ID must be valid" });
 		return token.price;
+	}
+
+	/**
+	 * Returns authenticated users profile
+	 * @returns ClientProfile @see ClientProfile
+	 */
+	getUsersProfile(): Promise<HttpResponseIn<ClientProfile>> {
+		return this.apiClient.get<HttpResponseIn<ClientProfile>>("/myprofile");
 	}
 
 	private getNFTAmounts(balances: TheaERC1155Balance[]): Record<string, string> {
