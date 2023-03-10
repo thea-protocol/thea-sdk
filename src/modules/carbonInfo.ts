@@ -7,6 +7,7 @@ import {
 	FootprintQuery,
 	FootprintSummary,
 	GraphqlQuery,
+	HttpResponseIn,
 	OffsetHistory,
 	OffsetStats,
 	ProviderOrSigner,
@@ -16,6 +17,7 @@ import {
 	TheaERC1155Balance,
 	TheaERC20Token,
 	TheaNetwork,
+	TokenInfoList,
 	TokenizationHistory,
 	TokenizationStats,
 	UserBalance
@@ -109,10 +111,12 @@ export class CarbonInfo {
 	private dataSet: Co2DataSet;
 	private lastYearInDataset: number;
 	readonly httpClient: HttpClient;
+	readonly apiClient: HttpClient;
 	constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		this.dataSet = co2dataset as Co2DataSet;
 		this.lastYearInDataset = this.dataSet["USA"].data[this.dataSet["USA"].data.length - 1].year;
 		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl);
+		this.apiClient = new HttpClient(consts[`${network}`].theaApiBaseUrl);
 	}
 
 	/**
@@ -195,6 +199,21 @@ export class CarbonInfo {
 			nft
 		};
 		return userBalance;
+	}
+
+	/**
+	 * Get price of NFT
+	 * @param tokenId - token ID of NFT
+	 * @returns - price of NFT
+	 */
+	async queryTokenPrice(tokenId: number): Promise<number> {
+		const tokenList = await this.apiClient.post<Record<string, never>, HttpResponseIn<TokenInfoList[]>>(
+			`/tokens/list`,
+			{}
+		);
+		const token = tokenList.result.find(({ id }) => id === tokenId);
+		if (!token) throw new TheaError({ type: "INVALID_TOKEN_ID", message: "Token ID must be valid" });
+		return token.price;
 	}
 
 	private getNFTAmounts(balances: TheaERC1155Balance[]): Record<string, string> {

@@ -251,6 +251,37 @@ export type UserBalance = {
 	};
 	nft: Record<string, string>;
 };
+export enum API_RESPONSE_ERROR {
+	GENERAL_ERROR = "GENERAL_ERROR",
+	BAD_INPUT_DATA = "BAD_INPUT_DATA",
+	NO_AUTH = "NO_AUTH",
+	BAD_CREDS = "BAD_CREDS",
+	RECORD_NOT_FOUND = "RECORD_NOT_FOUND",
+	RECORD_EXISTS = "RECORD_EXISTS",
+	RECORD_CONFLICT = "RECORD_CONFLICT",
+	PASSPOLICY_ERROR = "PASSPOLICY_ERROR",
+	NO_PRIVS = "NO_PRIVS",
+	REFERRED_RECORDS_DETECTED = "REFERRED_RECORDS_DETECTED",
+	ACCOUNT_LOCKED = "ACCOUNT_LOCKED",
+	DOCUSIGN_ERROR = "DOCUSIGN_ERROR",
+	UNABLE_TO_GET_RATING = "UNABLE_TO_GET_RATING",
+	VERRA_INTERACTION_ERROR = "VERRA_INTERACTION_ERROR",
+	INSUFFICIENT_AMOUNT = "INSUFFICIENT_AMOUNT",
+	INVALID_SIGNATURE = "INVALID_SIGNATURE",
+	IPFS_INTERACTION_ERROR = "IPFS_INTERACTION_ERROR"
+}
+export interface HttpResponseIn<T = any> {
+	result: T;
+	error: API_RESPONSE_ERROR | null;
+	errorMessage: string | null;
+}
+export type TokenInfoList = {
+	id: number;
+	spec: string;
+	price: number;
+	availableAmount: number;
+};
+
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";
 export * from "./IERC1155Contract";
