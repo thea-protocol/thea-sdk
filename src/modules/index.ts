@@ -11,3 +11,4 @@ export * from "./NFTtrading/getTokenList";
 export * from "./NFTtrading/orderbook";
 export * from "./NFTtrading/NFTTrading";
 export * from "./carbonInfo";
+export * from "./options";

@@ -329,6 +329,104 @@ export type ClientProfile = {
 	totalRetiredAmount: number;
 	invitations: number;
 };
+export enum OrderRecordStatus {
+	REQUESTED = "REQUESTED",
+	IN_QUEUE = "IN_QUEUE",
+	BC_PRE_PENDING = "BC_PRE_PENDING",
+	BC_PENDING = "BC_PENDING",
+	INTERACTING_WITH_VCC_SERVICE = "INTERACTING_WITH_VCC_SERVICE",
+	PERSISTING = "PERSISTING",
+	VALIDATING = "VALIDATING",
+	VALIDATED = "VALIDATED",
+	PAYMENT_REQUESTED = "PAYMENT_REQUESTED",
+	PAYMENT_RECEIVED = "PAYMENT_RECEIVED",
+	ERROR_PAYMENT_TIMEOUT = "ERROR_PAYMENT_TIMEOUT",
+	REFUND_REQUESTED = "REFUND_REQUESTED",
+	REFUND_SENT = "REFUND_SENT",
+	TRANSFER_REQUESTED = "TRANSFER_REQUESTED",
+	RETIRE_REQUESTED = "RETIRE_REQUESTED",
+	VCC_VALIDATION = "VCC_VALIDATION",
+	CLIENT_CONFIRMATION = "CLIENT_CONFIRMATION",
+	WAITING_VCC_TRANSFER = "WAITING_VCC_TRANSFER",
+	VCC_TRANSFER_VALIDATION = "VCC_TRANSFER_VALIDATION",
+	ERROR_REJECTED = "ERROR_REJECTED",
+	ERROR_INVALID_INPUT = "ERROR_INVALID_INPUT",
+	ERROR_GENERAL = "ERROR_GENERAL",
+	ERROR_VALIDATION = "ERROR_VALIDATION",
+	ERROR_ON_BC_SEND = "ERROR_ON_BC_SEND",
+	ERROR_IN_ETH_TX = "ERROR_IN_ETH_TX",
+	ERROR_BC_CONFIRMED_BUT_FAILED = "ERROR_BC_CONFIRMED_BUT_FAILED",
+	ERROR_ON_VCC_SERVICE_INTERACTION = "ERROR_ON_VCC_SERVICE_INTERACTION",
+	ERROR_VCC_SOURCE_EXISTS = "ERROR_VCC_SOURCE_EXISTS",
+	ERROR_VCC_SOURCE_CONFLICT = "ERROR_VCC_SOURCE_CONFLICT",
+	ERROR_PENDING_TIMEOUT = "ERROR_PENDING_TIMEOUT",
+	ERROR_TRANSFER_FAILED = "ERROR_TRANSFER_FAILED",
+	ERROR_RETIRE_FAILED = "ERROR_RETIRE_FAILED",
+	PERFORMED = "PERFORMED"
+}
+export type OrderRequest = {
+	orderId: string;
+	btOptionId: string;
+	quantity: number;
+	signature: string;
+};
+export type OrderRecord = {
+	uuid: string;
+	status: OrderRecordStatus;
+	txHash: string;
+	createdAt: string;
+	updatedAt: string;
+	btOptionId: string;
+	quantity: number;
+	signature: string;
+	premium: number;
+	ethAddr: string;
+};
+export type OrderCreateRequest = {
+	orderId: string;
+	btOptionId: string;
+	quantity: number;
+	signature: string;
+};
+export type OptionsOrderStruct = {
+	orderId: string;
+	btOptionId: string;
+	quantity: number;
+};
+export enum DeploymentStatus {
+	NEW = "NEW",
+	DEPLOYMENT_FAILED = "DEPLOYMENT_FAILED",
+	DEPLOYED = "DEPLOYED",
+	DISABLE = "DISABLED",
+	DEPLOY_IN_PROCESS = "DEPLOY_IN_PROCESS",
+	WAIT_BC_CONFIRMATION = "WAIT_BC_CONFIRMATION"
+}
+export type OptionsContractRecord = {
+	uuid: string;
+	btOptionsVaultId: string;
+	expiry: string;
+	contractAddress: string | null;
+	btContractAddress: string | null;
+	expiryPrice: number;
+	createdAt: string;
+	updatedAt: string;
+	deploymentStatus: DeploymentStatus;
+};
+export enum OptionType {
+	Call = "Call",
+	Put = "Put"
+}
+export type OptionsProduct = {
+	uuid: string;
+	contractId: string;
+	strike: number;
+	optionType: OptionType;
+	enabled: boolean;
+	updatedAt: string;
+	vaultAddr: string;
+	contractAddr: string;
+	premiumPrice: number;
+};
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";

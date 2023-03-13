@@ -1,8 +1,15 @@
 import {
 	ClientProfile,
+	DeploymentStatus,
 	HttpResponseIn,
 	OffsetHistory,
 	OffsetStats,
+	OptionsContractRecord,
+	OptionsProduct,
+	OptionType,
+	OrderRecord,
+	OrderRecordStatus,
+	OrderRequest,
 	PriceListings,
 	SearchOrdersResponsePayload,
 	TheaERC1155Balance,
@@ -415,6 +422,112 @@ export const userProfile: HttpResponseIn<ClientProfile> = {
 		historicPositionChanges: null,
 		totalRetiredAmount: 0,
 		invitations: 0
+	},
+	error: null,
+	errorMessage: null
+};
+export const deployedOptionsContracts: HttpResponseIn<OptionsContractRecord[]> = {
+	result: [
+		{
+			uuid: "00000186c4c423521c1d41a0d03c501a",
+			btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
+			expiry: "2027-12-12T12:00:00.000Z",
+			contractAddress: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+			btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
+			expiryPrice: 0,
+			createdAt: "2023-03-09T05:07:13.874Z",
+			updatedAt: "2023-03-09T06:22:26.257Z",
+			deploymentStatus: DeploymentStatus.DEPLOYED
+		},
+		{
+			uuid: "00000186c4f23e19daf25a6e687f1246",
+			btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
+			expiry: "2026-12-12T12:00:00.000Z",
+			contractAddress: "0x96bf2642d5ca9b0cbc6f15ad126d7084c09dba83",
+			btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
+			expiryPrice: 0,
+			createdAt: "2023-03-09T05:57:35.385Z",
+			updatedAt: "2023-03-09T05:58:18.034Z",
+			deploymentStatus: DeploymentStatus.DEPLOYED
+		}
+	],
+	error: null,
+	errorMessage: null
+};
+
+export const optionsProducts: HttpResponseIn<OptionsProduct[]> = {
+	result: [
+		{
+			uuid: "00000186c51111b5a3e818eae0ae9bd1",
+			contractId: "00000186c4c423521c1d41a0d03c501a",
+			strike: 7,
+			optionType: OptionType.Call,
+			enabled: true,
+			updatedAt: "2023-03-09T06:31:15.637Z",
+			vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+			contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+			premiumPrice: 0.0005566631703711085
+		},
+		{
+			uuid: "00000186c510db6ba6e0a324a79792ab",
+			contractId: "00000186c4c423521c1d41a0d03c501a",
+			strike: 7,
+			optionType: OptionType.Put,
+			enabled: true,
+			updatedAt: "2023-03-09T06:31:01.739Z",
+			vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+			contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+			premiumPrice: 5.800556663166686
+		}
+	],
+	error: null,
+	errorMessage: null
+};
+
+export const mockOrders: HttpResponseIn<OrderRecord[]> = {
+	result: [
+		{
+			uuid: "34",
+			status: OrderRecordStatus.PERFORMED,
+			txHash: "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
+			createdAt: "2023-03-10T11:09:45.645Z",
+			updatedAt: "2023-03-10T11:09:45.645Z",
+			btOptionId: "00000186c51111b5a3e818eae0ae9bd1",
+			quantity: 1,
+			signature:
+				"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
+			premium: 0.0005566631703711085,
+			ethAddr: WALLET_ADDRESS
+		}
+	],
+	error: null,
+	errorMessage: null
+};
+
+export const mockPrepareOptionsOrder: HttpResponseIn<OrderRequest> = {
+	result: {
+		orderId: "1",
+		btOptionId: "00000186c510db6ba6e0a324a79792ab",
+		quantity: 1,
+		signature: ""
+	},
+	error: null,
+	errorMessage: null
+};
+
+export const mockOptionsOrder: HttpResponseIn<OrderRecord> = {
+	result: {
+		uuid: "1",
+		status: OrderRecordStatus.REQUESTED,
+		txHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
+		createdAt: "2023-03-10T11:41:04.287Z",
+		updatedAt: "2023-03-10T11:41:04.287Z",
+		btOptionId: "00000186c510db6ba6e0a324a79792ab",
+		quantity: 0,
+		signature:
+			"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
+		premium: 0,
+		ethAddr: WALLET_ADDRESS
 	},
 	error: null,
 	errorMessage: null

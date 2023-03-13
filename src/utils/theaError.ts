@@ -37,7 +37,8 @@ export type ErrorType =
 	| "SIGNER_REQUIRES_PROVIDER"
 	| "MISSING_CURRENT_NBT_CONTRACT_ADDRESSS"
 	| "SUBGRAPH_CALL_ERROR"
-	| "TOKEN_NOT_FOUND";
+	| "TOKEN_NOT_FOUND"
+	| "INVALID_OPTION_PRODUCT_ID";
 
 export type ErrorProps = {
 	type: ErrorType;
