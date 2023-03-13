@@ -36,6 +36,7 @@ jest.mock("@ethersproject/contracts", () => {
 
 jest.mock("../../src/modules/shared", () => {
 	return {
+		...jest.requireActual("../../src/modules/shared"),
 		checkBalance: jest.fn(),
 		approve: jest.fn(),
 		execute: jest.fn().mockImplementation(() => {
@@ -161,6 +162,16 @@ describe("Offset", () => {
 			};
 			const result = offSet.extractRequestIdFromEvent([event as Event]);
 			expect(result.requestId).toBe("1");
+		});
+	});
+
+	describe("getNextOffsetEventDate", () => {
+		jest.dontMock("../../src/modules/shared");
+		it("should return next offset event date", async () => {
+			const httpClient = jest.spyOn(offSet.httpClient, "get").mockResolvedValueOnce("2023-04-05T12:00:00Z");
+			const result = await offSet.getNextOffsetEventDate();
+			expect(result).toBe("2023-04-05T12:00:00Z");
+			expect(httpClient).toBeCalledWith("/nextRetirement");
 		});
 	});
 });

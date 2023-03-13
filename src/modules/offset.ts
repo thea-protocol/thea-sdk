@@ -1,14 +1,22 @@
-import { IBaseTokenManagerContract, IRegistryContract, ProviderOrSigner, RequestId, TheaNetwork } from "../types";
+import {
+	HttpResponseIn,
+	IBaseTokenManagerContract,
+	IRegistryContract,
+	ProviderOrSigner,
+	RequestId,
+	TheaNetwork
+} from "../types";
 import { amountShouldBeGTZero, consts, ContractWrapper, Events, getAddress, signerRequired, TheaError } from "../utils";
 import Registry_ABI from "../abi/Registry_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-import { approve, checkBalance, execute, executeWithResponse, TheaERC20 } from "./shared";
+import { approve, checkBalance, execute, executeWithResponse, HttpClient, TheaERC20 } from "./shared";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Contract, ContractReceipt, Event } from "@ethersproject/contracts";
 import BaseTokenManager_ABI from "../abi/BaseTokenManager_ABI.json";
 
 export class Offset extends ContractWrapper<IRegistryContract> {
 	readonly baseTokenManager: IBaseTokenManagerContract;
+	readonly httpClient: HttpClient;
 	constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		super(providerOrSigner, Registry_ABI, consts[`${network}`].registryContract);
 		this.baseTokenManager = new Contract(
@@ -16,6 +24,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 			BaseTokenManager_ABI.abi,
 			providerOrSigner
 		) as IBaseTokenManagerContract;
+		this.httpClient = new HttpClient(consts[`${network}`].theaApiBaseUrl);
 	}
 
 	/**
@@ -83,6 +92,14 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		}
 
 		return response;
+	}
+
+	/**
+	 * Returns next offset event date
+	 * @returns next offset event date
+	 */
+	getNextOffsetEventDate(): Promise<HttpResponseIn<string>> {
+		return this.httpClient.get<HttpResponseIn<string>>("/nextRetirement");
 	}
 
 	private async getBaseTokenAddressByVintage(vintage: number): Promise<string> {
