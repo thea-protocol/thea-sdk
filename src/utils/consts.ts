@@ -102,7 +102,7 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 		stableTokenContract: "0x014349F1C543038a76384cFC1A68f1881AFc6B0a",
 		quoterContract: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
 		swapRouterContract: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-		theaApiBaseUrl: "https://127.0.0.1:8078/cli",
+		theaApiBaseUrl: "https://client.dev.thea.earth/cli",
 		exchangeProxyAddress: "0x4fb72262344034e034fce3d9c701fd9213a55260",
 		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.0.1"
 	},
