@@ -26,6 +26,7 @@ const theaSDK = await TheaSDK.init({
 	signer: new Wallet(privateKey, provider)
 });
 ```
+
 You can also pass in a current NBT address as an optional parameter to the SDK initialization. If you don't pass in a current NBT address, the SDK will fetch current base token addres from BaseTokenManager SC. Here is an example of passing in a current NBT address as a parameter:
 
 ```js
@@ -33,7 +34,7 @@ You can also pass in a current NBT address as an optional parameter to the SDK i
 const theaSDK = await TheaSDK.init({
 	network: TheaNetwork.MUMBAI,
 	signer: new Wallet(privateKey, provider),
-    currentNBTokenAddress: "0x123..."
+	currentNBTokenAddress: "0x123..."
 });
 ```
 
@@ -205,12 +206,6 @@ const transactionReceipt = await theaSDK.offset.offsetNFT(1, "2000");
 ```js
 // Returns requestId in transaction receipt
 const transactionReceipt = await theaSDK.offset.offsetFungible(2017, "2000");
-```
-
-- Query NFT price - return the price of NFT with specified token ID
-
-```js
-const price = await theaSDK.offset.queryTokenPrice(1);
 ```
 
 - Get next offset event date - returns the next offset event date
@@ -721,6 +716,12 @@ const profile = await theaSDK.carbonInfo.getUsersProfile();
 }
 ```
 
+- Query NFT price - return the price of NFT with specified token ID
+
+```js
+const price = await theaSDK.carbonInfo.queryTokenPrice(1);
+```
+
 ## Options
 
 - Create Order - places a option order for the user
@@ -783,29 +784,29 @@ const result = theaSDK.options.getCurrentStrikeAndPremium();
 
 // Sample output
 [
-    {
-        "uuid": "00000186c51111b5a3e818eae0ae9bd1",
-	"contractId": "00000186c4c423521c1d41a0d03c501a",
-	"strike": 7,
-	"optionType": "Call",
-	"enabled": true,
-	"updatedAt": "2023-03-09T06:31:15.637Z",
-	"vaultAddr": "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
-	"contractAddr": "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-	"premiumPrice": 0.0005566631703711085
-    },
-    {
-        "uuid": "00000186c510db6ba6e0a324a79792ab",
-	"contractId": "00000186c4c423521c1d41a0d03c501a",
-	"strike": 7,
-	"optionType": "Put",
-	"enabled": true,
-	"updatedAt": "2023-03-09T06:31:01.739Z",
-	"vaultAddr": "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
-	"contractAddr": "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-	"premiumPrice": 5.800556663166686
-    }
-]
+	{
+		uuid: "00000186c51111b5a3e818eae0ae9bd1",
+		contractId: "00000186c4c423521c1d41a0d03c501a",
+		strike: 7,
+		optionType: "Call",
+		enabled: true,
+		updatedAt: "2023-03-09T06:31:15.637Z",
+		vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+		contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+		premiumPrice: 0.0005566631703711085
+	},
+	{
+		uuid: "00000186c510db6ba6e0a324a79792ab",
+		contractId: "00000186c4c423521c1d41a0d03c501a",
+		strike: 7,
+		optionType: "Put",
+		enabled: true,
+		updatedAt: "2023-03-09T06:31:01.739Z",
+		vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+		contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+		premiumPrice: 5.800556663166686
+	}
+];
 ```
 
 - Exercise option - exercises the option
