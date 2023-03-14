@@ -12,7 +12,7 @@ import {
 	DeploymentStatus,
 	HttpResponseIn
 } from "../types";
-import { amountShouldBeGTZero, consts, signerRequired, TheaError } from "../utils";
+import { amountShouldBeGTZero, consts, signerRequired, TheaError, typedDataSignerRequired } from "../utils";
 import { execute, HttpClient } from "./shared";
 import TheaOptions_ABI from "../abi/TheaOptions_ABI.json";
 
@@ -35,6 +35,7 @@ export class Options {
 	 */
 	async createOrder(btOptionId: string, quantity: number): Promise<HttpResponseIn<OrderRecord>> {
 		amountShouldBeGTZero(quantity);
+		typedDataSignerRequired(this.signer);
 		const response = await this.httpClient.post<{ btOptionId: string; quantity: number }, HttpResponseIn<OrderRequest>>(
 			`/bt_options_orders/prepare`,
 			{
