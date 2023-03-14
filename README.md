@@ -1,4 +1,4 @@
-# Thea SDK [![npm version](https://badge.fury.io/js/@mcovilo%2Fthea-sdk.svg)](https://badge.fury.io/js/@mcovilo%2Fthea-sdk)
+# Thea SDK [![npm version](https://badge.fury.io/js/@thea-protocol%2Fsdk.svg)](https://badge.fury.io/js/@thea-protocol%2Fsdk)
 
 This is official JS SDK for Thea Protocol
 
