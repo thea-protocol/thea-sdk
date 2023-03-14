@@ -427,6 +427,17 @@ export type OptionsProduct = {
 	contractAddr: string;
 	premiumPrice: number;
 };
+export type Client = {
+	uuid: string;
+	inviterUuid: string | null;
+	invitationCode: string;
+	profilePrecalc: string;
+	wallets: [
+		{
+			ethAddr: string;
+		}
+	];
+};
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";

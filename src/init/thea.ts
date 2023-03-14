@@ -14,7 +14,8 @@ import {
 	Offset,
 	CarbonInfo,
 	RollBaseTokens,
-	Options
+	Options,
+	Auth
 } from "../modules";
 import { TheaNetwork, ProviderOrSigner } from "../types";
 import { consts, getCurrentNBTTokenAddress, isProvider, isSigner, TheaError, validateAddress } from "../utils";
@@ -42,6 +43,7 @@ export class TheaSDK {
 	readonly carbonInfo: CarbonInfo;
 	readonly rollBaseTokens: RollBaseTokens;
 	readonly options: Options;
+	readonly auth: Auth;
 
 	private constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		this.unwrap = new Unwrap(this.providerOrSigner, network);
@@ -57,6 +59,7 @@ export class TheaSDK {
 		this.carbonInfo = new CarbonInfo(this.providerOrSigner, network);
 		this.tokenization = new Tokenization(network);
 		this.options = new Options(this.providerOrSigner, network);
+		this.auth = new Auth(this.providerOrSigner, network);
 	}
 
 	/**

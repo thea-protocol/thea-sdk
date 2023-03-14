@@ -1,4 +1,5 @@
 import {
+	Client,
 	ClientProfile,
 	DeploymentStatus,
 	HttpResponseIn,
@@ -528,6 +529,28 @@ export const mockOptionsOrder: HttpResponseIn<OrderRecord> = {
 			"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
 		premium: 0,
 		ethAddr: WALLET_ADDRESS
+	},
+	error: null,
+	errorMessage: null
+};
+
+export const mockLoginRequest: HttpResponseIn<string> = {
+	result: "LOGIN_0x58e89583c13913a928662c1ac81988cac62df80b_1674797584045_-3941831526145628368",
+	error: null,
+	errorMessage: null
+};
+
+export const mockClient: HttpResponseIn<Client> = {
+	result: {
+		uuid: "00000356c510db6ba6e0a324a79792ds",
+		inviterUuid: null,
+		invitationCode: "ZL6IY2",
+		profilePrecalc: JSON.stringify(userProfile.result),
+		wallets: [
+			{
+				ethAddr: WALLET_ADDRESS
+			}
+		]
 	},
 	error: null,
 	errorMessage: null

@@ -815,3 +815,41 @@ const result = theaSDK.options.getCurrentStrikeAndPremium();
 // Requires order ID and options product ID as inputs
 const transactionReceipt = theaSDK.options.exercise("1", "00000186c510db6ba6e0a324a79792ab");
 ```
+
+## Auth
+
+- Login - authenticate user with backend
+
+```js
+const user = theaSDK.auth.login();
+
+// Sample output
+{
+	result: {
+		uuid: "00000356c510db6ba6e0a324a79792ds",
+		inviterUuid: null,
+		invitationCode: "ZL6IY2",
+		profilePrecalc: `{"userID":"00000186c48bc47f1778c129a9bdb0a2","walletAddress":"0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a","uniqueReferralCode":"ZL6IY2","active":true,"referrerID":null,"loyalty":{"badges":[],"tier":1},"bridgingBonusPaid":false,"offsetBonusPaid":false,"outstandingReferrals":{},"currentRpBalance":{"20230310Z":0},"historicRpChanges":[],"historicTierChanges":[],"historicPositionChanges":null,"totalRetiredAmount":0,"invitations":0}`,
+		wallets: [
+			{
+				ethAddr: "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
+			}
+		]
+	},
+	error: null,
+	errorMessage: null
+}
+```
+
+- Logout - disconnect user from backend
+
+```js
+const user = theaSDK.auth.logout();
+
+// Sample output
+{
+	result: "OK",
+	error: null,
+	errorMessage: null
+}
+```
