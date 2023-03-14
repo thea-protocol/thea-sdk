@@ -91,20 +91,20 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 	},
 	[TheaNetwork.MUMBAI]: {
 		networkName: "MUMBAI",
-		registryContract: "0xa435d49fd8f892e6a070d5b4f6731b2331f6829d",
-		theaERC1155Contract: "0x0d1543fa8057487f2fd36a643f1f211b2bc2b4b5",
-		vintageTokenContract: "0x737146EA29c72931E4FCc9b78Ff2EA28D2553658",
-		sdgTokenContract: "0xf60eFE9E4DE5F2cA6f1D1F1574A5eb58b759AcE1",
-		ratingTokenContract: "0xeC65e4c4f9185409fe152c35A86535F06615bbbf",
+		registryContract: "0x3fA858A1761b321465955d68dEdF423126C45437",
+		theaERC1155Contract: "0x2Bb76Ee89790BEE9F10F37043384566E137E295E",
+		vintageTokenContract: "0x976EFc02245e0300eA56b35c8cc6F058fb0083cA",
+		sdgTokenContract: "0xb198EA5967B7f24866Ab6271ca1F6D82439E3f9B",
+		ratingTokenContract: "0x145A83c194Cb0628aF76870f30cabE20155a3559",
 		currentNbtTokenContract: "",
-		baseTokenManagerContract: "0x72b27872C7E72b2E5070EE848477D3b860dD3bc9",
-		baseTokenManagerDeployerContract: "0xe2f9110dd85093663de7dd3379d632a1166deff2",
+		baseTokenManagerContract: "0x4aFE066fb4e5624808612E574b38eAb83f7bEF72",
+		baseTokenManagerDeployerContract: "0xF4F6C1f2335E3bf75Fc754f1129c7BAb21c80A7B",
 		stableTokenContract: "0x014349F1C543038a76384cFC1A68f1881AFc6B0a",
 		quoterContract: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
 		swapRouterContract: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 		theaApiBaseUrl: "https://client.dev.thea.earth/cli",
 		exchangeProxyAddress: "0x4fb72262344034e034fce3d9c701fd9213a55260",
-		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.0.1"
+		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.0.3"
 	},
 	[TheaNetwork.POLYGON]: {
 		networkName: "POLYGON",
