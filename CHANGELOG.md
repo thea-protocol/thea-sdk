@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/thea-protocol/thea-sdk/compare/v0.2.0...v0.3.0) (2023-03-14)
+
+
+### Features
+
+* user authentication ([9eca15f](https://github.com/thea-protocol/thea-sdk/commit/9eca15f4bf9c5fc1ef2fd226708c934033f04a4a))
+
+
+### Bug Fixes
+
+* require typed signer to create options order ([ba34bf2](https://github.com/thea-protocol/thea-sdk/commit/ba34bf22fa9b99448dceca1a7a059ed8c41fc117))
+
 ## [0.2.0](https://github.com/thea-protocol/thea-sdk/compare/v0.1.0...v0.2.0) (2023-03-13)
 
 
