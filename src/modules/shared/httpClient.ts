@@ -8,7 +8,8 @@ export class HttpClient {
 			baseURL: url,
 			headers: {
 				"Content-Type": "application/json"
-			}
+			},
+			withCredentials: true
 		});
 	}
 
