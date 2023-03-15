@@ -18,7 +18,7 @@ export class Orderbook {
 
 	constructor(network: TheaNetwork) {
 		this.network = network;
-		this.httpClient = new HttpClient(ORDERBOOK_URL);
+		this.httpClient = new HttpClient(ORDERBOOK_URL, false);
 	}
 
 	async queryOrdersInfo(tokenId: string, owner: string) {

@@ -23,7 +23,7 @@ export class GetTokenList {
 
 	constructor(network: TheaNetwork) {
 		this.network = network;
-		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl);
+		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl, false);
 	}
 	async getTokenList() {
 		const response = await this.httpClient.post<

@@ -22,13 +22,14 @@ describe("httpClient", () => {
 
 	it("should create http client on class initialization", () => {
 		const baseURL = "http://test.com";
-		httpClient = new HttpClient(baseURL);
+		httpClient = new HttpClient(baseURL, false);
 		const axiosCreateSpy = jest.spyOn(axios, "create");
 		expect(axiosCreateSpy).toBeCalledWith({
 			baseURL: baseURL,
 			headers: {
 				"Content-Type": "application/json"
-			}
+			},
+			withCredentials: false
 		});
 		expect(httpClient.client).toBeDefined();
 	});

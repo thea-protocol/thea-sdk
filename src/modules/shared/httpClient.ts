@@ -3,13 +3,13 @@ import { TheaAPICallError } from "../../utils";
 
 export class HttpClient {
 	readonly client: AxiosInstance;
-	constructor(url: string) {
+	constructor(url: string, withCredentials = true) {
 		this.client = axios.create({
 			baseURL: url,
 			headers: {
 				"Content-Type": "application/json"
 			},
-			withCredentials: true
+			withCredentials
 		});
 	}
 

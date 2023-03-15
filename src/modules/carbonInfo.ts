@@ -116,7 +116,7 @@ export class CarbonInfo {
 	constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		this.dataSet = co2dataset as Co2DataSet;
 		this.lastYearInDataset = this.dataSet["USA"].data[this.dataSet["USA"].data.length - 1].year;
-		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl);
+		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl, false);
 		this.apiClient = new HttpClient(consts[`${network}`].theaApiBaseUrl);
 	}
 
