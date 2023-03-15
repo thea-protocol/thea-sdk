@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/thea-protocol/thea-sdk/compare/v0.3.0...v0.3.1) (2023-03-15)
+
+
+### Bug Fixes
+
+* auth token ([45bb80c](https://github.com/thea-protocol/thea-sdk/commit/45bb80c4d61161125afcd501eb8733c0b722c654))
+
 ## [0.3.0](https://github.com/thea-protocol/thea-sdk/compare/v0.2.0...v0.3.0) (2023-03-14)
 
 
