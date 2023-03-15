@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/thea-protocol/thea-sdk/compare/v0.3.1...v1.0.0) (2023-03-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* axios client
+
+### Bug Fixes
+
+* axios client ([d723380](https://github.com/thea-protocol/thea-sdk/commit/d723380a53626d1bfd375425877afaee04ca8b0a))
+
 ## [0.3.1](https://github.com/thea-protocol/thea-sdk/compare/v0.3.0...v0.3.1) (2023-03-15)
 
 
