@@ -368,7 +368,7 @@ export type OrderRequest = {
 	orderId: string;
 	btOptionId: string;
 	quantity: number;
-	signature: string;
+	signature: string | null;
 };
 export type OrderRecord = {
 	uuid: string;
@@ -391,7 +391,7 @@ export type OrderCreateRequest = {
 export type OptionsOrderStruct = {
 	orderId: string;
 	btOptionId: string;
-	quantity: number;
+	quantity: string;
 };
 export enum DeploymentStatus {
 	NEW = "NEW",

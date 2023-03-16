@@ -1,5 +1,6 @@
 import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Contract, ContractReceipt } from "@ethersproject/contracts";
+import { parseFixed } from "@ethersproject/bignumber";
 import {
 	OrderRecord,
 	OrderCreateRequest,
@@ -43,7 +44,11 @@ export class Options {
 				quantity
 			}
 		);
-		const signedOrder = await this.signOrder({ orderId: response.result.orderId, btOptionId, quantity });
+		const signedOrder = await this.signOrder({
+			orderId: response.result.orderId,
+			btOptionId,
+			quantity: parseFixed(quantity.toString(), 4).toString()
+		});
 		return this.httpClient.post<OrderCreateRequest, HttpResponseIn<OrderRecord>>(`/bt_options_orders/create`, {
 			orderId: response.result.orderId,
 			btOptionId,

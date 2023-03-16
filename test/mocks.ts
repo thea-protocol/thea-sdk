@@ -510,7 +510,7 @@ export const mockPrepareOptionsOrder: HttpResponseIn<OrderRequest> = {
 		orderId: "1",
 		btOptionId: "00000186c510db6ba6e0a324a79792ab",
 		quantity: 1,
-		signature: ""
+		signature: null
 	},
 	error: null,
 	errorMessage: null
