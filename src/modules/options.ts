@@ -91,7 +91,7 @@ export class Options {
 	 * Returns current options strike and premium
 	 * @param orderId - option ID
 	 * @param btOptionId - option product ID
-	 * @returns OptionsProduct @see OptionsProduct
+	 * @returns ContractReceipt @see ContractReceipt
 	 */
 	async exercise(orderId: string, btOptionId: string): Promise<ContractReceipt> {
 		signerRequired(this.signer);
