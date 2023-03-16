@@ -426,6 +426,7 @@ export type OptionsProduct = {
 	vaultAddr: string;
 	contractAddr: string;
 	premiumPrice: number;
+	expiry: string;
 };
 export type Client = {
 	uuid: string;
