@@ -467,7 +467,8 @@ export const optionsProducts: HttpResponseIn<OptionsProduct[]> = {
 			updatedAt: "2023-03-09T06:31:15.637Z",
 			vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
 			contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-			premiumPrice: 0.0005566631703711085
+			premiumPrice: 0.0005566631703711085,
+			expiry: "2026-12-12T12:00:00.000Z"
 		},
 		{
 			uuid: "00000186c510db6ba6e0a324a79792ab",
@@ -478,7 +479,8 @@ export const optionsProducts: HttpResponseIn<OptionsProduct[]> = {
 			updatedAt: "2023-03-09T06:31:01.739Z",
 			vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
 			contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-			premiumPrice: 5.800556663166686
+			premiumPrice: 5.800556663166686,
+			expiry: "2026-12-12T12:00:00.000Z"
 		}
 	],
 	error: null,
