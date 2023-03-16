@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.2](https://github.com/thea-protocol/thea-sdk/compare/v1.0.1...v1.0.2) (2023-03-16)
+
+
+### Bug Fixes
+
+* exercise return type ([8221671](https://github.com/thea-protocol/thea-sdk/commit/82216718bdd73503e10afb578800134e64cb8f0a))
+* option product response ([451a7b0](https://github.com/thea-protocol/thea-sdk/commit/451a7b016bb99af9b634a798423b69367c813378))
+* testnet addresses ([9afbc15](https://github.com/thea-protocol/thea-sdk/commit/9afbc15a46ce47e0956566c934157433f6a8ee7e))
+
 ## [1.0.1](https://github.com/thea-protocol/thea-sdk/compare/v1.0.0...v1.0.1) (2023-03-16)
 
 
