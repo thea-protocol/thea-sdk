@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/thea-protocol/thea-sdk/compare/v1.0.0...v1.0.1) (2023-03-16)
+
+
+### Bug Fixes
+
+* create order ([2bb41c6](https://github.com/thea-protocol/thea-sdk/commit/2bb41c62bb6c7e0651ce6a5042ea29d9d975a4fb))
+
 ## [1.0.0](https://github.com/thea-protocol/thea-sdk/compare/v0.3.1...v1.0.0) (2023-03-15)
 
 
