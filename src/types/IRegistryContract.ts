@@ -21,10 +21,15 @@ export interface IRegistryContract extends Contract {
 		overrides?: TransactionOptions
 	): Promise<ContractTransaction>;
 
-	retire(tokenId: PromiseOrValue<BigNumberish>, amount: PromiseOrValue<BigNumberish>): Promise<ContractTransaction>;
+	retire(
+		tokenId: PromiseOrValue<BigNumberish>,
+		amount: PromiseOrValue<BigNumberish>,
+		receiver: PromiseOrValue<string>
+	): Promise<ContractTransaction>;
 
 	requestRetireFungible(
 		vintage: PromiseOrValue<BigNumberish>,
-		amount: PromiseOrValue<BigNumberish>
+		amount: PromiseOrValue<BigNumberish>,
+		tokenId: PromiseOrValue<BigNumberish>
 	): Promise<ContractTransaction>;
 }

@@ -101,6 +101,11 @@
 					"internalType": "uint256",
 					"name": "amount",
 					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "receiver",
+					"type": "address"
 				}
 			],
 			"name": "retire",
@@ -148,6 +153,11 @@
 					"internalType": "uint256",
 					"name": "amount",
 					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
 				}
 			],
 			"name": "requestRetireFungible",
@@ -175,6 +185,12 @@
 					"internalType": "contract BaseERC20",
 					"name": "baseToken",
 					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "tokenId",
+					"type": "uint256"
 				},
 				{
 					"indexed": false,
