@@ -1,7 +1,7 @@
 import { ContractTransaction, Event } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
 import { consts, Events, IRegistryContract, Offset, TheaError, TheaNetwork } from "../../src";
-import { CONTRACT_ADDRESS, PRIVATE_KEY } from "../mocks";
+import { CONTRACT_ADDRESS, PRIVATE_KEY, WALLET_ADDRESS } from "../mocks";
 import * as utils from "../../src/utils/utils";
 import * as shared from "../../src/modules/shared";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -107,7 +107,7 @@ describe("Offset", () => {
 				token: "ERC1155",
 				spender: contractAddress
 			});
-			expect(retireSpy).toHaveBeenCalledWith(tokenId, amount);
+			expect(retireSpy).toHaveBeenCalledWith(tokenId, amount, WALLET_ADDRESS);
 			expect(executeSpy).toHaveBeenCalledWith(txPromise, {
 				name: Registry_ABI.contractName,
 				address: contractAddress,
@@ -122,7 +122,7 @@ describe("Offset", () => {
 			const executeSpy = jest.spyOn(shared, "executeWithResponse");
 
 			const result = await offSet.offsetFungible(vintage, amount);
-			expect(retireFungibleSpy).toBeCalledWith(vintage, amount);
+			expect(retireFungibleSpy).toBeCalledWith(vintage, amount, 0);
 			expect(executeSpy).toHaveBeenCalled();
 			expect(result.requestId).toBe("1");
 		});

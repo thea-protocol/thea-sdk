@@ -33,7 +33,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * @param amount - amount of VCC tokens to burn
 	 * @returns Transaction receipt
 	 */
-	async offsetNFT(tokenId: BigNumberish, amount: BigNumberish): Promise<ContractReceipt> {
+	async offsetNFT(tokenId: BigNumberish, amount: BigNumberish, receiver?: string): Promise<ContractReceipt> {
 		signerRequired(this.providerOrSigner);
 		amountShouldBeGTZero(amount);
 		await checkBalance(this.providerOrSigner as Signer, this.network, { token: "ERC1155", tokenId, amount });
@@ -43,7 +43,12 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 			spender: this.contractDetails.address
 		});
 
-		return execute(this.contract.retire(tokenId, amount), { ...this.contractDetails, contractFunction: "retire" });
+		if (!receiver) receiver = await getAddress(this.providerOrSigner as Signer);
+
+		return execute(this.contract.retire(tokenId, amount, receiver), {
+			...this.contractDetails,
+			contractFunction: "retire"
+		});
 	}
 
 	/**
@@ -54,7 +59,11 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * @param amount - amount of NBT token to retire
 	 * @returns RequestId & ContractReceipt  @see RequestId
 	 */
-	async offsetFungible(vintage: number, amount: BigNumberish): Promise<ContractReceipt & RequestId> {
+	async offsetFungible(
+		vintage: number,
+		amount: BigNumberish,
+		tokenId: BigNumberish = 0
+	): Promise<ContractReceipt & RequestId> {
 		signerRequired(this.providerOrSigner);
 		amountShouldBeGTZero(amount);
 
@@ -70,7 +79,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		await token.approveERC20(owner, this.contractDetails.address, amount);
 
 		return executeWithResponse<RequestId>(
-			this.contract.requestRetireFungible(vintage, amount),
+			this.contract.requestRetireFungible(vintage, amount, tokenId),
 			{
 				...this.contractDetails,
 				contractFunction: "requestRetireFungible"
