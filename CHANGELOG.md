@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/thea-protocol/thea-sdk/compare/v2.0.0...v2.1.0) (2023-03-17)
+
+
+### Features
+
+* options deposit and withdraw ([5bd1e68](https://github.com/thea-protocol/thea-sdk/commit/5bd1e685401e36380080d860c409a243f0542cf5))
+
 ## [2.0.0](https://github.com/thea-protocol/thea-sdk/compare/v1.0.2...v2.0.0) (2023-03-17)
 
 
