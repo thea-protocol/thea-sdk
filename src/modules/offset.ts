@@ -6,7 +6,16 @@ import {
 	RequestId,
 	TheaNetwork
 } from "../types";
-import { amountShouldBeGTZero, consts, ContractWrapper, Events, getAddress, signerRequired, TheaError } from "../utils";
+import {
+	amountShouldBeGTZero,
+	consts,
+	ContractWrapper,
+	Events,
+	getAddress,
+	signerRequired,
+	TheaError,
+	validateAddress
+} from "../utils";
 import Registry_ABI from "../abi/Registry_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { approve, checkBalance, execute, executeWithResponse, HttpClient, TheaERC20 } from "./shared";
@@ -31,6 +40,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * Burns `amount` of VCC tokens of type `id` and emits event. Backend listens to event and retires the corresponding offchain VCCs
 	 * @param tokenId - VCC token id
 	 * @param amount - amount of VCC tokens to burn
+	 * @param receiver - address for whom VCC will be offseted
 	 * @returns Transaction receipt
 	 */
 	async offsetNFT(tokenId: BigNumberish, amount: BigNumberish, receiver?: string): Promise<ContractReceipt> {
@@ -44,6 +54,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		});
 
 		if (!receiver) receiver = await getAddress(this.providerOrSigner as Signer);
+		validateAddress(receiver);
 
 		return execute(this.contract.retire(tokenId, amount, receiver), {
 			...this.contractDetails,
@@ -57,6 +68,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * function after processing and validating the recovery and retire of VCC is successful.
 	 * @param vintage - vintage of NBT token
 	 * @param amount - amount of NBT token to retire
+	 * @param tokenId - `ID` of VCC token to offset
 	 * @returns RequestId & ContractReceipt  @see RequestId
 	 */
 	async offsetFungible(
