@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/thea-protocol/thea-sdk/compare/v1.0.2...v2.0.0) (2023-03-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* registry abi update
+
+### Bug Fixes
+
+* reduce options abi ([a68ddc6](https://github.com/thea-protocol/thea-sdk/commit/a68ddc676be22f62da6d54564107d0cd54cdb75a))
+* registry abi update ([02a2ce5](https://github.com/thea-protocol/thea-sdk/commit/02a2ce5e80a1a579da6b7dfa3845a0a3892b239f))
+
 ## [1.0.2](https://github.com/thea-protocol/thea-sdk/compare/v1.0.1...v1.0.2) (2023-03-16)
 
 
