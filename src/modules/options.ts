@@ -1,4 +1,4 @@
-import { TypedDataSigner } from "@ethersproject/abstract-signer";
+import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Contract, ContractReceipt } from "@ethersproject/contracts";
 import { parseFixed } from "@ethersproject/bignumber";
 import {
@@ -11,11 +11,13 @@ import {
 	OptionsContractRecord,
 	OptionsProduct,
 	DeploymentStatus,
-	HttpResponseIn
+	HttpResponseIn,
+	OptionType
 } from "../types";
-import { amountShouldBeGTZero, consts, signerRequired, TheaError, typedDataSignerRequired } from "../utils";
-import { execute, HttpClient } from "./shared";
+import { amountShouldBeGTZero, consts, getAddress, signerRequired, TheaError, typedDataSignerRequired } from "../utils";
+import { execute, HttpClient, TheaERC20 } from "./shared";
 import TheaOptions_ABI from "../abi/TheaOptions_ABI.json";
+import TheaOptionsVault_ABI from "../abi/TheaOptionsVault_ABI.json";
 
 export class Options {
 	readonly httpClient: HttpClient;
@@ -37,6 +39,39 @@ export class Options {
 	async createOrder(btOptionId: string, quantity: number): Promise<HttpResponseIn<OrderRecord>> {
 		amountShouldBeGTZero(quantity);
 		typedDataSignerRequired(this.signer);
+
+		const optionsProduct = await this.httpClient
+			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
+			.then((response) => response.result.find(({ uuid }) => uuid === btOptionId));
+
+		if (!optionsProduct)
+			throw new TheaError({ type: "INVALID_OPTION_PRODUCT_ID", message: "Options product id is invalid" });
+
+		const optionsContract = new Contract(optionsProduct.contractAddr, TheaOptions_ABI.abi, this.signer);
+		const optionsVault = new Contract(optionsProduct.vaultAddr, TheaOptionsVault_ABI.abi, this.signer);
+
+		const parsedQuantity = parseFixed(quantity.toString(), 4);
+		let depositAmount;
+		let depositToken;
+		if (optionsProduct.optionType === OptionType.Call) {
+			depositAmount = parsedQuantity;
+			depositToken = await optionsContract.baseToken();
+		} else {
+			depositAmount = parseFixed((quantity * optionsProduct.strike).toString(), 4);
+			depositToken = await optionsContract.usdc();
+		}
+
+		const owner = await getAddress(this.signer as Signer);
+		const token = new TheaERC20(this.signer, depositToken);
+		await token.checkERC20Balance(owner, depositAmount);
+		await token.approveERC20(owner, optionsProduct.vaultAddr, depositAmount);
+
+		await execute(optionsVault.deposit(depositToken, depositAmount), {
+			name: TheaOptionsVault_ABI.contractName,
+			address: optionsProduct.vaultAddr,
+			contractFunction: "deposit"
+		});
+
 		const response = await this.httpClient.post<{ btOptionId: string; quantity: number }, HttpResponseIn<OrderRequest>>(
 			`/bt_options_orders/prepare`,
 			{
@@ -47,7 +82,7 @@ export class Options {
 		const signedOrder = await this.signOrder({
 			orderId: response.result.orderId,
 			btOptionId,
-			quantity: parseFixed(quantity.toString(), 4).toString()
+			quantity: parsedQuantity.toString()
 		});
 		return this.httpClient.post<OrderCreateRequest, HttpResponseIn<OrderRecord>>(`/bt_options_orders/create`, {
 			orderId: response.result.orderId,
@@ -103,11 +138,25 @@ export class Options {
 			throw new TheaError({ type: "INVALID_OPTION_PRODUCT_ID", message: "Options product id is invalid" });
 
 		const optionsContract = new Contract(optionsProduct.contractAddr, TheaOptions_ABI.abi, this.signer);
-		return execute(optionsContract.exercise(orderId), {
+		const optionsVault = new Contract(optionsProduct.vaultAddr, TheaOptionsVault_ABI.abi, this.signer);
+
+		const owner = await getAddress(this.signer as Signer);
+		const baseToken = await optionsContract.baseToken();
+		const usdc = await optionsContract.usdc();
+
+		const txReceipt = await execute(optionsContract.exercise(orderId), {
 			name: TheaOptions_ABI.contractName,
 			address: optionsProduct.contractAddr,
 			contractFunction: "exercise"
 		});
+
+		const balanceBT = await optionsVault.balanceOf(owner, baseToken);
+		const balanceUsdc = await optionsVault.balanceOf(owner, usdc);
+
+		if (!balanceBT.isZero()) await optionsVault.withdraw(baseToken, balanceBT);
+		if (!balanceUsdc.isZero()) await optionsVault.withdraw(usdc, balanceUsdc);
+
+		return txReceipt;
 	}
 
 	private async signOrder(order: OptionsOrderStruct): Promise<string> {
