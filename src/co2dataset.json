@@ -10370,7 +10370,7 @@
 		]
 	},
 	"HKG": {
-		"country": "Hong Kong",
+		"country": "Hong Kong - SAR, China",
 		"isoCode": "HKG",
 		"data": [
 			{ "year": 1911 },
@@ -13634,7 +13634,7 @@
 		]
 	},
 	"MAC": {
-		"country": "Macao",
+		"country": "Macau - SAR, China",
 		"isoCode": "MAC",
 		"data": [
 			{ "year": 1954, "co2_per_capita": 0.1108953207731247 },
@@ -22690,7 +22690,7 @@
 		]
 	},
 	"TWN": {
-		"country": "Taiwan",
+		"country": "Taiwan, China",
 		"isoCode": "TWN",
 		"data": [
 			{ "year": 1911, "co2_per_capita": 0.20882895588874817 },
