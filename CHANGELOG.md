@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/thea-protocol/thea-sdk/compare/v2.1.0...v2.2.0) (2023-03-20)
+
+
+### Features
+
+* swap exact output ([d9865ec](https://github.com/thea-protocol/thea-sdk/commit/d9865ecd545a5d236c0aad985af5fa9fecb7961d))
+
 ## [2.1.0](https://github.com/thea-protocol/thea-sdk/compare/v2.0.0...v2.1.0) (2023-03-17)
 
 
