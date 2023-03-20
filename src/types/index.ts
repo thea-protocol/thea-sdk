@@ -28,25 +28,25 @@ export type ContractDetails = {
 
 export type TheaERC20Token = "SDG" | "Vintage" | "Rating" | "CurrentNBT" | "Stable";
 
-export type ExactInputSingleParams = {
+export type ExactOutputSingleParams = {
 	tokenIn: string;
 	tokenOut: string;
 	fee: BigNumberish;
 	recipient: string;
 	deadline: BigNumberish;
-	amountIn: BigNumberish;
-	amountOutMinimum: BigNumberish;
+	amountOut: BigNumberish;
+	amountInMaximum: BigNumberish;
 	sqrtPriceLimitX96: BigNumberish;
 };
 
 export type FungibleERC20Options = {
 	tokenIn: TheaERC20Token;
-	amountIn: BigNumberish;
+	amountOut: BigNumberish;
 };
 
 export type FungibleStableOptions = {
 	tokenIn: "Stable";
-	amountIn: BigNumberish;
+	amountOut: BigNumberish;
 	tokenOut: TheaERC20Token;
 };
 

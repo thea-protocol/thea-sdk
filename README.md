@@ -231,14 +231,14 @@ const result = await theaSDK.offset.getNextOffsetEventDate();
 // From ERC20 to Stable coin
 const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
 	tokenIn: "SDG",
-	amountIn: "1000000000000000000"
+	amountOut: "1000000000000000000"
 });
 
 // From Stable coin to ERC20
 const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
 	tokenIn: "Stable",
 	tokenOut: "SDG",
-	amountIn: "1000000000000000000"
+	amountOut: "1000000000000000000"
 });
 ```
 
@@ -248,14 +248,14 @@ const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
 // From ERC20 to Stable coin
 const transactionReceipt = await theaSDK.fungibleTrading.swapTokens({
 	tokenIn: "SDG",
-	amountIn: "1000000000000000000"
+	amountOut: "1000000000000000000"
 });
 
 // From Stable coin to ERC20
 const transactionReceipt = await theaSDK.fungibleTrading.swapTokens({
 	tokenIn: "Stable",
 	tokenOut: "SDG",
-	amountIn: "1000000000000000000"
+	amountOut: "1000000000000000000"
 });
 ```
 

@@ -39,7 +39,7 @@ describe("Fungible Trading", () => {
 			const result = await fungibleTrading.queryTokenPrice({
 				tokenIn: "Stable",
 				tokenOut: "SDG",
-				amountIn: amount
+				amountOut: amount
 			});
 
 			expect(queryTokenPriceSpy).toBeCalledWith(
@@ -54,7 +54,7 @@ describe("Fungible Trading", () => {
 			const queryTokenPriceSpy = jest.spyOn(fungibleTrading.quoter, "quoteBestPrice");
 			const result = await fungibleTrading.queryTokenPrice({
 				tokenIn: "SDG",
-				amountIn: amount
+				amountOut: amount
 			});
 
 			expect(queryTokenPriceSpy).toBeCalledWith(
@@ -82,7 +82,7 @@ describe("Fungible Trading", () => {
 			const quoteBestPriceSpy = jest.spyOn(fungibleTrading.quoter, "quoteBestPrice");
 			const swapSpy = jest.spyOn(fungibleTrading.swapRouter, "swap");
 
-			const result = await fungibleTrading.swapTokens({ amountIn: amount, tokenIn: "SDG" });
+			const result = await fungibleTrading.swapTokens({ amountOut: amount, tokenIn: "SDG" });
 
 			expect(quoteBestPriceSpy).toHaveBeenCalledWith(tokenInAddr, stableTokenAddr, amount);
 
@@ -93,8 +93,8 @@ describe("Fungible Trading", () => {
 					fee: POOL_FEE,
 					recipient: WALLET_ADDRESS,
 					deadline: expect.any(Number),
-					amountIn: amount,
-					amountOutMinimum: BigNumber.from(199),
+					amountOut: amount,
+					amountInMaximum: BigNumber.from(201),
 					sqrtPriceLimitX96: 0
 				},
 				"SDG"
@@ -105,7 +105,7 @@ describe("Fungible Trading", () => {
 
 		it("should throw error if providerOrSigner is not a signer", async () => {
 			const fungibleTrading = new FungibleTrading(new JsonRpcProvider(), network);
-			await expect(fungibleTrading.swapTokens({ amountIn: amount, tokenIn: "SDG" })).rejects.toThrow(
+			await expect(fungibleTrading.swapTokens({ amountOut: amount, tokenIn: "SDG" })).rejects.toThrow(
 				new TheaError({
 					type: "SIGNER_REQUIRED",
 					message: "Signer is required for this operation. You must pass in a signer on SDK initialization"
@@ -115,14 +115,14 @@ describe("Fungible Trading", () => {
 
 		it("should fail if quoter returns 0 amountOut", async () => {
 			jest.spyOn(fungibleTrading.quoter, "quoteBestPrice").mockResolvedValue(BigNumber.from(0));
-			await expect(fungibleTrading.swapTokens({ amountIn: amount, tokenIn: "SDG" })).rejects.toThrow(
+			await expect(fungibleTrading.swapTokens({ amountOut: amount, tokenIn: "SDG" })).rejects.toThrow(
 				new TheaError({ type: "INVALID_TOKEN_PRICE", message: "Coudn't fetch best token price from pair pools" })
 			);
 		});
 
 		it("should fail if invalid slippage tollerance value was passed", async () => {
 			await expect(
-				fungibleTrading.swapTokens({ amountIn: amount, tokenIn: "SDG" }, { slippageTolerance: 1.1 })
+				fungibleTrading.swapTokens({ amountOut: amount, tokenIn: "SDG" }, { slippageTolerance: 1.1 })
 			).rejects.toThrow(
 				new TheaError({
 					type: "INVALID_SLIPPAGE_TOLERANCE_VALUE",
@@ -134,7 +134,7 @@ describe("Fungible Trading", () => {
 		it("should extract swap options", async () => {
 			const swapOptions = { slippageTolerance: 1, deadline: Date.now() + 100000, recipient: "0x123" };
 			const swapSpy = jest.spyOn(fungibleTrading.swapRouter, "swap");
-			await fungibleTrading.swapTokens({ amountIn: amount, tokenIn: "SDG" }, swapOptions);
+			await fungibleTrading.swapTokens({ amountOut: amount, tokenIn: "SDG" }, swapOptions);
 
 			expect(swapSpy).toHaveBeenCalledWith(
 				{
@@ -143,8 +143,8 @@ describe("Fungible Trading", () => {
 					fee: POOL_FEE,
 					recipient: swapOptions.recipient,
 					deadline: swapOptions.deadline,
-					amountIn: amount,
-					amountOutMinimum: BigNumber.from(198),
+					amountOut: amount,
+					amountInMaximum: BigNumber.from(202),
 					sqrtPriceLimitX96: 0
 				},
 				"SDG"
@@ -153,7 +153,7 @@ describe("Fungible Trading", () => {
 
 		it("should throw error if deadline is in past", async () => {
 			const swapOptions = { slippageTolerance: 1, deadline: 1000, recipient: "0x123" };
-			await expect(fungibleTrading.swapTokens({ amountIn: amount, tokenIn: "SDG" }, swapOptions)).rejects.toThrow(
+			await expect(fungibleTrading.swapTokens({ amountOut: amount, tokenIn: "SDG" }, swapOptions)).rejects.toThrow(
 				new TheaError({ type: "INVALID_DEADLINE", message: "Deadline can't be in past" })
 			);
 		});

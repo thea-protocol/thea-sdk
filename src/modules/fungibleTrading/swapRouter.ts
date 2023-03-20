@@ -1,5 +1,5 @@
 import {
-	ExactInputSingleParams,
+	ExactOutputSingleParams,
 	ProviderOrSigner,
 	ISwapRouterContract,
 	TheaNetwork,
@@ -28,15 +28,15 @@ export class SwapRouter extends ContractWrapper<ISwapRouterContract> {
 	 * @param params.sqrtPriceLimitX96 - sqrt price limit
 	 * @returns ContractReceipt
 	 */
-	async swap(params: ExactInputSingleParams, tokenIn: TheaERC20Token): Promise<ContractReceipt> {
+	async swap(params: ExactOutputSingleParams, tokenIn: TheaERC20Token): Promise<ContractReceipt> {
 		signerRequired(this.providerOrSigner);
-		amountShouldBeGTZero(params.amountIn);
+		amountShouldBeGTZero(params.amountOut);
 		[params.tokenIn, params.tokenOut, params.recipient].forEach((address) => validateAddress(address));
 
 		// Check balance of token in
 		await checkBalance(this.providerOrSigner as Signer, this.network, {
 			token: "ERC20",
-			amount: params.amountIn,
+			amount: params.amountOut,
 			tokenName: tokenIn
 		});
 
@@ -44,7 +44,7 @@ export class SwapRouter extends ContractWrapper<ISwapRouterContract> {
 		await approve(this.providerOrSigner as Signer, this.network, {
 			token: "ERC20",
 			tokenName: tokenIn,
-			amount: params.amountIn,
+			amount: params.amountOut,
 			spender: this.contractDetails.address
 		});
 
