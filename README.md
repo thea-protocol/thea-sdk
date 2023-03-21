@@ -661,7 +661,7 @@ const offsetStats = await theaSDK.carbonInfo.queryOffsetStats("1");
 ];
 ```
 
-- User balance - returns balances of ERC20 and ERC1155 tokens for a given wallet address
+- User balance - returns balances of ERC20, ERC1155 tokens and tokens deposited in options vault for a given wallet address
 
 ```js
 const balance = await theaSDK.carbonInfo.getUsersBalance("0x123...");

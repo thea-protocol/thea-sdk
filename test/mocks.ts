@@ -7,6 +7,7 @@ import {
 	OffsetStats,
 	OptionsContractRecord,
 	OptionsProduct,
+	OptionsVaultBalance,
 	OptionType,
 	OrderRecord,
 	OrderRecordStatus,
@@ -397,6 +398,21 @@ export const theaERC1155Balances: TheaERC1155Balance[] = [
 		amount: "2000",
 		token: {
 			id: "2"
+		}
+	}
+];
+
+export const optionsVaultBalances: OptionsVaultBalance[] = [
+	{
+		amount: "1000",
+		token: {
+			symbol: "BT_2017"
+		}
+	},
+	{
+		amount: "2000",
+		token: {
+			symbol: "USDC"
 		}
 	}
 ];

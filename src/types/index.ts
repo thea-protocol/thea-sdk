@@ -245,7 +245,14 @@ export type TheaERC1155Balance = {
 		id: string;
 	};
 };
+export type OptionsVaultBalance = {
+	amount: string;
+	token: {
+		symbol: string;
+	};
+};
 export type UserBalance = {
+	optionsDeposit: Record<string, string>;
 	fungible: {
 		vintage: string;
 		rating: string;

@@ -11,6 +11,7 @@ import {
 	HttpResponseIn,
 	OffsetHistory,
 	OffsetStats,
+	OptionsVaultBalance,
 	ProviderOrSigner,
 	QueryError,
 	QueryErrorResponse,
@@ -93,16 +94,24 @@ export const offsetStatsQuery = (tokenId: string): GraphqlQuery => ({
 export const theaERC1155BalancesQuery = (owner: string) => ({
 	query: `
 			query ($owner: String!){
-				theaERC1155Balances(
-				  where: {owner: $owner}
-				) {
-				  amount
-				  token {
-					id
-				  }
-				}
-			  }
-		  `,
+          theaERC1155Balances(
+            where: {owner: $owner}
+          ) {
+            amount
+            token {
+              id
+            }
+          }
+          optionsVaultBalances(
+            where: {owner: $owner}
+          ) {
+            amount
+            token {
+              symbol
+            }
+          }
+			}
+  `,
 	variables: {
 		owner
 	}
@@ -182,7 +191,8 @@ export class CarbonInfo {
 	async getUsersBalance(walletAddress: string): Promise<UserBalance> {
 		const response = await this.httpClient.post<
 			GraphqlQuery,
-			QueryResponse<{ theaERC1155Balances: TheaERC1155Balance[] }> | QueryErrorResponse
+			| QueryResponse<{ theaERC1155Balances: TheaERC1155Balance[]; optionsVaultBalances: OptionsVaultBalance[] }>
+			| QueryErrorResponse
 		>("", theaERC1155BalancesQuery(walletAddress));
 
 		if ("errors" in response)
@@ -192,10 +202,13 @@ export class CarbonInfo {
 			);
 
 		const balances = response.data.theaERC1155Balances;
+		const vaultBalances = response.data.optionsVaultBalances;
 
 		const nft = this.getNFTAmounts(balances);
+		const optionsDeposit = this.getVaultDepositAmounts(vaultBalances);
 		const fungible = await this.getFungibleAmounts(walletAddress);
 		const userBalance: UserBalance = {
+			optionsDeposit,
 			fungible,
 			nft
 		};
@@ -228,6 +241,14 @@ export class CarbonInfo {
 	private getNFTAmounts(balances: TheaERC1155Balance[]): Record<string, string> {
 		return balances.reduce((acc, cur: TheaERC1155Balance) => {
 			const tokenId = cur.token.id;
+			acc[`${tokenId}`] = cur.amount;
+			return acc;
+		}, {} as Record<string, string>);
+	}
+
+	private getVaultDepositAmounts(balances: OptionsVaultBalance[]): Record<string, string> {
+		return balances.reduce((acc, cur: OptionsVaultBalance) => {
+			const tokenId = cur.token.symbol;
 			acc[`${tokenId}`] = cur.amount;
 			return acc;
 		}, {} as Record<string, string>);

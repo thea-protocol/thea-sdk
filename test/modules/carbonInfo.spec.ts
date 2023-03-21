@@ -18,6 +18,7 @@ import {
 	offsetHistory,
 	offsetStats,
 	theaERC1155Balances,
+	optionsVaultBalances,
 	tokenizationHistory,
 	tokenizationStats,
 	userProfile,
@@ -249,7 +250,7 @@ describe("Carbon info", () => {
 		it("should return user balance", async () => {
 			const httpClient = jest
 				.spyOn(carbonInfo.httpClient, "post")
-				.mockResolvedValueOnce({ data: { theaERC1155Balances } });
+				.mockResolvedValueOnce({ data: { theaERC1155Balances, optionsVaultBalances } });
 			const getERC20ContractAddressSpy = jest.spyOn(utils, "getERC20ContractAddress");
 
 			const result: UserBalance = (await carbonInfo.getUsersBalance(WALLET_ADDRESS)) as UserBalance;
