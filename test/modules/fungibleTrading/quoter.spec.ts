@@ -13,7 +13,7 @@ describe("Quoter", () => {
 	const amountOut = BigNumber.from(20);
 	const mockContract: Partial<IQuoterContract> = {
 		callStatic: {
-			quoteExactOutputSingle: jest.fn().mockResolvedValue(amountOut)
+			quoteExactInputSingle: jest.fn().mockResolvedValue(amountOut)
 		}
 	};
 	const network = TheaNetwork.GANACHE;
@@ -24,7 +24,7 @@ describe("Quoter", () => {
 
 	describe("quoteBestPrice", () => {
 		it("should return amountOut", async () => {
-			const quoteExactInputSingleSpy = jest.spyOn(quoter.contract.callStatic, "quoteExactOutputSingle");
+			const quoteExactInputSingleSpy = jest.spyOn(quoter.contract.callStatic, "quoteExactInputSingle");
 			const result = await quoter.quoteBestPrice(tokenIn, tokenOut, amountIn);
 			expect(result.toString()).toBe(amountOut.toString());
 			expect(quoteExactInputSingleSpy).toBeCalledWith(tokenIn, tokenOut, POOL_FEE, amountIn, 0);

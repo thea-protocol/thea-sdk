@@ -8,8 +8,8 @@ export interface ISwapRouterContract extends Contract {
 		fee: BigNumberish;
 		recipient: string;
 		deadline: BigNumberish;
-		amountOut: BigNumberish;
-		amountInMaximum: BigNumberish;
+		amountIn: BigNumberish;
+		amountOutMinimum: BigNumberish;
 		sqrtPriceLimitX96: BigNumberish;
 	}): Promise<ContractTransaction>;
 }

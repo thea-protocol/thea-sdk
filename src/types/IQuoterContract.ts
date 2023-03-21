@@ -3,11 +3,11 @@ import { Contract } from "@ethersproject/contracts";
 
 export interface IQuoterContract extends Contract {
 	callStatic: {
-		quoteExactOutputSingle(
+		quoteExactInputSingle(
 			tokenIn: string,
 			tokenOut: string,
 			fee: BigNumberish,
-			amountOut: BigNumberish,
+			amountIn: BigNumberish,
 			sqrtPriceLimitX96: BigNumberish
 		): Promise<BigNumber>;
 	};

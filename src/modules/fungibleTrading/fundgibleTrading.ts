@@ -5,7 +5,7 @@ import {
 	ProviderOrSigner,
 	FungibleOptions,
 	TheaNetwork,
-	ExactOutputSingleParams,
+	ExactInputSingleParams,
 	FungibleStableOptions,
 	SwapOptions,
 	POOL_FEE
@@ -43,9 +43,9 @@ export class FungibleTrading {
 		signerRequired(this.providerOrSigner);
 		const { tokenIn, tokenOut } = this.getTokenInAndOutAddress(options);
 
-		const amountIn = await this.quoter.quoteBestPrice(tokenIn, tokenOut, options.amountOut);
+		const amountOut = await this.quoter.quoteBestPrice(tokenIn, tokenOut, options.amountIn);
 
-		if (amountIn.eq(BigNumber.from(0))) {
+		if (amountOut.eq(BigNumber.from(0))) {
 			throw new TheaError({ type: "INVALID_TOKEN_PRICE", message: "Coudn't fetch best token price from pair pools" });
 		}
 
@@ -54,16 +54,16 @@ export class FungibleTrading {
 			swapOptions
 		);
 
-		const amountInMaximum = this.getAmountInMaximum(amountIn, slippageTolerance);
+		const amountOutMinimum = this.getAmountOutMinimum(amountOut, slippageTolerance);
 
-		const swapParams: ExactOutputSingleParams = {
+		const swapParams: ExactInputSingleParams = {
 			tokenIn,
 			tokenOut,
 			fee: POOL_FEE,
 			recipient,
 			deadline,
-			amountOut: options.amountOut,
-			amountInMaximum,
+			amountIn: options.amountIn,
+			amountOutMinimum,
 			sqrtPriceLimitX96: 0
 		};
 
@@ -77,7 +77,7 @@ export class FungibleTrading {
 	 */
 	async queryTokenPrice(options: FungibleOptions): Promise<string> {
 		const { tokenIn, tokenOut } = this.getTokenInAndOutAddress(options);
-		const amountOut = await this.quoter.quoteBestPrice(tokenIn, tokenOut, options.amountOut);
+		const amountOut = await this.quoter.quoteBestPrice(tokenIn, tokenOut, options.amountIn);
 		return amountOut.toString();
 	}
 
@@ -108,13 +108,13 @@ export class FungibleTrading {
 		};
 	}
 
-	// Calculates maximum amount of token in based on slippage tolerance.
-	private getAmountInMaximum(amountIn: BigNumber, slippageTolerance: number): BigNumber {
+	// Calculates minimum amount of token out based on slippage tolerance.
+	private getAmountOutMinimum(amountOut: BigNumber, slippageTolerance: number): BigNumber {
 		slippageTolerance = this.checkSlippageTollerance(slippageTolerance);
 
 		const percent = BigNumber.from(slippageTolerance * 100);
 
-		return amountIn.add(amountIn.mul(percent).div(10000));
+		return amountOut.sub(amountOut.mul(percent).div(10000));
 	}
 
 	// Slippage tolerance is a number between 0 and 1 and it can have only 2 decimal places.

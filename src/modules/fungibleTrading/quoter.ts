@@ -20,6 +20,6 @@ export class Quoter extends ContractWrapper<IQuoterContract> {
 		validateAddress(tokenOut);
 		amountShouldBeGTZero(amount);
 
-		return this.contract.callStatic.quoteExactOutputSingle(tokenIn, tokenOut, POOL_FEE, amount, 0);
+		return this.contract.callStatic.quoteExactInputSingle(tokenIn, tokenOut, POOL_FEE, amount, 0);
 	}
 }

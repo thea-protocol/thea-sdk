@@ -1,6 +1,6 @@
 import { ContractTransaction } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
-import { consts, ExactOutputSingleParams, ISwapRouterContract, SwapRouter, TheaError, TheaNetwork } from "../../../src";
+import { consts, ExactInputSingleParams, ISwapRouterContract, SwapRouter, TheaError, TheaNetwork } from "../../../src";
 import { PRIVATE_KEY, WALLET_ADDRESS } from "../../mocks";
 import * as shared from "../../../src/modules/shared";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -38,7 +38,7 @@ describe("Swap Router", () => {
 		exactInputSingle: jest.fn().mockResolvedValue(contractTransaction as ContractTransaction)
 	};
 	const network = TheaNetwork.GANACHE;
-	let exactInputSingleParams: ExactOutputSingleParams;
+	let exactInputSingleParams: ExactInputSingleParams;
 	beforeEach(() => {
 		swapRouter = new SwapRouter(providerOrSigner, network);
 		swapRouter.contract = mockContract as ISwapRouterContract;
@@ -48,8 +48,8 @@ describe("Swap Router", () => {
 			fee: 3000,
 			recipient: WALLET_ADDRESS,
 			deadline: 1620000000,
-			amountOut: "1000000000000000000",
-			amountInMaximum: "1000000000000000000",
+			amountIn: "1000000000000000000",
+			amountOutMinimum: "1000000000000000000",
 			sqrtPriceLimitX96: 0
 		};
 	});
@@ -65,13 +65,13 @@ describe("Swap Router", () => {
 
 			expect(checkBalanceSpy).toBeCalledWith(providerOrSigner as Signer, network, {
 				token: "ERC20",
-				amount: exactInputSingleParams.amountOut,
+				amount: exactInputSingleParams.amountIn,
 				tokenName: "SDG"
 			});
 
 			expect(approveSpy).toBeCalledWith(providerOrSigner as Signer, network, {
 				token: "ERC20",
-				amount: exactInputSingleParams.amountOut,
+				amount: exactInputSingleParams.amountIn,
 				tokenName: "SDG",
 				spender: swapRouterContractAddress
 			});
