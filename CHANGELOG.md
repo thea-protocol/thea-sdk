@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/thea-protocol/thea-sdk/compare/v2.1.0...v2.2.0) (2023-03-21)
+
+
+### Features
+
+* query current token price ([890b44b](https://github.com/thea-protocol/thea-sdk/commit/890b44b3810589c4a354e23372538e3308665c94))
+* swap exact output ([d9865ec](https://github.com/thea-protocol/thea-sdk/commit/d9865ecd545a5d236c0aad985af5fa9fecb7961d))
+
+
+### Bug Fixes
+
+* update stable token address ([ce76503](https://github.com/thea-protocol/thea-sdk/commit/ce765030440e8fae4492cbe35ce3afe2571c358f))
+
 ## [2.1.0](https://github.com/thea-protocol/thea-sdk/compare/v2.0.0...v2.1.0) (2023-03-17)
 
 
