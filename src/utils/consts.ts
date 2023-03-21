@@ -99,7 +99,7 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 		currentNbtTokenContract: "",
 		baseTokenManagerContract: "0x0aA2d82e03Bc4fd092ba0dd105119Ec46aED2f76",
 		baseTokenManagerDeployerContract: "0xd741ea92ada5cc18bfde2c27ad64dc48860a4f15",
-		stableTokenContract: "0x014349F1C543038a76384cFC1A68f1881AFc6B0a",
+		stableTokenContract: "0x1D6DBfb520ee332bc14e800A832389F731820787",
 		quoterContract: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
 		swapRouterContract: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 		theaApiBaseUrl: "https://client.dev.thea.earth/cli",
