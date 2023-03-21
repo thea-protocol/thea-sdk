@@ -10370,7 +10370,7 @@
 		]
 	},
 	"HKG": {
-		"country": "Hong Kong - SAR, China",
+		"country": "Hong Kong SAR, China",
 		"isoCode": "HKG",
 		"data": [
 			{ "year": 1911 },
@@ -13634,7 +13634,7 @@
 		]
 	},
 	"MAC": {
-		"country": "Macau - SAR, China",
+		"country": "Macau SAR, China",
 		"isoCode": "MAC",
 		"data": [
 			{ "year": 1954, "co2_per_capita": 0.1108953207731247 },
