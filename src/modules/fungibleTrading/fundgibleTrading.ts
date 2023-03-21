@@ -8,7 +8,8 @@ import {
 	ExactInputSingleParams,
 	FungibleStableOptions,
 	SwapOptions,
-	POOL_FEE
+	POOL_FEE,
+	DistributiveOmit
 } from "../../types";
 import {
 	consts,
@@ -75,9 +76,10 @@ export class FungibleTrading {
 	 * @param amount - amount of token in
 	 * @returns - amount of token out in WEI
 	 */
-	async queryTokenPrice(options: FungibleOptions): Promise<string> {
+	async queryTokenPrice(options: DistributiveOmit<FungibleOptions, "amountIn">): Promise<string> {
 		const { tokenIn, tokenOut } = this.getTokenInAndOutAddress(options);
-		const amountOut = await this.quoter.quoteBestPrice(tokenIn, tokenOut, options.amountIn);
+		const amountIn = options.tokenIn === "Stable" ? 1e6 : 1e4;
+		const amountOut = await this.quoter.quoteBestPrice(tokenIn, tokenOut, amountIn);
 		return amountOut.toString();
 	}
 
@@ -86,7 +88,10 @@ export class FungibleTrading {
 	 * @param options
 	 * @returns tokenIn and tokenOut address
 	 */
-	private getTokenInAndOutAddress(options: FungibleOptions): { tokenIn: string; tokenOut: string } {
+	private getTokenInAndOutAddress(options: DistributiveOmit<FungibleOptions, "amountIn">): {
+		tokenIn: string;
+		tokenOut: string;
+	} {
 		const stableTokenAddress = consts[`${this.network}`].stableTokenContract;
 		let tokenInAddress = "";
 		let tokenOutAddress = "";

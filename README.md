@@ -223,22 +223,20 @@ const result = await theaSDK.offset.getNextOffsetEventDate();
 
 ## Fungible trading
 
-- Query token price - Used to fetch best price by calling Uniswap's V3 Quoter contract
+- Query token price - Used to fetch current price by calling Uniswap's V3 Quoter contract
 
 ```js
 // Token in is "SDG" | "Vintage" | "Rating" | "CurrentNBT" | "Stable"
 
 // From ERC20 to Stable coin
 const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
-	tokenIn: "SDG",
-	amountIn: "1000000000000000000"
+	tokenIn: "SDG"
 });
 
 // From Stable coin to ERC20
 const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
 	tokenIn: "Stable",
-	tokenOut: "SDG",
-	amountIn: "1000000000000000000"
+	tokenOut: "SDG"
 });
 ```
 

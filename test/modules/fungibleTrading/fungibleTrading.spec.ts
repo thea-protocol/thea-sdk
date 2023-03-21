@@ -38,14 +38,13 @@ describe("Fungible Trading", () => {
 			const queryTokenPriceSpy = jest.spyOn(fungibleTrading.quoter, "quoteBestPrice");
 			const result = await fungibleTrading.queryTokenPrice({
 				tokenIn: "Stable",
-				tokenOut: "SDG",
-				amountIn: amount
+				tokenOut: "SDG"
 			});
 
 			expect(queryTokenPriceSpy).toBeCalledWith(
 				consts[`${network}`].stableTokenContract,
 				consts[`${network}`].sdgTokenContract,
-				amount
+				1e6
 			);
 			expect(result).toEqual(amountOut.toString());
 		});
@@ -53,14 +52,13 @@ describe("Fungible Trading", () => {
 		it("should return token price from token to stable coin ", async () => {
 			const queryTokenPriceSpy = jest.spyOn(fungibleTrading.quoter, "quoteBestPrice");
 			const result = await fungibleTrading.queryTokenPrice({
-				tokenIn: "SDG",
-				amountIn: amount
+				tokenIn: "SDG"
 			});
 
 			expect(queryTokenPriceSpy).toBeCalledWith(
 				consts[`${network}`].sdgTokenContract,
 				consts[`${network}`].stableTokenContract,
-				amount
+				1e4
 			);
 			expect(result).toEqual(amountOut.toString());
 		});
