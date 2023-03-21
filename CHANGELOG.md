@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/thea-protocol/thea-sdk/compare/v2.2.0...v2.3.0) (2023-03-21)
+
+
+### Features
+
+* options vault balances ([47aa9a6](https://github.com/thea-protocol/thea-sdk/commit/47aa9a63b73d415e679955df91c78d2b5f54a7b0))
+
 ## [2.2.0](https://github.com/thea-protocol/thea-sdk/compare/v2.1.0...v2.2.0) (2023-03-21)
 
 
