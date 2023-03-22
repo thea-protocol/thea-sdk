@@ -8,7 +8,6 @@ import {
 	FootprintQuery,
 	FootprintSummary,
 	GraphqlQuery,
-	HttpResponseIn,
 	OffsetHistory,
 	OffsetStats,
 	OptionsVaultBalance,
@@ -222,11 +221,8 @@ export class CarbonInfo {
 	 * @returns - price of NFT
 	 */
 	async queryTokenPrice(tokenId: number): Promise<number> {
-		const tokenList = await this.apiClient.post<Record<string, never>, HttpResponseIn<TokenInfoList[]>>(
-			`/tokens/list`,
-			{}
-		);
-		const token = tokenList.result.find(({ id }) => id === tokenId);
+		const tokenList = await this.apiClient.post<Record<string, never>, TokenInfoList[]>(`/tokens/list`, {});
+		const token = tokenList.find(({ id }) => id === tokenId);
 		if (!token) throw new TheaError({ type: "INVALID_TOKEN_ID", message: "Token ID must be valid" });
 		return token.price;
 	}
@@ -235,8 +231,8 @@ export class CarbonInfo {
 	 * Returns authenticated users profile
 	 * @returns ClientProfile @see ClientProfile
 	 */
-	getUsersProfile(): Promise<HttpResponseIn<ClientProfile>> {
-		return this.apiClient.get<HttpResponseIn<ClientProfile>>("/myprofile");
+	getUsersProfile(): Promise<ClientProfile> {
+		return this.apiClient.get<ClientProfile>("/myprofile");
 	}
 
 	private getNFTAmounts(balances: TheaERC1155Balance[]): Record<string, string> {

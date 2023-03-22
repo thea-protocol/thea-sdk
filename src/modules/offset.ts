@@ -1,6 +1,5 @@
 import {
 	EIP712Signature,
-	HttpResponseIn,
 	IBaseTokenManagerContract,
 	IRegistryContract,
 	OffsetOrder,
@@ -139,17 +138,15 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * Returns next offset event date
 	 * @returns next offset event date
 	 */
-	getNextOffsetEventDate(): Promise<HttpResponseIn<string>> {
-		return this.httpClient.get<HttpResponseIn<string>>("/nextRetirement");
+	getNextOffsetEventDate(): Promise<string> {
+		return this.httpClient.get<string>("/nextRetirement");
 	}
 
 	async offsetHistory(): Promise<Record<"commited" | "retired", OffsetOrder[]>> {
 		const offsetsFiat = await this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OffsetOrderStripe[]>>("/orders/list", {})
+			.post<Record<string, never>, OffsetOrderStripe[]>("/orders/list", {})
 			.then((response) =>
-				response.result.filter(
-					(offset) => offset.postAction === "RETIRE" && offset.status === OrderRecordStatus.PERFORMED
-				)
+				response.filter((offset) => offset.postAction === "RETIRE" && offset.status === OrderRecordStatus.PERFORMED)
 			)
 			.then((result) =>
 				result.map<OffsetOrder>((offset) => ({
@@ -162,8 +159,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 				}))
 			);
 		const offsetsNFT = await this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OffsetOrderNFT[]>>("/events/list", {})
-			.then((response) => response.result)
+			.post<Record<string, never>, OffsetOrderNFT[]>("/events/list", {})
 			.then((result) =>
 				result.map<OffsetOrder>((offset) => ({
 					vccSpecRecord: offset.vccSpecRecord,

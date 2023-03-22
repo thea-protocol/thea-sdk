@@ -9,7 +9,6 @@ import {
 	OptionsOrderStruct,
 	ProviderOrSigner,
 	OptionsProduct,
-	HttpResponseIn,
 	OptionType,
 	RelayerRequest,
 	EIP712Signature,
@@ -47,13 +46,13 @@ export class Options {
 	 * @param quantity - order quantity
 	 * @returns OrderRecord @see OrderRecord
 	 */
-	async createOrder(btOptionId: string, quantity: number): Promise<HttpResponseIn<OrderRecord>> {
+	async createOrder(btOptionId: string, quantity: number): Promise<OrderRecord> {
 		amountShouldBeGTZero(quantity);
 		typedDataSignerRequired(this.signer);
 
 		const optionsProduct = await this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
-			.then((response) => response.result.find(({ uuid }) => uuid === btOptionId));
+			.post<Record<string, never>, OptionsProduct[]>("/bt_options/list", {})
+			.then((response) => response.find(({ uuid }) => uuid === btOptionId));
 
 		if (!optionsProduct)
 			throw new TheaError({ type: "INVALID_OPTION_PRODUCT_ID", message: "Options product id is invalid" });
@@ -83,7 +82,7 @@ export class Options {
 			contractFunction: "deposit"
 		});
 
-		const response = await this.httpClient.post<{ btOptionId: string; quantity: number }, HttpResponseIn<OrderRequest>>(
+		const response = await this.httpClient.post<{ btOptionId: string; quantity: number }, OrderRequest>(
 			`/bt_options_orders/prepare`,
 			{
 				btOptionId,
@@ -91,12 +90,12 @@ export class Options {
 			}
 		);
 		const signedOrder = await this.signOrder({
-			orderId: response.result.orderId,
+			orderId: response.orderId,
 			btOptionId,
 			quantity: parsedQuantity.toString()
 		});
-		return this.httpClient.post<OrderCreateRequest, HttpResponseIn<OrderRecord>>(`/bt_options_orders/create`, {
-			orderId: response.result.orderId,
+		return this.httpClient.post<OrderCreateRequest, OrderRecord>(`/bt_options_orders/create`, {
+			orderId: response.orderId,
 			btOptionId,
 			quantity,
 			signature: signedOrder
@@ -107,8 +106,8 @@ export class Options {
 	 * Query all option orders
 	 * @returns OrderRecords @see OrderRecords
 	 */
-	getOrders(): Promise<HttpResponseIn<OrderRecord[]>> {
-		return this.httpClient.post<Record<string, never>, HttpResponseIn<OrderRecord[]>>("/bt_options_orders/list", {});
+	getOrders(): Promise<OrderRecord[]> {
+		return this.httpClient.post<Record<string, never>, OrderRecord[]>("/bt_options_orders/list", {});
 	}
 
 	/**
@@ -116,14 +115,12 @@ export class Options {
 	 * @returns OptionsProduct @see OptionsProduct
 	 */
 	async getCurrentStrikeAndPremium(): Promise<OptionsProduct[]> {
-		return this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
-			.then((response) =>
-				response.result
-					.filter(({ enabled, expiry }) => enabled && Date.parse(expiry) > Date.now())
-					.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
-					.slice(0, 2)
-			);
+		return this.httpClient.post<Record<string, never>, OptionsProduct[]>("/bt_options/list", {}).then((response) =>
+			response
+				.filter(({ enabled, expiry }) => enabled && Date.parse(expiry) > Date.now())
+				.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
+				.slice(0, 2)
+		);
 	}
 
 	/**
@@ -135,8 +132,8 @@ export class Options {
 	async exercise(orderId: string, btOptionId: string): Promise<ContractReceipt> {
 		signerRequired(this.signer);
 		const optionsProduct = await this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
-			.then((response) => response.result.find(({ uuid }) => uuid === btOptionId));
+			.post<Record<string, never>, OptionsProduct[]>("/bt_options/list", {})
+			.then((response) => response.find(({ uuid }) => uuid === btOptionId));
 
 		if (!optionsProduct)
 			throw new TheaError({ type: "INVALID_OPTION_PRODUCT_ID", message: "Options product id is invalid" });

@@ -1,5 +1,6 @@
-import axios, { AxiosInstance } from "axios";
-import { TheaAPICallError } from "../../utils";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { HttpResponseIn } from "src/types";
+import { TheaAPICallError, TheaAPIResponseError } from "../../utils";
 
 export class HttpClient {
 	readonly client: AxiosInstance;
@@ -11,6 +12,16 @@ export class HttpClient {
 			},
 			withCredentials
 		});
+
+		if (url.endsWith("/cli")) {
+			this.client.interceptors.response.use((value: AxiosResponse<HttpResponseIn>) => {
+				const { result, errorMessage, error } = value.data;
+				if (result === null && error) {
+					throw new TheaAPIResponseError({ type: error, message: errorMessage || "" });
+				}
+				return { ...value, data: value.data.result };
+			});
+		}
 	}
 
 	async post<TRequest, TResponse>(

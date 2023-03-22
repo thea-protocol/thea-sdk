@@ -277,9 +277,7 @@ describe("Carbon info", () => {
 
 	describe("queryTokenPrice", () => {
 		it("should return token price", async () => {
-			const apiClient = jest
-				.spyOn(carbonInfo.apiClient, "post")
-				.mockResolvedValueOnce({ result: [{ id: 1, price: 1.25 }] });
+			const apiClient = jest.spyOn(carbonInfo.apiClient, "post").mockResolvedValueOnce([{ id: 1, price: 1.25 }]);
 			const result = await carbonInfo.queryTokenPrice(1);
 
 			expect(apiClient).toBeCalledWith("/tokens/list", {});
@@ -287,9 +285,7 @@ describe("Carbon info", () => {
 		});
 
 		it("should fail if token id does not exists", async () => {
-			const apiClient = jest
-				.spyOn(carbonInfo.apiClient, "post")
-				.mockResolvedValueOnce({ result: [{ id: 1, price: 1.25 }] });
+			const apiClient = jest.spyOn(carbonInfo.apiClient, "post").mockResolvedValueOnce([{ id: 1, price: 1.25 }]);
 
 			expect(apiClient).toBeCalledWith("/tokens/list", {});
 			await expect(carbonInfo.queryTokenPrice(2)).rejects.toThrow(

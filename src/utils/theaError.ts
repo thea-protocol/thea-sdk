@@ -1,4 +1,4 @@
-import { ContractDetails, QueryError } from "../types";
+import { API_RESPONSE_ERROR, ContractDetails, QueryError } from "../types";
 
 export type ErrorType =
 	| "EMPTY_OPTIONS"
@@ -44,6 +44,12 @@ export type ErrorProps = {
 	type: ErrorType;
 	message: string;
 };
+
+export type APIResponseErrorProps = {
+	type: API_RESPONSE_ERROR;
+	message: string;
+};
+
 export class TheaError extends Error {
 	readonly type: ErrorType;
 	constructor(props: ErrorProps) {
@@ -75,5 +81,14 @@ export class TheaSubgraphError extends TheaError {
 		super({ type: "SUBGRAPH_CALL_ERROR", message });
 		this.queryErrors = queryErrors;
 		Object.setPrototypeOf(this, TheaSubgraphError.prototype);
+	}
+}
+
+export class TheaAPIResponseError extends Error {
+	readonly type: API_RESPONSE_ERROR;
+	constructor(props: APIResponseErrorProps) {
+		super(props.message);
+		this.type = props.type;
+		Object.setPrototypeOf(this, TheaAPIResponseError.prototype);
 	}
 }

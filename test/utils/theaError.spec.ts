@@ -1,4 +1,11 @@
-import { TheaAPICallError, TheaError, TheaContractCallError, TheaSubgraphError } from "../../src/utils";
+import { API_RESPONSE_ERROR } from "src";
+import {
+	TheaAPICallError,
+	TheaError,
+	TheaContractCallError,
+	TheaSubgraphError,
+	TheaAPIResponseError
+} from "../../src/utils";
 import { CONTRACT_ADDRESS } from "../mocks";
 
 describe("Thea errors", () => {
@@ -35,5 +42,12 @@ describe("Thea errors", () => {
 		expect(error.queryErrors.length).toBe(1);
 
 		expect(error instanceof TheaError).toBe(true);
+	});
+
+	it("should return the correct error message and type for TheaAPIResponseError", () => {
+		const error = new TheaAPIResponseError({ type: API_RESPONSE_ERROR.NO_AUTH, message: "User not authorised" });
+		expect(error.message).toBe("User not authorised");
+		expect(error.type).toBe(API_RESPONSE_ERROR.NO_AUTH);
+		expect(error instanceof Error).toBe(true);
 	});
 });

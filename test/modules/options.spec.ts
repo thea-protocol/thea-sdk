@@ -114,7 +114,7 @@ describe("Options", () => {
 		it("should return current strike and premium", async () => {
 			jest.spyOn(options.httpClient, "post").mockResolvedValue(optionsProducts);
 			const result = await options.getCurrentStrikeAndPremium();
-			expect(result).toEqual(optionsProducts.result);
+			expect(result).toEqual(optionsProducts);
 		});
 	});
 

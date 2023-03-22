@@ -4,7 +4,10 @@ jest.mock("axios", () => {
 	return {
 		create: jest.fn().mockReturnValue({
 			get: jest.fn(),
-			post: jest.fn()
+			post: jest.fn(),
+			interceptors: {
+				response: { use: jest.fn() }
+			}
 		})
 	};
 });
