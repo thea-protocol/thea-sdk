@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/thea-protocol/thea-sdk/compare/v2.3.0...v2.3.1) (2023-03-22)
+
+
+### Bug Fixes
+
+* current strike and premium ([362de3c](https://github.com/thea-protocol/thea-sdk/commit/362de3ce89c9a183371a303c78c397656aee96e2))
+
 ## [2.3.0](https://github.com/thea-protocol/thea-sdk/compare/v2.2.0...v2.3.0) (2023-03-21)
 
 
