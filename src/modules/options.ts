@@ -109,7 +109,10 @@ export class Options {
 			.post<Record<string, never>, HttpResponseIn<OptionsContractRecord[]>>("/bt_options_contracts/list", {})
 			.then((response) =>
 				response.result
-					.filter(({ deploymentStatus }) => deploymentStatus === DeploymentStatus.DEPLOYED)
+					.filter(
+						({ deploymentStatus, expiry }) =>
+							deploymentStatus === DeploymentStatus.DEPLOYED && Date.parse(expiry) > Date.now()
+					)
 					.sort((a, b) => Date.parse(b.expiry) - Date.parse(a.expiry))
 			);
 		return this.httpClient
