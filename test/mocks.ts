@@ -448,7 +448,7 @@ export const deployedOptionsContracts: HttpResponseIn<OptionsContractRecord[]> =
 		{
 			uuid: "00000186c4c423521c1d41a0d03c501a",
 			btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
-			expiry: "2027-12-12T12:00:00.000Z",
+			expiry: "2026-12-12T12:00:00.000Z",
 			contractAddress: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
 			btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
 			expiryPrice: 0,
@@ -459,7 +459,7 @@ export const deployedOptionsContracts: HttpResponseIn<OptionsContractRecord[]> =
 		{
 			uuid: "00000186c4f23e19daf25a6e687f1246",
 			btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
-			expiry: "2026-12-12T12:00:00.000Z",
+			expiry: "2027-12-12T12:00:00.000Z",
 			contractAddress: "0x96bf2642d5ca9b0cbc6f15ad126d7084c09dba83",
 			btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
 			expiryPrice: 0,

@@ -113,7 +113,7 @@ export class Options {
 						({ deploymentStatus, expiry }) =>
 							deploymentStatus === DeploymentStatus.DEPLOYED && Date.parse(expiry) > Date.now()
 					)
-					.sort((a, b) => Date.parse(b.expiry) - Date.parse(a.expiry))
+					.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
 			);
 		return this.httpClient
 			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
