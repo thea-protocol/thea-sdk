@@ -8,9 +8,7 @@ import {
 	OrderRequest,
 	OptionsOrderStruct,
 	ProviderOrSigner,
-	OptionsContractRecord,
 	OptionsProduct,
-	DeploymentStatus,
 	HttpResponseIn,
 	OptionType
 } from "../types";
@@ -105,23 +103,13 @@ export class Options {
 	 * @returns OptionsProduct @see OptionsProduct
 	 */
 	async getCurrentStrikeAndPremium(): Promise<OptionsProduct[]> {
-		const optionsContracts = await this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OptionsContractRecord[]>>("/bt_options_contracts/list", {})
-			.then((response) =>
-				response.result
-					.filter(
-						({ deploymentStatus, expiry }) =>
-							deploymentStatus === DeploymentStatus.DEPLOYED && Date.parse(expiry) > Date.now()
-					)
-					.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
-			);
 		return this.httpClient
 			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
 			.then((response) =>
-				response.result.filter(
-					({ contractId, contractAddr }) =>
-						contractId === optionsContracts[0].uuid && contractAddr === optionsContracts[0].contractAddress
-				)
+				response.result
+					.filter(({ enabled, expiry }) => enabled && Date.parse(expiry) > Date.now())
+					.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
+					.slice(0, 2)
 			);
 	}
 

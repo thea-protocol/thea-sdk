@@ -1,14 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { Options, TheaError, TheaNetwork } from "../../src";
-import {
-	deployedOptionsContracts,
-	mockOptionsOrder,
-	mockOrders,
-	mockPrepareOptionsOrder,
-	optionsProducts,
-	PRIVATE_KEY
-} from "../mocks";
+import { mockOptionsOrder, mockOrders, mockPrepareOptionsOrder, optionsProducts, PRIVATE_KEY } from "../mocks";
 import * as utils from "../../src/utils/utils";
 import { BigNumber } from "@ethersproject/bignumber";
 
@@ -83,13 +76,7 @@ describe("Options", () => {
 
 	describe("getCurrentStrikeAndPremium", () => {
 		it("should return current strike and premium", async () => {
-			jest.spyOn(options.httpClient, "post").mockImplementation(async (url) => {
-				if (url === "/bt_options_contracts/list") {
-					return deployedOptionsContracts;
-				} else {
-					return optionsProducts;
-				}
-			});
+			jest.spyOn(options.httpClient, "post").mockResolvedValue(optionsProducts);
 			const result = await options.getCurrentStrikeAndPremium();
 			expect(result).toEqual(optionsProducts.result);
 		});
