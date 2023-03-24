@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/thea-protocol/thea-sdk/compare/v2.3.3...v2.4.0) (2023-03-24)
+
+
+### Features
+
+* offset order history ([fdf1124](https://github.com/thea-protocol/thea-sdk/commit/fdf11244a7d8b1b47e0b39eab1a58c17ad42c28c))
+
 ## [2.3.3](https://github.com/thea-protocol/thea-sdk/compare/v2.3.2...v2.3.3) (2023-03-23)
 
 
