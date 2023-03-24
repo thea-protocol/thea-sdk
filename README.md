@@ -221,6 +221,35 @@ const result = await theaSDK.offset.getNextOffsetEventDate();
 }
 ```
 
+```js
+const result = await theaSDK.offset.offsetHistory(new Date().toString());
+
+// Sample output
+{
+  "commited": [],
+  "retired": [
+    {
+      "dt": 1679668669344,
+      "ethAddr": "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+      "orderSum": null,
+      "retiredAmount": 1.2,
+      "txHash": "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
+      "vccSpecRecord": {
+        "createdAt": "2023-03-16T12:35:06.747Z",
+        "description": "...desc",
+        "id": 1,
+        "imageUrl": "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+        "projectId": "1748",
+        "source": "verra",
+        "spec": "...spec",
+        "specHash": "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+        "vintage": 2019
+      }
+    }
+  ]
+}
+```
+
 ## Fungible trading
 
 - Query token price - Used to fetch current price by calling Uniswap's V3 Quoter contract

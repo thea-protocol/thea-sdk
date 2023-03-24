@@ -4,6 +4,9 @@ import {
 	DeploymentStatus,
 	HttpResponseIn,
 	OffsetHistory,
+	OffsetOrder,
+	OffsetOrderNFT,
+	OffsetOrderStripe,
 	OffsetStats,
 	OptionsContractRecord,
 	OptionsProduct,
@@ -572,4 +575,86 @@ export const mockClient: HttpResponseIn<Client> = {
 	},
 	error: null,
 	errorMessage: null
+};
+
+export const mockOffsetOrderStripe: HttpResponseIn<OffsetOrderStripe[]> = {
+	result: [
+		{
+			vccSpecRecord: {
+				id: 1,
+				spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
+				specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+				source: TokenizationSource.VERRA,
+				projectId: "1748",
+				vintage: 2019,
+				description:
+					"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
+				imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+				createdAt: "2023-03-16T12:35:06.747Z"
+			},
+			amount: 100000,
+			orderSum: null,
+			postAction: "TRANSFER",
+			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+			status: OrderRecordStatus.ERROR_VALIDATION,
+			created: 1679668732719,
+			updatedAt: 1679668732728,
+			transferHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
+			retireHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2"
+		}
+	],
+	error: null,
+	errorMessage: null
+};
+
+export const mockOffsetOrderNFT: HttpResponseIn<OffsetOrderNFT[]> = {
+	result: [
+		{
+			vccSpecRecord: {
+				id: 1,
+				spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
+				specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+				source: TokenizationSource.VERRA,
+				projectId: "1748",
+				vintage: 2019,
+				description:
+					"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
+				imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+				createdAt: "2023-03-16T12:35:06.747Z"
+			},
+			txHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
+			dt: 1679668669344,
+			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+			retiredAmount: 1.2,
+			reason: null,
+			transferee: null
+		}
+	],
+	error: null,
+	errorMessage: null
+};
+
+export const mockOffsetOrders: Record<"commited" | "retired", OffsetOrder[]> = {
+	commited: [],
+	retired: [
+		{
+			vccSpecRecord: {
+				id: 1,
+				spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
+				specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+				source: TokenizationSource.VERRA,
+				projectId: "1748",
+				vintage: 2019,
+				description:
+					"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
+				imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+				createdAt: "2023-03-16T12:35:06.747Z"
+			},
+			txHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
+			dt: 1679668669344,
+			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+			retiredAmount: 1.2,
+			orderSum: null
+		}
+	]
 };

@@ -449,6 +449,67 @@ export type Client = {
 		}
 	];
 };
+export type OffsetOrderStripe = {
+	vccSpecRecord: {
+		id: number;
+		spec: string;
+		specHash: string;
+		source: TokenizationSource;
+		projectId: string;
+		vintage: number;
+		description: string;
+		imageUrl: string;
+		createdAt: string;
+	};
+	amount: number;
+	orderSum: number | null;
+	postAction: "TRANSFER" | "RETIRE";
+	ethAddr: string;
+	status: OrderRecordStatus;
+	created: number;
+	updatedAt: number;
+	transferHash: string;
+	retireHash: string;
+};
+
+export type OffsetOrderNFT = {
+	vccSpecRecord: {
+		id: number;
+		spec: string;
+		specHash: string;
+		source: TokenizationSource;
+		projectId: string;
+		vintage: number;
+		description: string;
+		imageUrl: string;
+		createdAt: string;
+	};
+	txHash: string;
+	dt: number;
+	ethAddr: string;
+	retiredAmount: number;
+	reason: string | null;
+	transferee: string | null;
+};
+
+export type OffsetOrder = {
+	vccSpecRecord: {
+		id: number;
+		spec: string;
+		specHash: string;
+		source: TokenizationSource;
+		projectId: string;
+		vintage: number;
+		description: string;
+		imageUrl: string;
+		createdAt: string;
+	};
+	txHash: string;
+	dt: number;
+	ethAddr: string;
+	retiredAmount: number;
+	orderSum: number | null;
+};
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";

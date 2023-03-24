@@ -2,6 +2,10 @@ import {
 	HttpResponseIn,
 	IBaseTokenManagerContract,
 	IRegistryContract,
+	OffsetOrder,
+	OffsetOrderNFT,
+	OffsetOrderStripe,
+	OrderRecordStatus,
 	ProviderOrSigner,
 	RequestId,
 	TheaNetwork
@@ -121,6 +125,58 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 */
 	getNextOffsetEventDate(): Promise<HttpResponseIn<string>> {
 		return this.httpClient.get<HttpResponseIn<string>>("/nextRetirement");
+	}
+
+	async offsetHistory(start: string): Promise<Record<"commited" | "retired", OffsetOrder[]>> {
+		const offsetsFiat = await this.httpClient
+			.post<Record<string, never>, HttpResponseIn<OffsetOrderStripe[]>>("/orders/list", {})
+			.then((response) =>
+				response.result.filter(
+					(offset) => offset.postAction === "RETIRE" && offset.status === OrderRecordStatus.PERFORMED
+				)
+			)
+			.then((result) =>
+				result.map<OffsetOrder>((offset) => ({
+					vccSpecRecord: offset.vccSpecRecord,
+					txHash: offset.retireHash,
+					dt: offset.created,
+					ethAddr: offset.ethAddr,
+					retiredAmount: offset.amount,
+					orderSum: offset.orderSum
+				}))
+			);
+		const offsetsNFT = await this.httpClient
+			.post<Record<string, never>, HttpResponseIn<OffsetOrderNFT[]>>("/events/list", {})
+			.then((response) => response.result)
+			.then((result) =>
+				result.map<OffsetOrder>((offset) => ({
+					vccSpecRecord: offset.vccSpecRecord,
+					txHash: offset.txHash,
+					dt: offset.dt,
+					ethAddr: offset.ethAddr,
+					retiredAmount: offset.retiredAmount,
+					orderSum: null
+				}))
+			);
+		const txHashs = new Set(offsetsFiat.map((offset) => offset.txHash));
+		return this.filterOffsetOrders(
+			[...offsetsFiat, ...offsetsNFT.filter((offset) => !txHashs.has(offset.txHash))],
+			start
+		);
+	}
+
+	private filterOffsetOrders(orders: OffsetOrder[], start: string): Record<"commited" | "retired", OffsetOrder[]> {
+		return orders.reduce(
+			(acc, cur: OffsetOrder) => {
+				if (cur.dt > Date.parse(start)) {
+					acc.commited.push(cur);
+				} else {
+					acc.retired.push(cur);
+				}
+				return acc;
+			},
+			{ commited: [], retired: [] } as Record<"commited" | "retired", OffsetOrder[]>
+		);
 	}
 
 	private async getBaseTokenAddressByVintage(vintage: number): Promise<string> {

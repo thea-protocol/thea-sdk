@@ -1,7 +1,14 @@
 import { ContractTransaction, Event } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
 import { consts, Events, IRegistryContract, Offset, TheaError, TheaNetwork } from "../../src";
-import { CONTRACT_ADDRESS, PRIVATE_KEY, WALLET_ADDRESS } from "../mocks";
+import {
+	CONTRACT_ADDRESS,
+	mockOffsetOrderNFT,
+	mockOffsetOrders,
+	mockOffsetOrderStripe,
+	PRIVATE_KEY,
+	WALLET_ADDRESS
+} from "../mocks";
 import * as utils from "../../src/utils/utils";
 import * as shared from "../../src/modules/shared";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -172,6 +179,18 @@ describe("Offset", () => {
 			const result = await offSet.getNextOffsetEventDate();
 			expect(result).toBe("2023-04-05T12:00:00Z");
 			expect(httpClient).toBeCalledWith("/nextRetirement");
+		});
+	});
+
+	describe("offsetHistory", () => {
+		jest.dontMock("../../src/modules/shared");
+		it("should return offset history for current user", async () => {
+			jest
+				.spyOn(offSet.httpClient, "post")
+				.mockResolvedValueOnce(mockOffsetOrderStripe)
+				.mockResolvedValueOnce(mockOffsetOrderNFT);
+			const result = await offSet.offsetHistory(new Date().toString());
+			expect(result).toStrictEqual(mockOffsetOrders);
 		});
 	});
 });
