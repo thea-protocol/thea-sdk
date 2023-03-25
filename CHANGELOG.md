@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/thea-protocol/thea-sdk/compare/v2.4.0...v2.5.0) (2023-03-25)
+
+
+### Features
+
+* add stablecoin balance ([f979d18](https://github.com/thea-protocol/thea-sdk/commit/f979d18b77a52a18180a7a1236d1d9bf8c382e58))
+
 ## [2.4.0](https://github.com/thea-protocol/thea-sdk/compare/v2.3.3...v2.4.0) (2023-03-24)
 
 
