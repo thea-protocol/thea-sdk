@@ -258,6 +258,7 @@ export type UserBalance = {
 		rating: string;
 		sdg: string;
 		nbt: string;
+		stable: string;
 	};
 	nft: Record<string, string>;
 };

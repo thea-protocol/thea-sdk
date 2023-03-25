@@ -703,7 +703,8 @@ const balance = await theaSDK.carbonInfo.getUsersBalance("0x123...");
         "vintage": "1000",
         "rating": "1000",
         "sdg": "1000",
-        "nbt": "80000"
+        "nbt": "80000",
+        "stable": "9300"
     },
     "nft": {
         "1": "29000"

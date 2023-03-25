@@ -259,18 +259,21 @@ export class CarbonInfo {
 		rating: string;
 		sdg: string;
 		nbt: string;
+		stable: string;
 	}> {
-		const tokens = ["SDG", "Vintage", "Rating", "CurrentNBT"];
+		const tokens = ["SDG", "Vintage", "Rating", "CurrentNBT", "Stable"];
 		const fungible: {
 			vintage: string;
 			rating: string;
 			sdg: string;
 			nbt: string;
+			stable: string;
 		} = {
 			vintage: "0",
 			rating: "0",
 			sdg: "0",
-			nbt: "0"
+			nbt: "0",
+			stable: "0"
 		};
 		for (const token of tokens) {
 			const response = await new TheaERC20(
@@ -288,8 +291,11 @@ export class CarbonInfo {
 				case "Rating":
 					fungible.rating = amount;
 					break;
-				default:
+				case "CurrentNBT":
 					fungible.nbt = amount;
+					break;
+				default:
+					fungible.stable = amount;
 					break;
 			}
 		}

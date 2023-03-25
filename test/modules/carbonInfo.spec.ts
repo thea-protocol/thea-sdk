@@ -256,9 +256,9 @@ describe("Carbon info", () => {
 			const result: UserBalance = (await carbonInfo.getUsersBalance(WALLET_ADDRESS)) as UserBalance;
 
 			expect(httpClient).toBeCalledWith("", theaERC1155BalancesQuery(WALLET_ADDRESS));
-			expect(getERC20ContractAddressSpy).toBeCalledTimes(4);
+			expect(getERC20ContractAddressSpy).toBeCalledTimes(5);
 			expect(result.nft).toEqual({ "1": "1000", "2": "2000" });
-			expect(result.fungible).toEqual({ vintage: "100", rating: "100", sdg: "100", nbt: "100" });
+			expect(result.fungible).toEqual({ vintage: "100", rating: "100", sdg: "100", nbt: "100", stable: "100" });
 		});
 
 		it("should throw error with list of query errors", async () => {
