@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.2](https://github.com/thea-protocol/thea-sdk/compare/v2.6.1...v2.6.2) (2023-03-27)
+
+
+### Bug Fixes
+
+* address comparison ([0b011dc](https://github.com/thea-protocol/thea-sdk/commit/0b011dc18e4313d0a526adae77c690af4cb1e389))
+
 ## [2.6.1](https://github.com/thea-protocol/thea-sdk/compare/v2.6.0...v2.6.1) (2023-03-27)
 
 
