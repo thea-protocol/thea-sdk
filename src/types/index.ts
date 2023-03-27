@@ -248,6 +248,7 @@ export type TheaERC1155Balance = {
 export type OptionsVaultBalance = {
 	amount: string;
 	token: {
+		id: string;
 		symbol: string;
 	};
 };

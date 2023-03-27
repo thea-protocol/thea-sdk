@@ -251,14 +251,17 @@ describe("Carbon info", () => {
 			const httpClient = jest
 				.spyOn(carbonInfo.httpClient, "post")
 				.mockResolvedValueOnce({ data: { theaERC1155Balances, optionsVaultBalances } });
-			const getERC20ContractAddressSpy = jest.spyOn(utils, "getERC20ContractAddress");
+			const getERC20ContractAddressSpy = jest
+				.spyOn(utils, "getERC20ContractAddress")
+				.mockReturnValue("0x5B518de3F2743A33f79f7a312e10Eeac6f778A6c");
 
 			const result: UserBalance = (await carbonInfo.getUsersBalance(WALLET_ADDRESS)) as UserBalance;
 
 			expect(httpClient).toBeCalledWith("", theaERC1155BalancesQuery(WALLET_ADDRESS));
-			expect(getERC20ContractAddressSpy).toBeCalledTimes(5);
+			expect(getERC20ContractAddressSpy).toBeCalledTimes(6);
 			expect(result.nft).toEqual({ "1": "1000", "2": "2000" });
 			expect(result.fungible).toEqual({ vintage: "100", rating: "100", sdg: "100", nbt: "100", stable: "100" });
+			expect(result.optionsDeposit).toEqual({ currentNBT: "1000", BT_2017: "1000", USDC: "2000" });
 		});
 
 		it("should throw error with list of query errors", async () => {
