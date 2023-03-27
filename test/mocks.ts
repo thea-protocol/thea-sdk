@@ -409,7 +409,7 @@ export const optionsVaultBalances: OptionsVaultBalance[] = [
 	{
 		amount: "1000",
 		token: {
-			id: "0x5B518de3F2743A33f79f7a312e10Eeac6f778A6c",
+			id: "0x5b518de3f2743a33f79f7a312e10eeac6f778a6c",
 			symbol: "BT_2017"
 		}
 	},

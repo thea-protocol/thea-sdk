@@ -250,7 +250,7 @@ export class CarbonInfo {
 	private getVaultDepositAmounts(balances: OptionsVaultBalance[]): Record<string, string> {
 		const currentNBT = getERC20ContractAddress("CurrentNBT", this.network);
 		return balances.reduce((acc, cur: OptionsVaultBalance) => {
-			if (cur.token.id === currentNBT) acc[`currentNBT`] = cur.amount;
+			if (cur.token.id === currentNBT.toLowerCase()) acc[`currentNBT`] = cur.amount;
 			const tokenSymbol = cur.token.symbol;
 			acc[`${tokenSymbol}`] = cur.amount;
 			return acc;
