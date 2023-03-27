@@ -127,7 +127,8 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		return this.httpClient.get<HttpResponseIn<string>>("/nextRetirement");
 	}
 
-	async offsetHistory(start: string): Promise<Record<"commited" | "retired", OffsetOrder[]>> {
+	async offsetHistory(): Promise<Record<"commited" | "retired", OffsetOrder[]>> {
+		const { result: start } = await this.getNextOffsetEventDate();
 		const offsetsFiat = await this.httpClient
 			.post<Record<string, never>, HttpResponseIn<OffsetOrderStripe[]>>("/orders/list", {})
 			.then((response) =>

@@ -175,9 +175,11 @@ describe("Offset", () => {
 	describe("getNextOffsetEventDate", () => {
 		jest.dontMock("../../src/modules/shared");
 		it("should return next offset event date", async () => {
-			const httpClient = jest.spyOn(offSet.httpClient, "get").mockResolvedValueOnce("2023-04-05T12:00:00Z");
+			const httpClient = jest
+				.spyOn(offSet.httpClient, "get")
+				.mockResolvedValueOnce({ result: "2023-04-05T12:00:00Z", error: null, errorMessage: null });
 			const result = await offSet.getNextOffsetEventDate();
-			expect(result).toBe("2023-04-05T12:00:00Z");
+			expect(result).toStrictEqual({ result: "2023-04-05T12:00:00Z", error: null, errorMessage: null });
 			expect(httpClient).toBeCalledWith("/nextRetirement");
 		});
 	});
@@ -186,10 +188,13 @@ describe("Offset", () => {
 		jest.dontMock("../../src/modules/shared");
 		it("should return offset history for current user", async () => {
 			jest
+				.spyOn(offSet.httpClient, "get")
+				.mockResolvedValueOnce({ result: "2023-04-05T12:00:00Z", error: null, errorMessage: null });
+			jest
 				.spyOn(offSet.httpClient, "post")
 				.mockResolvedValueOnce(mockOffsetOrderStripe)
 				.mockResolvedValueOnce(mockOffsetOrderNFT);
-			const result = await offSet.offsetHistory(new Date().toString());
+			const result = await offSet.offsetHistory();
 			expect(result).toStrictEqual(mockOffsetOrders);
 		});
 	});

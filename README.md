@@ -224,7 +224,7 @@ const result = await theaSDK.offset.getNextOffsetEventDate();
 - Get offset order history - returns both commited and retired orders
 
 ```js
-const result = await theaSDK.offset.offsetHistory(new Date().toString());
+const result = await theaSDK.offset.offsetHistory();
 
 // Sample output
 {
