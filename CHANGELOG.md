@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1](https://github.com/thea-protocol/thea-sdk/compare/v2.6.0...v2.6.1) (2023-03-27)
+
+
+### Bug Fixes
+
+* offset history ([c90c8e5](https://github.com/thea-protocol/thea-sdk/commit/c90c8e51dea06672780be7327079b8bae4baf829))
+
 ## [2.6.0](https://github.com/thea-protocol/thea-sdk/compare/v2.5.0...v2.6.0) (2023-03-27)
 
 
