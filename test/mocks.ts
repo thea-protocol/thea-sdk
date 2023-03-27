@@ -409,12 +409,14 @@ export const optionsVaultBalances: OptionsVaultBalance[] = [
 	{
 		amount: "1000",
 		token: {
+			id: "0x5B518de3F2743A33f79f7a312e10Eeac6f778A6c",
 			symbol: "BT_2017"
 		}
 	},
 	{
 		amount: "2000",
 		token: {
+			id: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
 			symbol: "USDC"
 		}
 	}
@@ -593,14 +595,14 @@ export const mockOffsetOrderStripe: HttpResponseIn<OffsetOrderStripe[]> = {
 				createdAt: "2023-03-16T12:35:06.747Z"
 			},
 			amount: 100000,
-			orderSum: null,
-			postAction: "TRANSFER",
+			orderSum: 1000,
+			postAction: "RETIRE",
 			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
-			status: OrderRecordStatus.ERROR_VALIDATION,
-			created: 1679668732719,
-			updatedAt: 1679668732728,
-			transferHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
-			retireHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2"
+			status: OrderRecordStatus.PERFORMED,
+			created: new Date().getTime() + 86400,
+			updatedAt: new Date().getTime() + 86400,
+			transferHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
+			retireHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98"
 		}
 	],
 	error: null,
@@ -635,7 +637,27 @@ export const mockOffsetOrderNFT: HttpResponseIn<OffsetOrderNFT[]> = {
 };
 
 export const mockOffsetOrders: Record<"commited" | "retired", OffsetOrder[]> = {
-	commited: [],
+	commited: [
+		{
+			vccSpecRecord: {
+				id: 1,
+				spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
+				specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+				source: TokenizationSource.VERRA,
+				projectId: "1748",
+				vintage: 2019,
+				description:
+					"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
+				imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+				createdAt: "2023-03-16T12:35:06.747Z"
+			},
+			retiredAmount: 100000,
+			orderSum: 1000,
+			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+			dt: mockOffsetOrderStripe.result[0].created,
+			txHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98"
+		}
+	],
 	retired: [
 		{
 			vccSpecRecord: {
