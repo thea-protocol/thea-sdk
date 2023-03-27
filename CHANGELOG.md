@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/thea-protocol/thea-sdk/compare/v2.5.0...v2.6.0) (2023-03-27)
+
+
+### Features
+
+* current NBT deposit ([e69804e](https://github.com/thea-protocol/thea-sdk/commit/e69804e355df93ef10dc7756aeeeedc0eabd3c4d))
+
 ## [2.5.0](https://github.com/thea-protocol/thea-sdk/compare/v2.4.0...v2.5.0) (2023-03-25)
 
 
