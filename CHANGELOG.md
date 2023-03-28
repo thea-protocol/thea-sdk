@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/thea-protocol/thea-sdk/compare/v2.6.2...v3.0.0) (2023-03-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* option orders
+
+### Bug Fixes
+
+* option orders ([06ef6b8](https://github.com/thea-protocol/thea-sdk/commit/06ef6b8699805f24a902398f56db4b35330927d5))
+
 ## [2.6.2](https://github.com/thea-protocol/thea-sdk/compare/v2.6.1...v2.6.2) (2023-03-27)
 
 
