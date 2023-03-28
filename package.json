@@ -1,6 +1,6 @@
 {
 	"name": "@thea-protocol/sdk",
-	"version": "2.6.2",
+	"version": "3.0.0",
 	"description": "Thea SDK",
 	"main": "dist/index.js",
 	"module": "dist/index.es.js",
