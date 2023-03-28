@@ -55,7 +55,7 @@ export class Options {
 			depositAmount = parsedQuantity;
 			depositToken = await optionsContract.baseToken();
 		} else {
-			depositAmount = parseFixed((quantity * optionsProduct.strike).toString(), 4);
+			depositAmount = parseFixed((quantity * optionsProduct.strike).toString(), 6);
 			depositToken = await optionsContract.usdc();
 		}
 
