@@ -6,6 +6,7 @@ import {
 	castAbiInterface,
 	consts,
 	getAddress,
+	getBalance,
 	getCurrentNBTTokenAddress,
 	getERC20ContractAddress,
 	isProvider,
@@ -32,6 +33,14 @@ jest.mock("@ethersproject/contracts", () => {
 		})
 	};
 });
+
+jest.mock("../../src/utils", () => {
+	return {
+		...jest.requireActual("../../src/utils"),
+		getBalance: jest.fn().mockResolvedValue(200)
+	};
+});
+
 describe("Utils", () => {
 	it("should cast contract ABI as ContractInterface", () => {
 		const result = castAbiInterface(ABI);
@@ -180,6 +189,14 @@ describe("Utils", () => {
 			const signer = new Wallet(PRIVATE_KEY);
 			const result = await getAddress(signer as Signer);
 			expect(result).toBe("0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a");
+		});
+	});
+
+	describe("getBalance", () => {
+		it("should return address of signer", async () => {
+			const signer = new Wallet(PRIVATE_KEY);
+			const result = await getBalance(signer as Signer);
+			expect(result).toBe(200);
 		});
 	});
 

@@ -28,6 +28,7 @@ export type InitOptions = {
 	signer?: Signer;
 	web3Provider?: Web3Provider;
 	currentNBTokenAddress?: string;
+	relayerUrl?: string;
 };
 
 export class TheaSDK {
@@ -113,6 +114,10 @@ export class TheaSDK {
 				options.network,
 				providerOrSigner
 			);
+		}
+
+		if (options.relayerUrl) {
+			consts[`${options.network}`].relayerUrl = options.relayerUrl;
 		}
 		return new TheaSDK(providerOrSigner, options.network);
 	}

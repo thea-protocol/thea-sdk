@@ -32,4 +32,44 @@ export interface IRegistryContract extends Contract {
 		amount: PromiseOrValue<BigNumberish>,
 		tokenId: PromiseOrValue<BigNumberish>
 	): Promise<ContractTransaction>;
+
+	sigNonces(account: PromiseOrValue<string>): Promise<BigNumber>;
+
+	unwrapWithSig(
+		id: PromiseOrValue<BigNumberish>,
+		amount: PromiseOrValue<BigNumberish>,
+		offchainAccount: PromiseOrValue<string>,
+		owner: PromiseOrValue<string>,
+		sig: {
+			v: string;
+			r: string;
+			s: string;
+			deadline: BigNumberish;
+		},
+		permit: {
+			v: string;
+			r: string;
+			s: string;
+			deadline: BigNumberish;
+		}
+	): Promise<BigNumber>;
+
+	retireWithSig(
+		tokenId: PromiseOrValue<BigNumberish>,
+		amount: PromiseOrValue<BigNumberish>,
+		receiver: PromiseOrValue<string>,
+		owner: PromiseOrValue<string>,
+		sig: {
+			v: string;
+			r: string;
+			s: string;
+			deadline: BigNumberish;
+		},
+		permit: {
+			v: string;
+			r: string;
+			s: string;
+			deadline: BigNumberish;
+		}
+	): Promise<ContractTransaction>;
 }
