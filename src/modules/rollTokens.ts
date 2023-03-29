@@ -3,7 +3,7 @@ import { ContractWrapper, signerRequired, Events, consts, amountShouldBeGTZero, 
 import BaseTokenManager_ABI from "../abi/BaseTokenManager_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { ContractReceipt, Event } from "@ethersproject/contracts";
-import { approve, checkBalance, executeWithResponse, TheaERC20 } from "./shared";
+import { approve, checkBalance, executeWithResponse, HttpClient, TheaERC20 } from "./shared";
 import { Signer } from "@ethersproject/abstract-signer";
 
 export class RollBaseTokens extends ContractWrapper<IBaseTokenManagerContract> {

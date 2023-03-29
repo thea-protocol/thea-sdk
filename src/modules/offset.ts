@@ -1,4 +1,5 @@
 import {
+	EIP712Signature,
 	HttpResponseIn,
 	IBaseTokenManagerContract,
 	IRegistryContract,
@@ -7,6 +8,7 @@ import {
 	OffsetOrderStripe,
 	OrderRecordStatus,
 	ProviderOrSigner,
+	RelayerRequest,
 	RequestId,
 	TheaNetwork
 } from "../types";
@@ -16,14 +18,16 @@ import {
 	ContractWrapper,
 	Events,
 	getAddress,
+	getBalance,
+	parseRawSignature,
 	signerRequired,
 	TheaError,
 	validateAddress
 } from "../utils";
 import Registry_ABI from "../abi/Registry_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-import { approve, checkBalance, execute, executeWithResponse, HttpClient, TheaERC20 } from "./shared";
-import { Signer } from "@ethersproject/abstract-signer";
+import { approve, checkBalance, execute, executeWithResponse, HttpClient, permit, relay, TheaERC20 } from "./shared";
+import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Contract, ContractReceipt, Event } from "@ethersproject/contracts";
 import BaseTokenManager_ABI from "../abi/BaseTokenManager_ABI.json";
 
@@ -52,18 +56,30 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		amountShouldBeGTZero(amount);
 		await checkBalance(this.providerOrSigner as Signer, this.network, { token: "ERC1155", tokenId, amount });
 
-		await approve(this.providerOrSigner as Signer, this.network, {
-			token: "ERC1155",
-			spender: this.contractDetails.address
-		});
-
 		if (!receiver) receiver = await getAddress(this.providerOrSigner as Signer);
 		validateAddress(receiver);
 
-		return execute(this.contract.retire(tokenId, amount, receiver), {
-			...this.contractDetails,
-			contractFunction: "retire"
-		});
+		const balance = await getBalance(this.providerOrSigner as Signer);
+
+		const canSendTx = balance.gt(1e15);
+		if (!canSendTx && consts[`${this.network}`].relayerUrl.length !== 0) {
+			const request = await this.prepareRequest(tokenId, amount, 0, receiver);
+
+			return relay(this.httpClient, this.contract.provider, request, {
+				...this.contractDetails,
+				contractFunction: "retireWithSig"
+			});
+		} else {
+			await approve(this.providerOrSigner as Signer, this.network, {
+				token: "ERC1155",
+				spender: this.contractDetails.address
+			});
+
+			return execute(this.contract.retire(tokenId, amount, receiver), {
+				...this.contractDetails,
+				contractFunction: "retire"
+			});
+		}
 	}
 
 	/**
@@ -184,5 +200,79 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 			throw new TheaError({ type: "TOKEN_NOT_FOUND", message: `Token by ${vintage} vintage not found` });
 
 		return address;
+	}
+
+	private async prepareRequest(
+		tokenId: BigNumberish,
+		amount: BigNumberish,
+		detailsId: BigNumberish,
+		receiver: string
+	): Promise<RelayerRequest> {
+		const owner = await getAddress(this.providerOrSigner as Signer);
+
+		const vccSig = await permit(this.providerOrSigner as Signer, this.network, {
+			token: "ERC1155",
+			spender: this.contractDetails.address
+		});
+
+		const retireSig = await this.retireWithSig(tokenId, amount, detailsId, receiver, owner);
+
+		const encodedData = this.contract.interface.encodeFunctionData("retireWithSig", [
+			tokenId,
+			amount,
+			detailsId,
+			receiver,
+			owner,
+			retireSig,
+			vccSig
+		]);
+
+		return { to: this.contractDetails.address, data: encodedData };
+	}
+
+	private async retireWithSig(
+		tokenId: BigNumberish,
+		amount: BigNumberish,
+		detailsId: BigNumberish,
+		receiver: string,
+		owner: string
+	): Promise<EIP712Signature> {
+		const domain = {
+			name: "TheaRegistry",
+			version: "1",
+			chainId: this.network,
+			verifyingContract: this.contractDetails.address
+		};
+
+		const types = {
+			RetireWithSig: [
+				{ name: "tokenId", type: "uint256" },
+				{ name: "amount", type: "uint256" },
+				{ name: "detailsId", type: "uint256" },
+				{ name: "receiver", type: "address" },
+				{ name: "owner", type: "address" },
+				{ name: "nonce", type: "uint256" },
+				{ name: "deadline", type: "uint256" }
+			]
+		};
+
+		const nonce = await this.contract.sigNonces(owner);
+		const deadline = Math.floor(Date.now() / 1000) + 20 * 60;
+
+		const value = {
+			tokenId,
+			amount,
+			detailsId,
+			receiver,
+			owner,
+			nonce,
+			deadline
+		};
+
+		const rawSignature = await (this.providerOrSigner as TypedDataSigner)._signTypedData(domain, types, value);
+
+		const ecSignature = parseRawSignature(rawSignature);
+
+		return { ...ecSignature, deadline };
 	}
 }

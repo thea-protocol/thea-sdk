@@ -4,25 +4,40 @@ import {
 	RecoverEvent,
 	BaseTokenCharactaristics,
 	BaseTokenAmounts,
-	TheaNetwork
+	TheaNetwork,
+	RelayerRequest,
+	EIP712Signature
 } from "../types";
-import { ContractWrapper, RATE_VCC_TO_BT, signerRequired, Events, consts, amountShouldBeGTZero } from "../utils";
+import {
+	ContractWrapper,
+	RATE_VCC_TO_BT,
+	signerRequired,
+	Events,
+	consts,
+	amountShouldBeGTZero,
+	getAddress,
+	parseRawSignature,
+	getBalance
+} from "../utils";
 import BaseTokenManager_ABI from "../abi/BaseTokenManager_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { ContractReceipt, Event } from "@ethersproject/contracts";
-import { approve, checkBalance, executeWithResponse } from "./shared";
-import { Signer } from "@ethersproject/abstract-signer";
+import { approve, checkBalance, executeWithResponse, HttpClient, permit, relayWithResponse } from "./shared";
+import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { formatBytes32String } from "@ethersproject/strings";
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { GetCharacteristicsBytes } from "./getCharacteristicsBytes";
+import { Log } from "@ethersproject/providers";
 
 export class Recover extends ContractWrapper<IBaseTokenManagerContract> {
+	readonly httpClient: HttpClient;
 	constructor(
 		readonly providerOrSigner: ProviderOrSigner,
 		readonly network: TheaNetwork,
 		readonly registry: GetCharacteristicsBytes
 	) {
 		super(providerOrSigner, BaseTokenManager_ABI, consts[`${network}`].baseTokenManagerContract);
+		this.httpClient = new HttpClient(consts[`${network}`].relayerUrl, false);
 		this.registry = registry;
 	}
 
@@ -40,16 +55,36 @@ export class Recover extends ContractWrapper<IBaseTokenManagerContract> {
 		const btAmount = await this.calculateBaseTokensAmounts(tokenId, amount, baseTokenCharactaristics);
 
 		await this.checkBalancesForAllBaseTokens(btAmount);
-		await this.approveAllBaseTokens(btAmount);
 
-		return executeWithResponse<RecoverEvent>(
-			this.contract.recover(tokenId, amount),
-			{
-				...this.contractDetails,
-				contractFunction: "recover"
-			},
-			this.extractInfoFromEvent
-		);
+		const balance = await getBalance(this.providerOrSigner as Signer);
+
+		const canSendTx = balance.gt(1e15);
+		if (!canSendTx && consts[`${this.network}`].relayerUrl.length !== 0) {
+			const permits = await this.permitAllBaseTokens(btAmount);
+			const request = await this.prepareRequest(tokenId, amount, permits);
+
+			return relayWithResponse<RecoverEvent>(
+				this.httpClient,
+				this.contract.provider,
+				request,
+				{
+					...this.contractDetails,
+					contractFunction: "recoverWithSig"
+				},
+				this.extractInfoFromLog
+			);
+		} else {
+			await this.approveAllBaseTokens(btAmount);
+
+			return executeWithResponse<RecoverEvent>(
+				this.contract.recover(tokenId, amount),
+				{
+					...this.contractDetails,
+					contractFunction: "recover"
+				},
+				this.extractInfoFromEvent
+			);
+		}
 	}
 
 	async queryRecoverFungibles(tokenId: BigNumberish, amount: BigNumberish): Promise<BaseTokenAmounts> {
@@ -117,6 +152,47 @@ export class Recover extends ContractWrapper<IBaseTokenManagerContract> {
 		});
 	}
 
+	async permitAllBaseTokens(btAmount: BaseTokenAmounts): Promise<EIP712Signature[]> {
+		const spender = this.contractDetails.address;
+		const permits: EIP712Signature[] = [];
+
+		await permit(this.providerOrSigner as Signer, this.network, {
+			token: "ERC20",
+			spender,
+			amount: btAmount.cbt,
+			tokenName: "CurrentNBT"
+		}).then((sig) => permits.push(sig));
+
+		if (!BigNumber.from(btAmount.sdg).isZero()) {
+			await permit(this.providerOrSigner as Signer, this.network, {
+				token: "ERC20",
+				spender,
+				amount: btAmount.sdg,
+				tokenName: "SDG"
+			}).then((sig) => permits.push(sig));
+		}
+
+		if (!BigNumber.from(btAmount.vintage).isZero()) {
+			await permit(this.providerOrSigner as Signer, this.network, {
+				token: "ERC20",
+				spender,
+				amount: btAmount.vintage,
+				tokenName: "Vintage"
+			}).then((sig) => permits.push(sig));
+		}
+
+		if (!BigNumber.from(btAmount.rating).isZero()) {
+			await permit(this.providerOrSigner as Signer, this.network, {
+				token: "ERC20",
+				spender,
+				amount: btAmount.rating,
+				tokenName: "Rating"
+			}).then((sig) => permits.push(sig));
+		}
+
+		return permits;
+	}
+
 	//returns object with sdg, vintage and rating amounts
 	async calculateBaseTokensAmounts(
 		id: BigNumberish,
@@ -153,5 +229,77 @@ export class Recover extends ContractWrapper<IBaseTokenManagerContract> {
 		}
 
 		return response;
+	}
+
+	extractInfoFromLog(logs?: Log[]): RecoverEvent {
+		const logDesc = logs
+			?.filter((log) => log.address === this.contractDetails.address)
+			.map((log) => this.contract.interface.parseLog(log));
+		const response: RecoverEvent = { id: undefined, amount: undefined };
+		if (logDesc) {
+			const log = logDesc.find((log) => log.name === Events.recover);
+			if (log) {
+				response.id = log.args?.tokenId.toString();
+				response.amount = log.args?.amount.toString();
+			}
+		}
+
+		return response;
+	}
+
+	private async prepareRequest(
+		id: BigNumberish,
+		amount: BigNumberish,
+		permits: EIP712Signature[]
+	): Promise<RelayerRequest> {
+		const owner = await getAddress(this.providerOrSigner as Signer);
+
+		const recoverSig = await this.recoverWithSig(id, amount, owner);
+
+		const encodedData = this.contract.interface.encodeFunctionData("recoverWithSig", [
+			id,
+			amount,
+			owner,
+			recoverSig,
+			permits
+		]);
+
+		return { to: this.contractDetails.address, data: encodedData };
+	}
+
+	private async recoverWithSig(id: BigNumberish, amount: BigNumberish, owner: string): Promise<EIP712Signature> {
+		const domain = {
+			name: "TheaBaseTokenManager",
+			version: "1",
+			chainId: this.network,
+			verifyingContract: this.contractDetails.address
+		};
+
+		const types = {
+			RecoverWithSig: [
+				{ name: "id", type: "uint256" },
+				{ name: "amount", type: "uint256" },
+				{ name: "owner", type: "address" },
+				{ name: "nonce", type: "uint256" },
+				{ name: "deadline", type: "uint256" }
+			]
+		};
+
+		const nonce = await this.contract.sigNonces(owner);
+		const deadline = Math.floor(Date.now() / 1000) + 20 * 60;
+
+		const value = {
+			id,
+			amount,
+			owner,
+			nonce,
+			deadline
+		};
+
+		const rawSignature = await (this.providerOrSigner as TypedDataSigner)._signTypedData(domain, types, value);
+
+		const ecSignature = parseRawSignature(rawSignature);
+
+		return { ...ecSignature, deadline };
 	}
 }

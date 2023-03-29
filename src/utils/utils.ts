@@ -1,12 +1,13 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { isAddress } from "@ethersproject/address";
 import { Contract, ContractInterface } from "@ethersproject/contracts";
-import { IBaseTokenManagerContract, ProviderOrSigner, TheaERC20Token, TheaNetwork } from "../types";
+import { ECSignature, IBaseTokenManagerContract, ProviderOrSigner, TheaERC20Token, TheaNetwork } from "../types";
 import { consts } from "./consts";
 import { TheaError } from "./theaError";
 import BaseTokenManager_ABI from "../abi/BaseTokenManager_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Provider } from "@ethersproject/providers";
+import { hexDataLength, hexDataSlice } from "@ethersproject/bytes";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export const castAbiInterface = (abi: any) => {
@@ -42,6 +43,8 @@ export const signerRequired = (providerOrSigner: ProviderOrSigner) => {
 };
 
 export const getAddress = async (signer: Signer) => signer.getAddress();
+
+export const getBalance = async (signer: Signer) => signer.getBalance();
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export function isTypedDataSigner(providerOrSigner: any): providerOrSigner is Signer {
@@ -108,4 +111,43 @@ export const tokenAmountShouldBeTon = (amount: BigNumberish): void => {
 			message: "Amount should be a ton. Value must be greater than 0 and divisible by 1000"
 		});
 	}
+};
+
+// Parse a hex signature returned by an RPC call into an `ECSignature`.
+export const parseRawSignature = (rawSignature: string): ECSignature => {
+	const hexSize = hexDataLength(rawSignature);
+	if (hexSize !== 65) {
+		throw new TheaError({
+			message: "Invalid signature length, expected 65",
+			type: "INVALID_SIGNATURE_SIZE"
+		});
+	}
+	// Some providers encode V as 0,1 instead of 27,28.
+	const VALID_V_VALUES = [0, 1, 27, 28];
+	// Some providers return the signature packed as V,R,S and others R,S,V.
+	let v = parseInt(rawSignature.slice(-2), 16);
+	if (VALID_V_VALUES.includes(v)) {
+		// Format is R,S,V
+		v = v >= 27 ? v : v + 27;
+		return {
+			r: hexDataSlice(rawSignature, 0, 32),
+			s: hexDataSlice(rawSignature, 32, 64),
+			v
+		};
+	}
+	// Format should be V,R,S
+	v = parseInt(rawSignature.slice(2, 4), 16);
+	if (!VALID_V_VALUES.includes(v)) {
+		throw new TheaError({
+			message: "Cannot determine RPC signature layout from V value",
+			type: "INVALID_SIGNATURE_LAYOUT"
+		});
+	}
+	v = v >= 27 ? v : v + 27;
+
+	return {
+		v,
+		r: hexDataSlice(rawSignature, 1, 33),
+		s: hexDataSlice(rawSignature, 33, 65)
+	};
 };

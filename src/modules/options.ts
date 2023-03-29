@@ -1,6 +1,6 @@
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Contract, ContractReceipt } from "@ethersproject/contracts";
-import { parseFixed } from "@ethersproject/bignumber";
+import { BigNumberish, parseFixed } from "@ethersproject/bignumber";
 import {
 	OrderRecord,
 	OrderCreateRequest,
@@ -10,12 +10,25 @@ import {
 	ProviderOrSigner,
 	OptionsProduct,
 	HttpResponseIn,
-	OptionType
+	OptionType,
+	RelayerRequest,
+	EIP712Signature,
+	ContractDetails
 } from "../types";
-import { amountShouldBeGTZero, consts, getAddress, signerRequired, TheaError, typedDataSignerRequired } from "../utils";
-import { execute, HttpClient, TheaERC20 } from "./shared";
+import {
+	amountShouldBeGTZero,
+	consts,
+	getAddress,
+	getBalance,
+	parseRawSignature,
+	signerRequired,
+	TheaError,
+	typedDataSignerRequired
+} from "../utils";
+import { execute, HttpClient, relay, TheaERC20 } from "./shared";
 import TheaOptions_ABI from "../abi/TheaOptions_ABI.json";
 import TheaOptionsVault_ABI from "../abi/TheaOptionsVault_ABI.json";
+import { Provider } from "@ethersproject/providers";
 
 export class Options {
 	readonly httpClient: HttpClient;
@@ -135,19 +148,35 @@ export class Options {
 		const baseToken = await optionsContract.baseToken();
 		const usdc = await optionsContract.usdc();
 
-		const txReceipt = await execute(optionsContract.exercise(orderId), {
-			name: TheaOptions_ABI.contractName,
-			address: optionsProduct.contractAddr,
-			contractFunction: "exercise"
-		});
+		const balance = await getBalance(this.signer as Signer);
 
-		const balanceBT = await optionsVault.balanceOf(owner, baseToken);
-		const balanceUsdc = await optionsVault.balanceOf(owner, usdc);
+		const canSendTx = balance.gt(1e15);
+		if (!canSendTx && consts[`${this.network}`].relayerUrl.length !== 0) {
+			const contractDetails = {
+				address: optionsProduct.contractAddr,
+				name: TheaOptionsVault_ABI.contractName
+			};
+			const request = await this.prepareRequest(orderId, contractDetails, optionsContract);
 
-		if (!balanceBT.isZero()) await optionsVault.withdraw(baseToken, balanceBT);
-		if (!balanceUsdc.isZero()) await optionsVault.withdraw(usdc, balanceUsdc);
+			return relay(this.httpClient, this.signer as Provider, request, {
+				...contractDetails,
+				contractFunction: "exerciseWithSig"
+			});
+		} else {
+			const txReceipt = await execute(optionsContract.exercise(orderId), {
+				name: TheaOptions_ABI.contractName,
+				address: optionsProduct.contractAddr,
+				contractFunction: "exercise"
+			});
 
-		return txReceipt;
+			const balanceBT = await optionsVault.balanceOf(owner, baseToken);
+			const balanceUsdc = await optionsVault.balanceOf(owner, usdc);
+
+			if (!balanceBT.isZero()) await optionsVault.withdraw(baseToken, balanceBT);
+			if (!balanceUsdc.isZero()) await optionsVault.withdraw(usdc, balanceUsdc);
+
+			return txReceipt;
+		}
 	}
 
 	private async signOrder(order: OptionsOrderStruct): Promise<string> {
@@ -174,5 +203,56 @@ export class Options {
 		const rawSignatureFromEoaWallet = await signer._signTypedData(domain, types, value);
 
 		return rawSignatureFromEoaWallet;
+	}
+
+	private async prepareRequest(
+		id: BigNumberish,
+		contractDetails: ContractDetails,
+		contract: Contract
+	): Promise<RelayerRequest> {
+		const owner = await getAddress(this.signer as Signer);
+
+		const exerciseSig = await this.exerciseWithSig(id, owner, contractDetails, contract);
+
+		const encodedData = contract.interface.encodeFunctionData("exerciseWithSig", [id, exerciseSig]);
+
+		return { to: contractDetails.address, data: encodedData };
+	}
+
+	private async exerciseWithSig(
+		id: BigNumberish,
+		owner: string,
+		contractDetails: ContractDetails,
+		contract: Contract
+	): Promise<EIP712Signature> {
+		const domain = {
+			name: "TheaOptions",
+			version: "1",
+			chainId: this.network,
+			verifyingContract: contractDetails.address
+		};
+
+		const types = {
+			UnwrapWithSig: [
+				{ name: "id", type: "uint256" },
+				{ name: "nonce", type: "uint256" },
+				{ name: "deadline", type: "uint256" }
+			]
+		};
+
+		const nonce = await contract.sigNonces(owner);
+		const deadline = Math.floor(Date.now() / 1000) + 20 * 60;
+
+		const value = {
+			id,
+			nonce,
+			deadline
+		};
+
+		const rawSignature = await (this.signer as TypedDataSigner)._signTypedData(domain, types, value);
+
+		const ecSignature = parseRawSignature(rawSignature);
+
+		return { ...ecSignature, deadline };
 	}
 }
