@@ -128,7 +128,6 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	}
 
 	async offsetHistory(): Promise<Record<"commited" | "retired", OffsetOrder[]>> {
-		const { result: start } = await this.getNextOffsetEventDate();
 		const offsetsFiat = await this.httpClient
 			.post<Record<string, never>, HttpResponseIn<OffsetOrderStripe[]>>("/orders/list", {})
 			.then((response) =>
@@ -160,16 +159,15 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 				}))
 			);
 		const txHashs = new Set(offsetsFiat.map((offset) => offset.txHash));
-		return this.filterOffsetOrders(
-			[...offsetsFiat, ...offsetsNFT.filter((offset) => !txHashs.has(offset.txHash))],
-			start
-		);
+		return this.filterOffsetOrders([...offsetsFiat, ...offsetsNFT.filter((offset) => !txHashs.has(offset.txHash))]);
 	}
 
-	private filterOffsetOrders(orders: OffsetOrder[], start: string): Record<"commited" | "retired", OffsetOrder[]> {
+	private filterOffsetOrders(orders: OffsetOrder[]): Record<"commited" | "retired", OffsetOrder[]> {
 		return orders.reduce(
 			(acc, cur: OffsetOrder) => {
-				if (cur.dt > Date.parse(start)) {
+				const orderDate = new Date(cur.dt);
+				const now = new Date();
+				if (now.getMonth() === orderDate.getMonth() && now.getFullYear() === orderDate.getFullYear()) {
 					acc.commited.push(cur);
 				} else {
 					acc.retired.push(cur);

@@ -579,6 +579,8 @@ export const mockClient: HttpResponseIn<Client> = {
 	errorMessage: null
 };
 
+const now = new Date().getTime();
+
 export const mockOffsetOrderStripe: HttpResponseIn<OffsetOrderStripe[]> = {
 	result: [
 		{
@@ -599,8 +601,8 @@ export const mockOffsetOrderStripe: HttpResponseIn<OffsetOrderStripe[]> = {
 			postAction: "RETIRE",
 			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
 			status: OrderRecordStatus.PERFORMED,
-			created: 17304191990000,
-			updatedAt: 17304191990000,
+			created: now,
+			updatedAt: now,
 			transferHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
 			retireHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98"
 		}
@@ -654,7 +656,7 @@ export const mockOffsetOrders: Record<"commited" | "retired", OffsetOrder[]> = {
 			retiredAmount: 100000,
 			orderSum: 1000,
 			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
-			dt: 17304191990000,
+			dt: now,
 			txHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98"
 		}
 	],
