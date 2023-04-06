@@ -271,6 +271,33 @@ const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
 });
 ```
 
+- Query transaction history - Used to fetch all buy and sell transactions of current NBT token
+
+```js
+const txHistory = await theaSDK.fungibleTrading.transactionHistory("0x123...");
+// Sample output
+[
+	{
+		action: "Buy NBT",
+		timestamp: "1679995741",
+		amount: "1",
+		type: "Income"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679761665",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679994793",
+		amount: "-0.994",
+		type: "Outcome"
+	}
+];
+```
+
 - Swap tokens - Used to swap tokens by calling Uniswap's V3 SwapRouter contract
 
 ```js

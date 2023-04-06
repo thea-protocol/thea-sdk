@@ -104,7 +104,7 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 		swapRouterContract: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
 		theaApiBaseUrl: "https://client.dev.thea.earth/cli",
 		exchangeProxyAddress: "0x4fb72262344034e034fce3d9c701fd9213a55260",
-		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.0.9"
+		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.1.2"
 	},
 	[TheaNetwork.POLYGON]: {
 		networkName: "POLYGON",

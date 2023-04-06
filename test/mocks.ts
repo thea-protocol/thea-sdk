@@ -17,6 +17,8 @@ import {
 	OrderRequest,
 	PriceListings,
 	SearchOrdersResponsePayload,
+	Swap,
+	SwapTransaction,
 	TheaERC1155Balance,
 	TokenizationHistory,
 	TokenizationSource,
@@ -56,7 +58,7 @@ export const tokenizationState: TokenizationState = {
 		updatedAt: "2023-01-15T20:18:20.358Z",
 		email: "miloscovilons@gmail.com",
 		fullName: "Milos Covilo",
-		ethAddr: "0xbd44572e53343a0f003b719cf438c6338bd29d9c",
+		ethAddr: WALLET_ADDRESS,
 		source: TokenizationSource.VERRA,
 		subaccountId: "12274",
 		batchId: "11158-289118799-289118805-VCS-VCU-263-VER-KH-14-1748-01012019-31122019-1",
@@ -682,3 +684,191 @@ export const mockOffsetOrders: Record<"commited" | "retired", OffsetOrder[]> = {
 		}
 	]
 };
+
+export const swaps: Swap[] = [
+	{
+		amount0: "-5.974908",
+		amount1: "1",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679995741"
+	},
+	{
+		amount0: "-5.974769",
+		amount1: "1",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679761787"
+	},
+	{
+		amount0: "5.974699",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679754129"
+	},
+	{
+		amount0: "5.974699",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679749787"
+	},
+	{
+		amount0: "5.974745",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679761665"
+	},
+	{
+		amount0: "-5.974746",
+		amount1: "1",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679759021"
+	},
+	{
+		amount0: "5.974722",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679758955"
+	},
+	{
+		amount0: "5.974885",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679994793"
+	},
+	{
+		amount0: "-5.974885",
+		amount1: "1",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679995833"
+	},
+	{
+		amount0: "5.974722",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679759139"
+	},
+	{
+		amount0: "-5.974722",
+		amount1: "1",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679751067"
+	},
+	{
+		amount0: "5.974839",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679988085"
+	},
+	{
+		amount0: "5.974862",
+		amount1: "-0.994",
+		recipient: {
+			id: WALLET_ADDRESS
+		},
+		timestamp: "1679994581"
+	}
+];
+
+export const swapTransactions: SwapTransaction[] = [
+	{
+		action: "Buy NBT",
+		timestamp: "1679995741",
+		amount: "1",
+		type: "Income"
+	},
+	{
+		action: "Buy NBT",
+		timestamp: "1679761787",
+		amount: "1",
+		type: "Income"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679754129",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679749787",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679761665",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Buy NBT",
+		timestamp: "1679759021",
+		amount: "1",
+		type: "Income"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679758955",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679994793",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Buy NBT",
+		timestamp: "1679995833",
+		amount: "1",
+		type: "Income"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679759139",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Buy NBT",
+		timestamp: "1679751067",
+		amount: "1",
+		type: "Income"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679988085",
+		amount: "-0.994",
+		type: "Outcome"
+	},
+	{
+		action: "Sell NBT",
+		timestamp: "1679994581",
+		amount: "-0.994",
+		type: "Outcome"
+	}
+];

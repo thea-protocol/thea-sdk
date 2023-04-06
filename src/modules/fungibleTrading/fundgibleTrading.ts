@@ -1,3 +1,4 @@
+import { HttpClient } from "./../shared/httpClient";
 import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "@ethersproject/bignumber";
 import { ContractReceipt } from "@ethersproject/contracts";
@@ -9,7 +10,13 @@ import {
 	FungibleStableOptions,
 	SwapOptions,
 	POOL_FEE,
-	DistributiveOmit
+	DistributiveOmit,
+	GraphqlQuery,
+	QueryResponse,
+	QueryErrorResponse,
+	QueryError,
+	Swap,
+	SwapTransaction
 } from "../../types";
 import {
 	consts,
@@ -17,17 +24,40 @@ import {
 	getAddress,
 	getERC20ContractAddress,
 	signerRequired,
-	TheaError
+	TheaError,
+	TheaSubgraphError
 } from "../../utils";
 import { Quoter } from "./quoter";
 import { SwapRouter } from "./swapRouter";
 
+export const swapsQuery = (recipient: string, token0: string, token1: string) => ({
+	query: `
+			query ($recipient: String!, $token0: String!, $token1: String!){
+        swaps(where: {recipient: $recipient, token0: $token0, token1: $token1}) {
+          amount0
+          amount1
+          recipient {
+            id
+          }
+          timestamp
+        }
+			}
+  `,
+	variables: {
+		recipient,
+		token0,
+		token1
+	}
+});
+
 export class FungibleTrading {
 	readonly quoter: Quoter;
 	readonly swapRouter: SwapRouter;
+	readonly httpClient: HttpClient;
 	constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		this.quoter = new Quoter(providerOrSigner, network);
 		this.swapRouter = new SwapRouter(providerOrSigner, network);
+		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl, false);
 	}
 
 	/**
@@ -81,6 +111,28 @@ export class FungibleTrading {
 		const amountIn = options.tokenIn === "Stable" ? 1e6 : 1e4;
 		const amountOut = await this.quoter.quoteBestPrice(tokenIn, tokenOut, amountIn);
 		return amountOut.toString();
+	}
+
+	/**
+	 * Returns buy and sell transactions of NBT tokens for a given wallet address
+	 * @param walletAddress - wallet address of user
+	 * @returns SwapTransaction @see SwapTransaction
+	 */
+	async transactionHistory(walletAddress: string): Promise<SwapTransaction[]> {
+		const currentNBT = getERC20ContractAddress("CurrentNBT", this.network).toLowerCase();
+		const stable = getERC20ContractAddress("Stable", this.network).toLowerCase();
+		const response = await this.httpClient.post<GraphqlQuery, QueryResponse<{ swaps: Swap[] }> | QueryErrorResponse>(
+			"",
+			swapsQuery(walletAddress, stable, currentNBT)
+		);
+
+		if ("errors" in response)
+			throw new TheaSubgraphError(`Subgraph call error when trying to query swaps`, response.errors as QueryError[]);
+
+		const swaps = response.data.swaps;
+
+		const history = this.getTransactionHistory(swaps);
+		return history;
 	}
 
 	/**
@@ -141,5 +193,15 @@ export class FungibleTrading {
 			throw new TheaError({ type: "INVALID_DEADLINE", message: "Deadline can't be in past" });
 		}
 		return deadline ? deadline : defaultDeadLine;
+	}
+
+	private getTransactionHistory(swaps: Swap[]): SwapTransaction[] {
+		return swaps.map((swap) => {
+			if (Number(swap.amount0) < 0) {
+				return { action: "Buy NBT", timestamp: swap.timestamp, amount: swap.amount1, type: "Income" };
+			} else {
+				return { action: "Sell NBT", timestamp: swap.timestamp, amount: swap.amount1, type: "Outcome" };
+			}
+		});
 	}
 }

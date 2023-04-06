@@ -512,6 +512,20 @@ export type OffsetOrder = {
 	retiredAmount: number;
 	orderSum: number | null;
 };
+export type Swap = {
+	amount0: string;
+	amount1: string;
+	recipient: {
+		id: string;
+	};
+	timestamp: string;
+};
+export type SwapTransaction = {
+	action: "Buy NBT" | "Sell NBT";
+	timestamp: string;
+	amount: string;
+	type: "Income" | "Outcome";
+};
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";
