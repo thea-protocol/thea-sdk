@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/thea-protocol/thea-sdk/compare/v3.0.0...v3.0.1) (2023-04-06)
+
+
+### Bug Fixes
+
+* offset history ([3ac5797](https://github.com/thea-protocol/thea-sdk/commit/3ac5797142485a9769ca30534e36dafeffbefa6a))
+
 ## [3.0.0](https://github.com/thea-protocol/thea-sdk/compare/v2.6.2...v3.0.0) (2023-03-28)
 
 
