@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/thea-protocol/thea-sdk/compare/v3.0.1...v3.1.0) (2023-04-06)
+
+
+### Features
+
+* transaction history ([677631f](https://github.com/thea-protocol/thea-sdk/commit/677631ff32f96f71d8f947a91a61d21d9c4a6528))
+
 ## [3.0.1](https://github.com/thea-protocol/thea-sdk/compare/v3.0.0...v3.0.1) (2023-04-06)
 
 
