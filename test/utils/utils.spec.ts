@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Contract } from "@ethersproject/contracts";
-import { InfuraProvider } from "@ethersproject/providers";
+import { InfuraProvider, JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import {
 	castAbiInterface,
@@ -189,7 +189,7 @@ describe("Utils", () => {
 
 	describe("getBalance", () => {
 		it("should return balance of signer", async () => {
-			const signer = new Wallet(PRIVATE_KEY, new InfuraProvider());
+			const signer = new Wallet(PRIVATE_KEY, new JsonRpcProvider());
 			const result = await getBalance(signer as Signer);
 			expect(result).toStrictEqual(BigNumber.from(0));
 		});

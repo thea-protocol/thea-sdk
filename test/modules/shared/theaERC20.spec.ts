@@ -22,7 +22,7 @@ jest.mock("../../../src/modules/shared/execute", () => {
 });
 
 describe("TheaERC20", () => {
-	const signer = new Wallet(PRIVATE_KEY);
+	const signer = new Wallet(PRIVATE_KEY, new JsonRpcProvider());
 	const theaERC20: TheaERC20 = new TheaERC20(signer, vintageTokenContractAddress);
 	const owner = WALLET_ADDRESS;
 	const spender = WALLET_ADDRESS;
