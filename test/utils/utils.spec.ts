@@ -17,10 +17,12 @@ import {
 	TheaNetwork,
 	tokenAmountShouldBeTon,
 	typedDataSignerRequired,
-	validateAddress
+	validateAddress,
+	parseRawSignature
 } from "../../src";
 
 import { ABI, CONTRACT_ADDRESS, PRIVATE_KEY, WALLET_ADDRESS } from "../mocks";
+import { BigNumber } from "@ethersproject/bignumber";
 
 jest.mock("@ethersproject/contracts", () => {
 	return {
@@ -31,13 +33,6 @@ jest.mock("@ethersproject/contracts", () => {
 				else return "0x0000000000000000000000000000000000000000";
 			})
 		})
-	};
-});
-
-jest.mock("../../src/utils", () => {
-	return {
-		...jest.requireActual("../../src/utils"),
-		getBalance: jest.fn().mockResolvedValue(200)
 	};
 });
 
@@ -193,10 +188,10 @@ describe("Utils", () => {
 	});
 
 	describe("getBalance", () => {
-		it("should return address of signer", async () => {
-			const signer = new Wallet(PRIVATE_KEY);
+		it("should return balance of signer", async () => {
+			const signer = new Wallet(PRIVATE_KEY, new InfuraProvider());
 			const result = await getBalance(signer as Signer);
-			expect(result).toBe(200);
+			expect(result).toStrictEqual(BigNumber.from(0));
 		});
 	});
 
@@ -216,6 +211,74 @@ describe("Utils", () => {
 			expect(() => {
 				tokenAmountShouldBeTon(1000);
 			}).not.toThrow();
+		});
+	});
+
+	describe("parseRawSignature", () => {
+		it("should throw error signature length is invalid", async () => {
+			const rawSignature =
+				"0x8a97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d07411dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef0224644721c";
+			expect(() => {
+				parseRawSignature(rawSignature);
+			}).toThrow(
+				new TheaError({
+					type: "INVALID_SIGNATURE_SIZE",
+					message: "Invalid signature length, expected 65"
+				})
+			);
+		});
+
+		it("should throw error for invalid signature layout", async () => {
+			const rawSignature =
+				"0x9997d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299";
+			expect(() => {
+				parseRawSignature(rawSignature);
+			}).toThrow(
+				new TheaError({
+					type: "INVALID_SIGNATURE_LAYOUT",
+					message: "Cannot determine RPC signature layout from V value"
+				})
+			);
+		});
+
+		it("should return raw signature if V value is in front of R and S", async () => {
+			const rawSignature =
+				"0x1c97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299";
+			expect(parseRawSignature(rawSignature)).toEqual({
+				v: 28,
+				r: "0x97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411",
+				s: "0xdba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299"
+			});
+		});
+
+		it("should return raw signature if V value is in front of R and S", async () => {
+			const rawSignature =
+				"0x1c97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299";
+			expect(parseRawSignature(rawSignature)).toEqual({
+				v: 28,
+				r: "0x97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411",
+				s: "0xdba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299"
+			});
+		});
+
+		it("should add 27 if V value is less that 27 and ordering is V, R, S", async () => {
+			const rawSignature =
+				"0x1c97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447201";
+			expect(parseRawSignature(rawSignature)).toEqual({
+				v: 28,
+				r: "0x1c97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d07704",
+				s: "0x11dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef022464472"
+			});
+		});
+
+		it("should add 27 if V value is less that 27 and ordering is R, S, V", async () => {
+			const rawSignature =
+				"0x0097d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411dba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299";
+			expect(parseRawSignature(rawSignature)).toEqual({
+				v: 27,
+				r: "0x97d5ade4a92a44f87d83fbe83b494090ecfdd3276720f4fb5b235614d0770411",
+				s: "0xdba9d8d9f3e774850e63a02e19da252e246ddeec9e879be9fafef02246447299"
+			});
 		});
 	});
 });

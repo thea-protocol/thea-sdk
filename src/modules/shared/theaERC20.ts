@@ -43,6 +43,8 @@ export class TheaERC20 extends ContractWrapper<IERC20Contract> {
 	}
 
 	async permit(owner: string, spender: string, amount: BigNumberish): Promise<EIP712Signature> {
+		validateAddress(owner);
+		validateAddress(spender);
 		const name = await this.contract.name();
 		const network = await this.contract.provider.getNetwork();
 

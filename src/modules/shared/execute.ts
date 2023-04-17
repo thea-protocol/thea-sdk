@@ -37,20 +37,18 @@ export const relay = async (
 	request: RelayerRequest,
 	details: ContractDetails & { contractFunction: string; contractArgs?: string[] }
 ): Promise<ContractReceipt> => {
-	try {
-		return httpClient.post<RelayerRequest, RelayerResponse>("/", request).then(async (response) => {
-			const txHash = JSON.parse(response.result);
-			return provider.getTransactionReceipt(txHash);
-		});
-	} catch (error) {
+	const response = await httpClient.post<RelayerRequest, RelayerResponse>("/", request);
+	if (response.status === "error") {
 		throw new TheaContractCallError(
 			{
 				type: "TRANSACTION_FAILED",
-				message: error.message
+				message: "Transaction failed"
 			},
 			details
 		);
 	}
+	const txHash = JSON.parse(response.result);
+	return provider.getTransactionReceipt(txHash);
 };
 
 export const relayWithResponse = async <T>(

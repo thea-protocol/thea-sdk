@@ -95,8 +95,8 @@ export class Convert extends ContractWrapper<IBaseTokenManagerContract> {
 		if (logDesc) {
 			const log = logDesc.find((log) => log.name === Events.convert);
 			if (log) {
-				response.id = log.args?.tokenId.toString();
-				response.amount = log.args?.amount.toString();
+				response.id = log.args.tokenId.toString();
+				response.amount = log.args.amount.toString();
 			}
 		}
 

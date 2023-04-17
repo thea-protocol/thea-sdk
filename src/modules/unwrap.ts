@@ -135,7 +135,7 @@ export class Unwrap extends ContractWrapper<IRegistryContract> {
 		const response: RequestId = { requestId: undefined };
 		if (logDesc) {
 			const log = logDesc.find((log) => log.name === Events.unwrap);
-			if (log) response.requestId = log.args?.requestId.toString();
+			if (log) response.requestId = log.args.requestId.toString();
 		}
 
 		return response;

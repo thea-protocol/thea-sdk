@@ -178,6 +178,19 @@ describe("TheaSDK", () => {
 				})
 			);
 		});
+
+		it("should return TheaSDK instance when relayerUrl is passed", async () => {
+			const signer = new Wallet(PRIVATE_KEY, new InfuraProvider());
+			const result = await TheaSDK.init({
+				network: TheaNetwork.MUMBAI,
+				signer,
+				relayerUrl: "https://api.defender.openzeppelin.com/"
+			});
+
+			expect(result).toBeInstanceOf(TheaSDK);
+			expect(result.network).toBe(TheaNetwork.MUMBAI);
+			expect(result.providerOrSigner).toBeInstanceOf(Wallet);
+		});
 	});
 
 	describe("setCurrentNBTContractAddress", () => {
