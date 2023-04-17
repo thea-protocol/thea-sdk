@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Contract } from "@ethersproject/contracts";
-import { InfuraProvider, JsonRpcProvider } from "@ethersproject/providers";
+import { BlockTag, InfuraProvider, JsonRpcProvider, Provider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import {
 	castAbiInterface,
@@ -32,6 +32,22 @@ jest.mock("@ethersproject/contracts", () => {
 				if (args[0] === 2017) return CONTRACT_ADDRESS;
 				else return "0x0000000000000000000000000000000000000000";
 			})
+		})
+	};
+});
+
+jest.mock("@ethersproject/providers", () => {
+	return {
+		...jest.requireActual("@ethersproject/providers"),
+		JsonRpcProvider: jest.fn().mockImplementation(() => {
+			const value = {
+				_isProvider: true,
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+				getBalance: (blockTag?: BlockTag | undefined): Promise<BigNumber> => {
+					return Promise.resolve(BigNumber.from(200));
+				}
+			};
+			return value as Provider;
 		})
 	};
 });
@@ -191,7 +207,7 @@ describe("Utils", () => {
 		it("should return balance of signer", async () => {
 			const signer = new Wallet(PRIVATE_KEY, new JsonRpcProvider());
 			const result = await getBalance(signer as Signer);
-			expect(result).toStrictEqual(BigNumber.from(0));
+			expect(result).toStrictEqual(BigNumber.from(200));
 		});
 	});
 

@@ -5,7 +5,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { TheaERC20, IERC20Contract, ContractDetails, TheaError, consts, TheaNetwork } from "../../../src";
 import { Wallet } from "@ethersproject/wallet";
 import { PRIVATE_KEY, WALLET_ADDRESS } from "../../mocks";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Network, Provider } from "@ethersproject/providers";
 
 const vintageTokenContractAddress = consts[TheaNetwork.GANACHE].vintageTokenContract;
 
@@ -17,6 +17,20 @@ jest.mock("../../../src/modules/shared/execute", () => {
 				from: "0x123",
 				contractAddress: vintageTokenContractAddress
 			};
+		})
+	};
+});
+
+jest.mock("@ethersproject/providers", () => {
+	return {
+		JsonRpcProvider: jest.fn().mockImplementation((args) => {
+			const value = {
+				_isProvider: true,
+				getNetwork: (): Promise<Network> => {
+					return Promise.resolve({ chainId: args ?? 1337, name: "GANACHE" });
+				}
+			};
+			return value as Provider;
 		})
 	};
 });
