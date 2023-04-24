@@ -1,18 +1,23 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { ContractTransaction, Event } from "@ethersproject/contracts";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Log } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { consts, Events, IRegistryContract, TheaError, TheaNetwork, Unwrap } from "../../src";
-import { PRIVATE_KEY } from "../mocks";
+import { PRIVATE_KEY, WALLET_ADDRESS } from "../mocks";
 import * as shared from "../../src/modules/shared";
 import * as utils from "../../src/utils/utils";
 import Registry_ABI from "../../src/abi/Registry_ABI.json";
+import { Interface } from "@ethersproject/abi";
+
+consts[TheaNetwork.GANACHE].relayerUrl = "https://api.defender.openzeppelin.com/";
 
 const registryContractAddress = consts[TheaNetwork.GANACHE].registryContract;
 jest.mock("../../src/modules/shared", () => {
 	return {
+		...jest.requireActual("../../src/modules/shared"),
 		checkBalance: jest.fn(),
 		approve: jest.fn(),
+		permit: jest.fn(),
 		executeWithResponse: jest.fn().mockImplementation(() => {
 			return {
 				to: registryContractAddress,
@@ -20,7 +25,28 @@ jest.mock("../../src/modules/shared", () => {
 				contractAddress: registryContractAddress,
 				requestId: "1"
 			};
+		}),
+		relayWithResponse: jest.fn().mockImplementation(() => {
+			return {
+				to: registryContractAddress,
+				from: "0x123",
+				contractAddress: registryContractAddress,
+				id: "1",
+				amount: "1000"
+			};
 		})
+	};
+});
+
+jest.mock("../../src/utils/utils", () => {
+	return {
+		__esModule: true,
+		...jest.requireActual("../../src/utils/utils"),
+		getBalance: jest
+			.fn()
+			.mockImplementationOnce(() => BigNumber.from("10000000000000000"))
+			.mockImplementationOnce(() => BigNumber.from(0)),
+		getAddress: jest.fn().mockImplementation(() => WALLET_ADDRESS)
 	};
 });
 
@@ -39,9 +65,14 @@ describe("Unwrap", () => {
 		})
 	};
 
+	const iface = new Interface(Registry_ABI.abi);
+	iface.encodeFunctionData = jest.fn();
+
 	const mockContract: Partial<IRegistryContract> = {
 		unwrap: jest.fn().mockResolvedValue(contractTransaction as ContractTransaction),
-		requests: jest.fn().mockResolvedValue({ status: 0, maker: "0x123", tokenId, amount })
+		requests: jest.fn().mockResolvedValue({ status: 0, maker: "0x123", tokenId, amount }),
+		sigNonces: jest.fn().mockResolvedValue(0),
+		interface: iface
 	};
 	const network = TheaNetwork.GANACHE;
 	beforeEach(() => {
@@ -101,6 +132,30 @@ describe("Unwrap", () => {
 			});
 			expect(tokenAmountShouldBeTonSpy).toHaveBeenCalledWith(amount);
 		});
+
+		it("should relay transaction on insufficient gas", async () => {
+			const relaySpy = jest.spyOn(shared, "relayWithResponse");
+			const checkBalanceSpy = jest.spyOn(shared, "checkBalance").mockReturnThis();
+			const permitSpy = jest.spyOn(shared, "permit");
+
+			const result = await unwrap.unwrapToken(tokenId, amount, offchainAccount);
+
+			expect(checkBalanceSpy).toHaveBeenCalledWith(providerOrSigner, network, {
+				token: "ERC1155",
+				tokenId,
+				amount
+			});
+			expect(permitSpy).toHaveBeenCalledWith(providerOrSigner, network, {
+				token: "ERC1155",
+				spender: registryContractAddress
+			});
+			expect(relaySpy).toHaveBeenCalled();
+			expect(result).toMatchObject({
+				to: registryContractAddress,
+				from: "0x123",
+				contractAddress: registryContractAddress
+			});
+		});
 	});
 
 	describe("extractRequestIdFromEvent", () => {
@@ -133,6 +188,39 @@ describe("Unwrap", () => {
 			expect(result.requestId).toBe("1");
 		});
 	});
+
+	describe("extractRequestIdFromLog", () => {
+		it("should return undefined request id if no logs passed", () => {
+			const result = unwrap.extractRequestIdFromLog();
+			expect(result.requestId).toBeUndefined();
+		});
+
+		it("should return undefined request id if no Unwrap logs passed", () => {
+			const result = unwrap.extractRequestIdFromLog();
+			expect(result.requestId).toBeUndefined();
+		});
+
+		it("should extract request id from logs", () => {
+			const log: Log = {
+				transactionIndex: 4,
+				blockNumber: 33708557,
+				transactionHash: "0x7637da26f233b53ea1dda7e66e5c7677f486f9ae6c7a134facda2eda80afe26d",
+				address: registryContractAddress,
+				topics: [
+					"0x123058a603e310439e60c4a3b16905105a0605670c0cb813b579f7a316301955",
+					"0x0000000000000000000000000000000000000000000000000000000000000001",
+					"0x0000000000000000000000000000000000000000000000000000000000000001"
+				],
+				data: "0x00000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000002a30786264343435373265353333343361306630303362373139636634333863363333386264323964396300000000000000000000000000000000000000000000",
+				logIndex: 15,
+				blockHash: "0x8de2f3de37202499e038fd868118abbe921a840a7ee3a9f3701e0bdfdbd5dee1",
+				removed: false
+			};
+			const result = unwrap.extractRequestIdFromLog([log as Log]);
+			expect(result.requestId).toBe("1");
+		});
+	});
+
 	describe("getUnwrapTokenState", () => {
 		it("should call requests mapping from contract", async () => {
 			const requestsSpy = jest.spyOn(unwrap.contract, "requests");

@@ -6,4 +6,6 @@ export interface IERC1155Contract extends Contract {
 	isApprovedForAll(account: PromiseOrValue<string>, operator: PromiseOrValue<string>): Promise<boolean>;
 	setApprovalForAll(operator: PromiseOrValue<string>, approved: PromiseOrValue<boolean>): Promise<ContractTransaction>;
 	balanceOf(account: PromiseOrValue<string>, id: PromiseOrValue<BigNumberish>): Promise<BigNumber>;
+	sigNonces(account: PromiseOrValue<string>): Promise<BigNumber>;
+	name(): Promise<string>;
 }
