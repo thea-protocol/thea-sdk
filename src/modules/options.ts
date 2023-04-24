@@ -102,15 +102,20 @@ export class Options {
 	 * Returns current options strike and premium
 	 * @returns OptionsProduct @see OptionsProduct
 	 */
-	async getCurrentStrikeAndPremium(): Promise<OptionsProduct[]> {
+	async getCurrentStrikeAndPremium(): Promise<[OptionsProduct | undefined, OptionsProduct | undefined]> {
 		return this.httpClient
 			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
 			.then((response) =>
 				response.result
 					.filter(({ enabled, expiry }) => enabled && Date.parse(expiry) > Date.now())
 					.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
-					.slice(0, 2)
-			);
+			)
+			.then((activeProducts) => {
+				const callOption = activeProducts.find((option) => option.optionType === OptionType.Call);
+				const putOption = activeProducts.find((option) => option.optionType === OptionType.Put);
+
+				return [callOption, putOption];
+			});
 	}
 
 	/**

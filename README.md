@@ -834,7 +834,7 @@ const orders = theaSDK.options.getOrders();
 }
 ```
 
-- Get current strike and premium - returns strike and premium for current options
+- Get current strike and premium - returns one closet call and put option
 
 ```js
 const result = theaSDK.options.getCurrentStrikeAndPremium();
