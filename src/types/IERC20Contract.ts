@@ -10,4 +10,6 @@ export interface IERC20Contract extends Contract {
 		overrides?: TransactionOptions
 	): Promise<ContractTransaction>;
 	balanceOf(owner: PromiseOrValue<string>): Promise<BigNumber>;
+	sigNonces(account: PromiseOrValue<string>): Promise<BigNumber>;
+	name(): Promise<string>;
 }

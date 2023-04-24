@@ -1,9 +1,23 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
-import { Options, TheaError, TheaNetwork } from "../../src";
-import { mockOptionsOrder, mockOrders, mockPrepareOptionsOrder, optionsProducts, PRIVATE_KEY } from "../mocks";
+import { consts, Options, TheaError, TheaNetwork } from "../../src";
+import {
+	mockOptionsOrder,
+	mockOrders,
+	mockPrepareOptionsOrder,
+	optionsProducts,
+	PRIVATE_KEY,
+	WALLET_ADDRESS
+} from "../mocks";
 import * as utils from "../../src/utils/utils";
 import { BigNumber } from "@ethersproject/bignumber";
+import { Interface } from "@ethersproject/abi";
+import TheaOptions_ABI from "../../src/abi/TheaOptions_ABI.json";
+
+consts[TheaNetwork.GANACHE].relayerUrl = "https://api.defender.openzeppelin.com/";
+
+const iface = new Interface(TheaOptions_ABI.abi);
+iface.encodeFunctionData = jest.fn();
 
 jest.mock("@ethersproject/contracts", () => {
 	return {
@@ -38,7 +52,9 @@ jest.mock("@ethersproject/contracts", () => {
 				),
 				baseToken: jest.fn().mockReturnValue(Promise.resolve("0x5B518de3F2743A33f79f7a312e10Eeac6f778A6c")),
 				usdc: jest.fn().mockReturnValue(Promise.resolve("0x014349F1C543038a76384cFC1A68f1881AFc6B0a")),
-				balanceOf: jest.fn().mockResolvedValue(BigNumber.from(200))
+				balanceOf: jest.fn().mockResolvedValue(BigNumber.from(200)),
+				sigNonces: jest.fn().mockResolvedValue(0),
+				interface: iface
 			};
 		})
 	};
@@ -49,7 +65,15 @@ jest.mock("../../src/modules/shared", () => {
 		...jest.requireActual("../../src/modules/shared"),
 		checkBalance: jest.fn(),
 		approve: jest.fn(),
+		permit: jest.fn(),
 		execute: jest.fn().mockImplementation(() => {
+			return {
+				to: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+				from: "0x123",
+				contractAddress: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42"
+			};
+		}),
+		relay: jest.fn().mockImplementation(() => {
 			return {
 				to: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
 				from: "0x123",
@@ -62,6 +86,18 @@ jest.mock("../../src/modules/shared", () => {
 				approveERC20: jest.fn()
 			};
 		})
+	};
+});
+
+jest.mock("../../src/utils/utils", () => {
+	return {
+		__esModule: true,
+		...jest.requireActual("../../src/utils/utils"),
+		getBalance: jest
+			.fn()
+			.mockImplementationOnce(() => BigNumber.from("10000000000000000"))
+			.mockImplementationOnce(() => BigNumber.from(0)),
+		getAddress: jest.fn().mockImplementation(() => WALLET_ADDRESS)
 	};
 });
 
@@ -78,7 +114,7 @@ describe("Options", () => {
 		it("should return current strike and premium", async () => {
 			jest.spyOn(options.httpClient, "post").mockResolvedValue(optionsProducts);
 			const result = await options.getCurrentStrikeAndPremium();
-			expect(result).toEqual(optionsProducts.result);
+			expect(result).toEqual(optionsProducts);
 		});
 	});
 
@@ -155,6 +191,21 @@ describe("Options", () => {
 
 			expect(signerRequiredSpy).toHaveBeenCalledWith(signer);
 			expect(httpClient).toBeCalledWith("/bt_options/list", {});
+		});
+
+		it("should relay transaction on insufficient gas", async () => {
+			const signerRequiredSpy = jest.spyOn(utils, "signerRequired");
+			const httpClient = jest.spyOn(options.httpClient, "post").mockResolvedValueOnce(optionsProducts);
+
+			const result = await options.exercise("1", "00000186c510db6ba6e0a324a79792ab");
+
+			expect(signerRequiredSpy).toHaveBeenCalledWith(signer);
+			expect(httpClient).toBeCalledWith("/bt_options/list", {});
+			expect(result).toMatchObject({
+				to: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+				from: "0x123",
+				contractAddress: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42"
+			});
 		});
 
 		it("should throw error if options product id is invalid", async () => {

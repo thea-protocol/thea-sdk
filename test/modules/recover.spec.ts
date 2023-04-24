@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { ContractTransaction, Event } from "@ethersproject/contracts";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Log } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import {
 	Events,
@@ -12,17 +12,22 @@ import {
 	TheaNetwork,
 	consts
 } from "../../src";
-import { PRIVATE_KEY } from "../mocks";
+import { PRIVATE_KEY, WALLET_ADDRESS } from "../mocks";
 import * as shared from "../../src/modules/shared";
 import BaseTokenManager_ABI from "../../src/abi/BaseTokenManager_ABI.json";
 import { formatBytes32String } from "@ethersproject/strings";
+import { Interface } from "@ethersproject/abi";
+
+consts[TheaNetwork.GANACHE].relayerUrl = "https://api.defender.openzeppelin.com/";
 
 const baseTokenManagerContractAddress = consts[TheaNetwork.GANACHE].baseTokenManagerContract;
 
 jest.mock("../../src/modules/shared", () => {
 	return {
+		...jest.requireActual("../../src/modules/shared"),
 		checkBalance: jest.fn(),
 		approve: jest.fn(),
+		permit: jest.fn().mockResolvedValue({ v: 34, r: "", s: "", deadline: 4646574365 }),
 		executeWithResponse: jest.fn().mockImplementation(() => {
 			return {
 				to: baseTokenManagerContractAddress,
@@ -32,7 +37,28 @@ jest.mock("../../src/modules/shared", () => {
 				amount: "1000",
 				msgSender: "0x123"
 			};
+		}),
+		relayWithResponse: jest.fn().mockImplementation(() => {
+			return {
+				to: baseTokenManagerContractAddress,
+				from: "0x123",
+				contractAddress: baseTokenManagerContractAddress,
+				id: "1",
+				amount: "1000",
+				msgSender: "0x123"
+			};
 		})
+	};
+});
+
+jest.mock("../../src/utils", () => {
+	return {
+		...jest.requireActual("../../src/utils"),
+		getBalance: jest
+			.fn()
+			.mockImplementationOnce(() => BigNumber.from("10000000000000000"))
+			.mockImplementationOnce(() => BigNumber.from(0)),
+		getAddress: jest.fn().mockImplementation(() => WALLET_ADDRESS)
 	};
 });
 
@@ -77,9 +103,14 @@ describe("Recover", () => {
 	const getCharacteristicsBytesTransaction =
 		"0x00000000000000000000000000000000000000000000000000000000000007e3000000000000000000000000000000000000000000000000000000000000000f0000000000000000000000000000000000000000000000000000000000000002";
 
+	const iface = new Interface(BaseTokenManager_ABI.abi);
+	iface.encodeFunctionData = jest.fn();
+
 	const mockContract: Partial<IBaseTokenManagerContract> = {
 		recover: jest.fn().mockResolvedValue(contractTransaction as ContractTransaction),
-		baseCharacteristics: jest.fn().mockResolvedValue(baseTokenCharacteristicsTransaction as ContractTransaction)
+		baseCharacteristics: jest.fn().mockResolvedValue(baseTokenCharacteristicsTransaction as ContractTransaction),
+		sigNonces: jest.fn().mockResolvedValue(0),
+		interface: iface
 	};
 
 	const network = TheaNetwork.GANACHE;
@@ -156,6 +187,42 @@ describe("Recover", () => {
 				contractAddress: baseTokenManagerContractAddress
 			});
 		});
+
+		it("should relay transaction on insufficient gas", async () => {
+			const baseCharacteristicsTxPromise = Promise.resolve(
+				baseTokenCharacteristicsTransaction as BaseTokenCharactaristics
+			);
+			const calculateBaseTokensAmountsTxPromise = Promise.resolve(
+				calculateBaseTokensAmountsTransaction as {
+					cbt: BigNumber;
+					sdg: BigNumber;
+					vintage: BigNumber;
+					rating: BigNumber;
+				}
+			);
+			const calculateBaseTokensAmountsSpy = jest
+				.spyOn(recover, "calculateBaseTokensAmounts")
+				.mockReturnValue(calculateBaseTokensAmountsTxPromise);
+			const baseCharacteristicsSpy = jest
+				.spyOn(recover.contract, "baseCharacteristics")
+				.mockReturnValue(baseCharacteristicsTxPromise);
+			const relaySpy = jest.spyOn(shared, "relayWithResponse");
+			const checkBalanceSpy = jest.spyOn(shared, "checkBalance").mockReturnThis();
+			const permitSpy = jest.spyOn(shared, "permit");
+
+			const result = await recover.recoverNFT(tokenId, amount);
+
+			expect(baseCharacteristicsSpy).toHaveBeenCalled();
+			expect(calculateBaseTokensAmountsSpy).toHaveBeenCalled();
+			expect(checkBalanceSpy).toHaveBeenCalledTimes(8);
+			expect(permitSpy).toHaveBeenCalledTimes(4);
+			expect(relaySpy).toHaveBeenCalled();
+			expect(result).toMatchObject({
+				to: baseTokenManagerContractAddress,
+				from: "0x123",
+				contractAddress: baseTokenManagerContractAddress
+			});
+		});
 	});
 
 	describe("extractInfoFromEvent", () => {
@@ -189,6 +256,40 @@ describe("Recover", () => {
 				args: { tokenId, amount } as any
 			};
 			const result = recover.extractInfoFromEvent([event as Event]);
+			expect(result.id).toBe("1");
+			expect(result.amount).toBe("1000");
+		});
+	});
+
+	describe("extractInfoFromLog", () => {
+		it("should return undefined id, amount and msgSender if no logs passed", () => {
+			const result = recover.extractInfoFromLog();
+			expect(result.id).toBeUndefined();
+			expect(result.amount).toBeUndefined();
+		});
+
+		it("should return undefined id, amount and msgSender if no Recover logs passed", () => {
+			const result = recover.extractInfoFromLog();
+			expect(result.id).toBeUndefined();
+			expect(result.amount).toBeUndefined();
+		});
+
+		it("should extract id, amount and msgSender from logs", () => {
+			const log: Log = {
+				transactionIndex: 5,
+				blockNumber: 33709784,
+				transactionHash: "0x280db46db596f7153c12ca3fd79c13bf498fad65cd070a11224313b8de976a93",
+				address: baseTokenManagerContractAddress,
+				topics: [
+					"0x9692b528745f48333680160d05b753540b75f3b0f14f03c570701d4777e22fa8",
+					"0x0000000000000000000000000000000000000000000000000000000000000001"
+				],
+				data: "0x00000000000000000000000000000000000000000000000000000000000003e8000000000000000000000000bd44572e53343a0f003b719cf438c6338bd29d9c",
+				logIndex: 32,
+				blockHash: "0xfe9cd0b9d85c8af472af2c1d493886504b79ba401a0d9f78b4ba58cd3709aca8",
+				removed: false
+			};
+			const result = recover.extractInfoFromLog([log as Log]);
 			expect(result.id).toBe("1");
 			expect(result.amount).toBe("1000");
 		});

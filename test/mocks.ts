@@ -2,7 +2,6 @@ import {
 	Client,
 	ClientProfile,
 	DeploymentStatus,
-	HttpResponseIn,
 	OffsetHistory,
 	OffsetOrder,
 	OffsetOrderNFT,
@@ -424,221 +423,182 @@ export const optionsVaultBalances: OptionsVaultBalance[] = [
 	}
 ];
 
-export const userProfile: HttpResponseIn<ClientProfile> = {
-	result: {
-		userID: "00000186c48bc47f1778c129a9bdb0a2",
-		walletAddress: WALLET_ADDRESS,
-		uniqueReferralCode: "ZL6IY2",
-		active: true,
-		referrerID: null,
-		loyalty: {
-			badges: [],
-			tier: 1
-		},
-		bridgingBonusPaid: false,
-		offsetBonusPaid: false,
-		outstandingReferrals: {},
-		currentRpBalance: {
-			"20230310Z": 0
-		},
-		historicRpChanges: [],
-		historicTierChanges: [],
-		historicPositionChanges: null,
-		totalRetiredAmount: 0,
-		invitations: 0
+export const userProfile: ClientProfile = {
+	userID: "00000186c48bc47f1778c129a9bdb0a2",
+	walletAddress: WALLET_ADDRESS,
+	uniqueReferralCode: "ZL6IY2",
+	active: true,
+	referrerID: null,
+	loyalty: {
+		badges: [],
+		tier: 1
 	},
-	error: null,
-	errorMessage: null
-};
-export const deployedOptionsContracts: HttpResponseIn<OptionsContractRecord[]> = {
-	result: [
-		{
-			uuid: "00000186c4c423521c1d41a0d03c501a",
-			btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
-			expiry: "2026-12-12T12:00:00.000Z",
-			contractAddress: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-			btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
-			expiryPrice: 0,
-			createdAt: "2023-03-09T05:07:13.874Z",
-			updatedAt: "2023-03-09T06:22:26.257Z",
-			deploymentStatus: DeploymentStatus.DEPLOYED
-		},
-		{
-			uuid: "00000186c4f23e19daf25a6e687f1246",
-			btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
-			expiry: "2027-12-12T12:00:00.000Z",
-			contractAddress: "0x96bf2642d5ca9b0cbc6f15ad126d7084c09dba83",
-			btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
-			expiryPrice: 0,
-			createdAt: "2023-03-09T05:57:35.385Z",
-			updatedAt: "2023-03-09T05:58:18.034Z",
-			deploymentStatus: DeploymentStatus.DEPLOYED
-		}
-	],
-	error: null,
-	errorMessage: null
+	bridgingBonusPaid: false,
+	offsetBonusPaid: false,
+	outstandingReferrals: {},
+	currentRpBalance: {
+		"20230310Z": 0
+	},
+	historicRpChanges: [],
+	historicTierChanges: [],
+	historicPositionChanges: null,
+	totalRetiredAmount: 0,
+	invitations: 0
 };
 
-export const optionsProducts: HttpResponseIn<OptionsProduct[]> = {
-	result: [
-		{
-			uuid: "00000186c51111b5a3e818eae0ae9bd1",
-			contractId: "00000186c4c423521c1d41a0d03c501a",
-			strike: 7,
-			optionType: OptionType.Call,
-			enabled: true,
-			updatedAt: "2023-03-09T06:31:15.637Z",
-			vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
-			contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-			premiumPrice: 0.0005566631703711085,
-			expiry: "2026-12-12T12:00:00.000Z"
-		},
-		{
-			uuid: "00000186c510db6ba6e0a324a79792ab",
-			contractId: "00000186c4c423521c1d41a0d03c501a",
-			strike: 7,
-			optionType: OptionType.Put,
-			enabled: true,
-			updatedAt: "2023-03-09T06:31:01.739Z",
-			vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
-			contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-			premiumPrice: 5.800556663166686,
-			expiry: "2026-12-12T12:00:00.000Z"
-		}
-	],
-	error: null,
-	errorMessage: null
-};
+export const deployedOptionsContracts: OptionsContractRecord[] = [
+	{
+		uuid: "00000186c4c423521c1d41a0d03c501a",
+		btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
+		expiry: "2026-12-12T12:00:00.000Z",
+		contractAddress: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+		btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
+		expiryPrice: 0,
+		createdAt: "2023-03-09T05:07:13.874Z",
+		updatedAt: "2023-03-09T06:22:26.257Z",
+		deploymentStatus: DeploymentStatus.DEPLOYED
+	},
+	{
+		uuid: "00000186c4f23e19daf25a6e687f1246",
+		btOptionsVaultId: "00000186c4c39ce2b441bff1bc43bec3",
+		expiry: "2027-12-12T12:00:00.000Z",
+		contractAddress: "0x96bf2642d5ca9b0cbc6f15ad126d7084c09dba83",
+		btContractAddress: "0x8583f4f5be04d7d37200c9dc0a5f5ee7ef8fbe34",
+		expiryPrice: 0,
+		createdAt: "2023-03-09T05:57:35.385Z",
+		updatedAt: "2023-03-09T05:58:18.034Z",
+		deploymentStatus: DeploymentStatus.DEPLOYED
+	}
+];
 
-export const mockOrders: HttpResponseIn<OrderRecord[]> = {
-	result: [
-		{
-			uuid: "34",
-			status: OrderRecordStatus.PERFORMED,
-			txHash: "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
-			createdAt: "2023-03-10T11:09:45.645Z",
-			updatedAt: "2023-03-10T11:09:45.645Z",
-			btOptionId: "00000186c51111b5a3e818eae0ae9bd1",
-			quantity: 1,
-			signature:
-				"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
-			premium: 0.0005566631703711085,
-			ethAddr: WALLET_ADDRESS
-		}
-	],
-	error: null,
-	errorMessage: null
-};
+export const optionsProducts: OptionsProduct[] = [
+	{
+		uuid: "00000186c51111b5a3e818eae0ae9bd1",
+		contractId: "00000186c4c423521c1d41a0d03c501a",
+		strike: 7,
+		optionType: OptionType.Call,
+		enabled: true,
+		updatedAt: "2023-03-09T06:31:15.637Z",
+		vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+		contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+		premiumPrice: 0.0005566631703711085,
+		expiry: "2026-12-12T12:00:00.000Z"
+	},
+	{
+		uuid: "00000186c510db6ba6e0a324a79792ab",
+		contractId: "00000186c4c423521c1d41a0d03c501a",
+		strike: 7,
+		optionType: OptionType.Put,
+		enabled: true,
+		updatedAt: "2023-03-09T06:31:01.739Z",
+		vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+		contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+		premiumPrice: 5.800556663166686,
+		expiry: "2026-12-12T12:00:00.000Z"
+	}
+];
 
-export const mockPrepareOptionsOrder: HttpResponseIn<OrderRequest> = {
-	result: {
-		orderId: "1",
-		btOptionId: "00000186c510db6ba6e0a324a79792ab",
+export const mockOrders: OrderRecord[] = [
+	{
+		uuid: "34",
+		status: OrderRecordStatus.PERFORMED,
+		txHash: "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
+		createdAt: "2023-03-10T11:09:45.645Z",
+		updatedAt: "2023-03-10T11:09:45.645Z",
+		btOptionId: "00000186c51111b5a3e818eae0ae9bd1",
 		quantity: 1,
-		signature: null
-	},
-	error: null,
-	errorMessage: null
-};
-
-export const mockOptionsOrder: HttpResponseIn<OrderRecord> = {
-	result: {
-		uuid: "1",
-		status: OrderRecordStatus.REQUESTED,
-		txHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
-		createdAt: "2023-03-10T11:41:04.287Z",
-		updatedAt: "2023-03-10T11:41:04.287Z",
-		btOptionId: "00000186c510db6ba6e0a324a79792ab",
-		quantity: 0,
 		signature:
 			"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
-		premium: 0,
+		premium: 0.0005566631703711085,
 		ethAddr: WALLET_ADDRESS
-	},
-	error: null,
-	errorMessage: null
+	}
+];
+
+export const mockPrepareOptionsOrder: OrderRequest = {
+	orderId: "1",
+	btOptionId: "00000186c510db6ba6e0a324a79792ab",
+	quantity: 1,
+	signature: null
 };
 
-export const mockLoginRequest: HttpResponseIn<string> = {
-	result: "LOGIN_0x58e89583c13913a928662c1ac81988cac62df80b_1674797584045_-3941831526145628368",
-	error: null,
-	errorMessage: null
+export const mockOptionsOrder: OrderRecord = {
+	uuid: "1",
+	status: OrderRecordStatus.REQUESTED,
+	txHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
+	createdAt: "2023-03-10T11:41:04.287Z",
+	updatedAt: "2023-03-10T11:41:04.287Z",
+	btOptionId: "00000186c510db6ba6e0a324a79792ab",
+	quantity: 0,
+	signature:
+		"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
+	premium: 0,
+	ethAddr: WALLET_ADDRESS
 };
 
-export const mockClient: HttpResponseIn<Client> = {
-	result: {
-		uuid: "00000356c510db6ba6e0a324a79792ds",
-		inviterUuid: null,
-		invitationCode: "ZL6IY2",
-		profilePrecalc: JSON.stringify(userProfile.result),
-		wallets: [
-			{
-				ethAddr: WALLET_ADDRESS
-			}
-		]
-	},
-	error: null,
-	errorMessage: null
+export const mockLoginRequest = "LOGIN_0x58e89583c13913a928662c1ac81988cac62df80b_1674797584045_-3941831526145628368";
+
+export const mockClient: Client = {
+	uuid: "00000356c510db6ba6e0a324a79792ds",
+	inviterUuid: null,
+	invitationCode: "ZL6IY2",
+	profilePrecalc: JSON.stringify(userProfile),
+	wallets: [
+		{
+			ethAddr: WALLET_ADDRESS
+		}
+	]
 };
 
 const now = new Date().getTime();
 
-export const mockOffsetOrderStripe: HttpResponseIn<OffsetOrderStripe[]> = {
-	result: [
-		{
-			vccSpecRecord: {
-				id: 1,
-				spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
-				specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
-				source: TokenizationSource.VERRA,
-				projectId: "1748",
-				vintage: 2019,
-				description:
-					"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
-				imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
-				createdAt: "2023-03-16T12:35:06.747Z"
-			},
-			amount: 100000,
-			orderSum: 1000,
-			postAction: "RETIRE",
-			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
-			status: OrderRecordStatus.PERFORMED,
-			created: now,
-			updatedAt: now,
-			transferHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
-			retireHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98"
-		}
-	],
-	error: null,
-	errorMessage: null
-};
+export const mockOffsetOrderStripe: OffsetOrderStripe[] = [
+	{
+		vccSpecRecord: {
+			id: 1,
+			spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
+			specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+			source: TokenizationSource.VERRA,
+			projectId: "1748",
+			vintage: 2019,
+			description:
+				"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
+			imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+			createdAt: "2023-03-16T12:35:06.747Z"
+		},
+		amount: 100000,
+		orderSum: 1000,
+		postAction: "RETIRE",
+		ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+		status: OrderRecordStatus.PERFORMED,
+		created: now,
+		updatedAt: now,
+		transferHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
+		retireHash: "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98"
+	}
+];
 
-export const mockOffsetOrderNFT: HttpResponseIn<OffsetOrderNFT[]> = {
-	result: [
-		{
-			vccSpecRecord: {
-				id: 1,
-				spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
-				specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
-				source: TokenizationSource.VERRA,
-				projectId: "1748",
-				vintage: 2019,
-				description:
-					"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
-				imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
-				createdAt: "2023-03-16T12:35:06.747Z"
-			},
-			txHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
-			dt: 1679668669344,
-			ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
-			retiredAmount: 1.2,
-			reason: null,
-			transferee: null
-		}
-	],
-	error: null,
-	errorMessage: null
-};
+export const mockOffsetOrderNFT: OffsetOrderNFT[] = [
+	{
+		vccSpecRecord: {
+			id: 1,
+			spec: '{\n  "ccb_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "ccb_standard_edition" : "ccb third edition",\n  "ccb_status" : "verification_approved",\n  "ccb_validator" : "scs global services",\n  "country" : "cambodia",\n  "crt_ccb_biodiversity_gold" : true,\n  "crt_ccb_climate_gold" : true,\n  "latitude" : "11.540589",\n  "longitude" : "103.503275",\n  "project_id" : "1748",\n  "project_name" : "southern cardamom redd+ project",\n  "protocol_vm0009" : true,\n  "province" : "koh kong province",\n  "rating" : 2,\n  "region" : "asia",\n  "sdgs" : [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17 ],\n  "sdgs_bits" : 245630,\n  "sdgs_count" : 15,\n  "sdvista_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "sdvista_status" : "verification_approval_requested",\n  "sdvista_validator" : "aster global environmental solutions inc.",\n  "subtype_redd" : true,\n  "type_afolu" : true,\n  "vcc_source" : "verra",\n  "vcs_proponent_name" : "royal government of cambodia (rgc), ministry of environment",\n  "vcs_status" : "registered",\n  "vcs_validator" : "scs global services",\n  "vintage" : 2019\n}',
+			specHash: "5efb1efd47caed4558eb870b6f5fe5c3a4bea16b53ee4437854f580e2ac7b60e",
+			source: TokenizationSource.VERRA,
+			projectId: "1748",
+			vintage: 2019,
+			description:
+				"The Southern Cardamom REDD+ Project (SCRP) is an initiative designed to promote climate change mitigation and adaptation, maintain biodiversity and create alternative livelihoods under the United Nations scheme of Reducing Emissions from Deforestation and forest Degradation (REDD+). The 445,339 ha SCRP encompasses parts of Southern Cardamom National Park and Tatai Wildlife Sanctuary and will protect a critical part of the Cardamom Mountains Rainforest Ecoregion – one of the 200 most important locations for biodiversity conservation on the planet. The Project will directly support the livelihoods of 21 villages in nine communes around the perimeter of the project area.",
+			imageUrl: "ipfs://QmQmtWGefBfy2azmvpvciy12R78Y5DQLT4hX26oSWJ4Sfe",
+			createdAt: "2023-03-16T12:35:06.747Z"
+		},
+		txHash: "0xabb0f0c45b571585a16956681a88c61a9a1a9d8097a419f467cc3fd5605de3a2",
+		dt: 1679668669344,
+		ethAddr: "0x7a1dbec6f1203f89942766314be0f36fd4615704",
+		retiredAmount: 1.2,
+		reason: null,
+		transferee: null
+	}
+];
 
 export const mockOffsetOrders: Record<"commited" | "retired", OffsetOrder[]> = {
 	commited: [

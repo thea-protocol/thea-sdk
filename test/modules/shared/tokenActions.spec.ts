@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Wallet } from "@ethersproject/wallet";
-import { approve, checkBalance, TheaERC1155, TheaERC20, TheaError, TheaNetwork } from "../../../src";
+import { approve, checkBalance, permit, TheaERC1155, TheaERC20, TheaError, TheaNetwork } from "../../../src";
 import { PRIVATE_KEY, WALLET_ADDRESS } from "../../mocks";
 
 jest.mock("@ethersproject/wallet", () => {
@@ -17,7 +17,8 @@ jest.mock("../../../src/modules/shared/theaERC20", () => {
 	return {
 		TheaERC20: jest.fn().mockReturnValue({
 			approveERC20: jest.fn(),
-			checkERC20Balance: jest.fn()
+			checkERC20Balance: jest.fn(),
+			permit: jest.fn()
 		})
 	};
 });
@@ -32,12 +33,14 @@ jest.mock("../../../src/modules/shared/theaERC1155", () => {
 	return {
 		TheaERC1155: jest.fn().mockReturnValue({
 			approveERC1155: jest.fn(),
-			checkERC1155Balance: jest.fn()
+			checkERC1155Balance: jest.fn(),
+			permit: jest.fn()
 		})
 	};
 });
 describe("tokenActions", () => {
 	const signer = new Wallet(PRIVATE_KEY);
+	const owner = WALLET_ADDRESS;
 	const spender = WALLET_ADDRESS;
 	const theaERC20 = new TheaERC20(signer, "Vintage");
 	const network = TheaNetwork.GANACHE;
@@ -87,6 +90,40 @@ describe("tokenActions", () => {
 		it("should throw error if token type is not supported", async () => {
 			await expect(
 				approve(signer, network, {
+					token: "ERC721",
+					spender
+				} as any)
+			).rejects.toThrow(new TheaError({ type: "NOT_SUPPORED_TOKEN_TYPE", message: "Token type does not exist" }));
+		});
+
+		it("should permit ERC20 token", async () => {
+			const permitSpy = jest.spyOn(theaERC20, "permit");
+
+			await permit(signer, network, {
+				token: "ERC20",
+				spender,
+				amount,
+				tokenName: "CurrentNBT"
+			});
+
+			expect(getAddressSpy).toBeCalledTimes(1);
+			expect(permitSpy).toBeCalledWith(owner, spender, amount);
+		});
+
+		it("should permit ERC1155 token", async () => {
+			const permitERC1155Spy = jest.spyOn(theaERC1155, "permit");
+			await permit(signer, network, {
+				token: "ERC1155",
+				spender
+			});
+			expect(getAddressSpy).toBeCalledTimes(1);
+			expect(permitERC1155Spy).toHaveBeenCalledWith(WALLET_ADDRESS, spender);
+		});
+
+		/* eslint-disable  @typescript-eslint/no-explicit-any */
+		it("should throw error if token type is not supported", async () => {
+			await expect(
+				permit(signer, network, {
 					token: "ERC721",
 					spender
 				} as any)

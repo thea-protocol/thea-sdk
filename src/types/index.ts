@@ -526,6 +526,26 @@ export type SwapTransaction = {
 	amount: string;
 	type: "Income" | "Outcome";
 };
+export type EIP712Signature = {
+	v: number;
+	r: string;
+	s: string;
+	deadline: BigNumberish;
+};
+export type RelayerRequest = {
+	to: string;
+	data: string;
+};
+export type RelayerResponse = {
+	autotaskRunId: string;
+	autotaskId: string;
+	trigger: string;
+	status: string;
+	createdAt: string;
+	requestId: string;
+	encodedLogs: string;
+	result: string;
+};
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";

@@ -163,21 +163,17 @@ const tokenizationState = await theaSDK.tokenization.requestTokenization(
   )
 // Sample output
 {
-    "result": {
-        "uuid": "0000018631954fb292bd329c70fe6751", // tokenization ID
-        "createdAt": "2023-02-08T15:11:54.291Z",
-        "updatedAt": "2023-02-08T15:11:54.291Z",
-        "email": "john@test.com",
-        "fullName": "John",
-        "ethAddr": "0x123...",
-        "source": "verra",
-        "subaccountId": "43163",
-        "batchId": "11158-2891187991...",
-        "status": "IN_QUEUE",
-        ...
-    },
-    "error": null,
-    "errorMessage": null
+    "uuid": "0000018631954fb292bd329c70fe6751", // tokenization ID
+    "createdAt": "2023-02-08T15:11:54.291Z",
+    "updatedAt": "2023-02-08T15:11:54.291Z",
+    "email": "john@test.com",
+    "fullName": "John",
+    "ethAddr": "0x123...",
+    "source": "verra",
+    "subaccountId": "43163",
+    "batchId": "11158-2891187991...",
+    "status": "IN_QUEUE",
+    ...
 }
 ```
 
@@ -211,14 +207,7 @@ const transactionReceipt = await theaSDK.offset.offsetFungible(2017, "2000");
 - Get next offset event date - returns the next offset event date
 
 ```js
-const result = await theaSDK.offset.getNextOffsetEventDate();
-
-// Sample output
-{
-    "result": "2023-04-05T12:00:00Z";
-    "error": null;
-    "errorMessage": null;
-}
+const offsetDate = await theaSDK.offset.getNextOffsetEventDate();
 ```
 
 - Get offset order history - returns both commited and retired orders
@@ -746,8 +735,7 @@ const profile = await theaSDK.carbonInfo.getUsersProfile();
 
 // Sample output
 {
-    "result": {
-        "userID": "00000186c48bc47f1778c129a9bdb0a2",
+  "userID": "00000186c48bc47f1778c129a9bdb0a2",
 	"walletAddress": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a",
 	"uniqueReferralCode": "ZL6IY2",
 	"active": true,
@@ -767,9 +755,6 @@ const profile = await theaSDK.carbonInfo.getUsersProfile();
 	"historicPositionChanges": null,
 	"totalRetiredAmount": 0,
 	"invitations": 0
-    },
-    "error": null,
-    "errorMessage": null
 }
 ```
 
@@ -789,8 +774,7 @@ const order = theaSDK.options.createOrder("00000186c510db6ba6e0a324a79792ab", 1)
 
 // Sample output
 {
-    "result": {
-        "uuid": "1",
+  "uuid": "1",
 	"status": "REQUESTED",
 	"txHash": "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
 	"createdAt": "2023-03-10T11:41:04.287Z",
@@ -801,9 +785,6 @@ const order = theaSDK.options.createOrder("00000186c510db6ba6e0a324a79792ab", 1)
 	    "1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
 	"premium": 0.0005566631703711085,
 	"ethAddr": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
-    },
-    "error": null,
-    "errorMessage": null
 }
 ```
 
@@ -813,25 +794,21 @@ const order = theaSDK.options.createOrder("00000186c510db6ba6e0a324a79792ab", 1)
 const orders = theaSDK.options.getOrders();
 
 // Sample output
-{
-    "result": [
-        {
-	    "uuid": "34",
-	    "status": "PERFORMED",
-	    "txHash": "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
-	    "createdAt": "2023-03-10T11:09:45.645Z",
-	    "updatedAt": "2023-03-10T11:09:45.645Z",
-	    "btOptionId": "00000186c51111b5a3e818eae0ae9bd1",
-	    "quantity": 1,
-	    "signature":
-	        "1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
-	    "premium": 0.0005566631703711085,
-	    "ethAddr": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
-        }
-    ],
-    "error": null,
-    "errorMessage": null
-}
+[
+	{
+		uuid: "34",
+		status: "PERFORMED",
+		txHash: "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
+		createdAt: "2023-03-10T11:09:45.645Z",
+		updatedAt: "2023-03-10T11:09:45.645Z",
+		btOptionId: "00000186c51111b5a3e818eae0ae9bd1",
+		quantity: 1,
+		signature:
+			"1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
+		premium: 0.0005566631703711085,
+		ethAddr: "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
+	}
+];
 ```
 
 - Get current strike and premium - returns strike and premium for current options
@@ -882,7 +859,6 @@ const user = theaSDK.auth.login();
 
 // Sample output
 {
-	result: {
 		uuid: "00000356c510db6ba6e0a324a79792ds",
 		inviterUuid: null,
 		invitationCode: "ZL6IY2",
@@ -892,21 +868,11 @@ const user = theaSDK.auth.login();
 				ethAddr: "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
 			}
 		]
-	},
-	error: null,
-	errorMessage: null
 }
 ```
 
 - Logout - disconnect user from backend
 
 ```js
-const user = theaSDK.auth.logout();
-
-// Sample output
-{
-	result: "OK",
-	error: null,
-	errorMessage: null
-}
+theaSDK.auth.logout();
 ```

@@ -13,6 +13,10 @@ import * as utils from "../../src/utils/utils";
 import * as shared from "../../src/modules/shared";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import Registry_ABI from "../../src/abi/Registry_ABI.json";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Interface } from "@ethersproject/abi";
+
+consts[TheaNetwork.GANACHE].relayerUrl = "https://api.defender.openzeppelin.com/";
 
 jest.mock("@ethersproject/contracts", () => {
 	return {
@@ -46,6 +50,7 @@ jest.mock("../../src/modules/shared", () => {
 		...jest.requireActual("../../src/modules/shared"),
 		checkBalance: jest.fn(),
 		approve: jest.fn(),
+		permit: jest.fn(),
 		execute: jest.fn().mockImplementation(() => {
 			return {
 				to: "0x88449Dd0a1b75BC607A1E971b13930617D535EC1",
@@ -61,6 +66,13 @@ jest.mock("../../src/modules/shared", () => {
 				requestId: "1"
 			};
 		}),
+		relay: jest.fn().mockImplementation(() => {
+			return {
+				to: "0x686AfD6e502A81D2e77f2e038A23C0dEf4949A20",
+				from: "0x123",
+				contractAddress: "0x686AfD6e502A81D2e77f2e038A23C0dEf4949A20"
+			};
+		}),
 		TheaERC20: jest.fn().mockImplementation(() => {
 			return {
 				checkERC20Balance: jest.fn(),
@@ -70,6 +82,17 @@ jest.mock("../../src/modules/shared", () => {
 	};
 });
 
+jest.mock("../../src/utils/utils", () => {
+	return {
+		__esModule: true,
+		...jest.requireActual("../../src/utils/utils"),
+		getBalance: jest
+			.fn()
+			.mockImplementationOnce(() => BigNumber.from("10000000000000000"))
+			.mockImplementationOnce(() => BigNumber.from(0)),
+		getAddress: jest.fn().mockImplementation(() => WALLET_ADDRESS)
+	};
+});
 describe("Offset", () => {
 	const signer = new Wallet(PRIVATE_KEY, new JsonRpcProvider());
 	const network = TheaNetwork.GANACHE;
@@ -88,9 +111,14 @@ describe("Offset", () => {
 	const vintage = 2017;
 	let offSet: Offset;
 
+	const iface = new Interface(Registry_ABI.abi);
+	iface.encodeFunctionData = jest.fn();
+
 	const mockContract: Partial<IRegistryContract> = {
 		retire: jest.fn().mockReturnValue(txPromise),
-		requestRetireFungible: jest.fn().mockReturnValue(contractTransaction as ContractTransaction)
+		requestRetireFungible: jest.fn().mockReturnValue(contractTransaction as ContractTransaction),
+		sigNonces: jest.fn().mockResolvedValue(0),
+		interface: iface
 	};
 
 	beforeEach(() => {
@@ -119,6 +147,30 @@ describe("Offset", () => {
 				name: Registry_ABI.contractName,
 				address: contractAddress,
 				contractFunction: "retire"
+			});
+		});
+
+		it("should relay transaction on insufficient gas", async () => {
+			const relaySpy = jest.spyOn(shared, "relay");
+			const checkBalanceSpy = jest.spyOn(shared, "checkBalance").mockReturnThis();
+			const permitSpy = jest.spyOn(shared, "permit");
+
+			const result = await offSet.offsetNFT(tokenId, amount);
+
+			expect(checkBalanceSpy).toHaveBeenCalledWith(signer, network, {
+				token: "ERC1155",
+				tokenId,
+				amount
+			});
+			expect(permitSpy).toHaveBeenCalledWith(signer, network, {
+				token: "ERC1155",
+				spender: contractAddress
+			});
+			expect(relaySpy).toHaveBeenCalled();
+			expect(result).toMatchObject({
+				to: contractAddress,
+				from: "0x123",
+				contractAddress: contractAddress
 			});
 		});
 	});

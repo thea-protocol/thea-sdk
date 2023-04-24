@@ -5,6 +5,7 @@ import * as utils from "../../../src/utils/utils";
 import * as shared from "../../../src/modules/shared";
 import { ContractReceipt, ContractTransaction } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 const theaERC1155ContractAddress = consts[TheaNetwork.GANACHE].theaERC1155Contract;
 jest.mock("../../../src/modules/shared/execute", () => {
@@ -26,9 +27,13 @@ describe("TheaERC1155", () => {
 	const spender = WALLET_ADDRESS;
 	const tokenId = "1";
 	const mockContract: Partial<IERC1155Contract> = {
+		name: jest.fn().mockResolvedValue("theaErc1155"),
 		isApprovedForAll: jest.fn(),
 		setApprovalForAll: jest.fn(),
-		balanceOf: jest.fn()
+		balanceOf: jest.fn(),
+		permit: jest.fn(),
+		provider: new JsonRpcProvider(),
+		sigNonces: jest.fn().mockResolvedValue(0)
 	};
 
 	const contractReceipt: Partial<ContractReceipt> = {
@@ -77,6 +82,20 @@ describe("TheaERC1155", () => {
 		expect(setApprovalForAllSpy).toHaveBeenCalledWith(spender, true);
 		expect(validateAddressSpy).toHaveBeenCalledTimes(1);
 		expect(executeSpy).toHaveBeenCalledWith(txPromise, details);
+	});
+
+	it("should set approval through permit", async () => {
+		const nonceSpy = jest.spyOn(mockContract, "sigNonces");
+
+		const signature = await theaERC1155.permit(owner, spender);
+
+		expect(signature).toHaveProperty("v");
+		expect(signature).toHaveProperty("r");
+		expect(signature).toHaveProperty("s");
+		expect(signature).toHaveProperty("deadline");
+
+		expect(nonceSpy).toBeCalledWith(owner);
+		expect(validateAddressSpy).toHaveBeenCalledTimes(2);
 	});
 
 	describe("approveERC1155", () => {

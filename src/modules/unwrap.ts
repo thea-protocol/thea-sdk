@@ -1,14 +1,35 @@
-import { ProviderOrSigner, IRegistryContract, UnwrapTokenState, RequestId, TheaNetwork } from "../types";
-import { consts, ContractWrapper, Events, signerRequired, TheaError, tokenAmountShouldBeTon } from "../utils";
+import {
+	ProviderOrSigner,
+	IRegistryContract,
+	UnwrapTokenState,
+	RequestId,
+	TheaNetwork,
+	RelayerRequest,
+	EIP712Signature
+} from "../types";
+import {
+	consts,
+	ContractWrapper,
+	Events,
+	getAddress,
+	getBalance,
+	parseRawSignature,
+	signerRequired,
+	TheaError,
+	tokenAmountShouldBeTon
+} from "../utils";
 import Registry_ABI from "../abi/Registry_ABI.json";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { ContractReceipt, Event } from "@ethersproject/contracts";
-import { approve, checkBalance, executeWithResponse } from "./shared";
-import { Signer } from "@ethersproject/abstract-signer";
+import { approve, checkBalance, executeWithResponse, HttpClient, permit, relayWithResponse } from "./shared";
+import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
+import { Log } from "@ethersproject/providers";
 
 export class Unwrap extends ContractWrapper<IRegistryContract> {
+	readonly httpClient: HttpClient;
 	constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		super(providerOrSigner, Registry_ABI, consts[`${network}`].registryContract);
+		this.httpClient = new HttpClient(consts[`${network}`].relayerUrl, false);
 	}
 
 	/**
@@ -29,19 +50,37 @@ export class Unwrap extends ContractWrapper<IRegistryContract> {
 
 		await checkBalance(this.providerOrSigner as Signer, this.network, { token: "ERC1155", tokenId, amount });
 
-		await approve(this.providerOrSigner as Signer, this.network, {
-			token: "ERC1155",
-			spender: this.contractDetails.address
-		});
+		const balance = await getBalance(this.providerOrSigner as Signer);
 
-		return executeWithResponse<RequestId>(
-			this.contract.unwrap(tokenId, amount, offchainAccount),
-			{
-				...this.contractDetails,
-				contractFunction: "unwrap"
-			},
-			this.extractRequestIdFromEvent
-		);
+		const canSendTx = balance.gt(1e15);
+		if (!canSendTx && consts[`${this.network}`].relayerUrl.length !== 0) {
+			const request = await this.prepareRequest(tokenId, amount, offchainAccount);
+
+			return relayWithResponse<RequestId>(
+				this.httpClient,
+				this.contract.provider,
+				request,
+				{
+					...this.contractDetails,
+					contractFunction: "unwrapWithSig"
+				},
+				this.extractRequestIdFromLog
+			);
+		} else {
+			await approve(this.providerOrSigner as Signer, this.network, {
+				token: "ERC1155",
+				spender: this.contractDetails.address
+			});
+
+			return executeWithResponse<RequestId>(
+				this.contract.unwrap(tokenId, amount, offchainAccount),
+				{
+					...this.contractDetails,
+					contractFunction: "unwrap"
+				},
+				this.extractRequestIdFromEvent
+			);
+		}
 	}
 
 	/**
@@ -87,5 +126,87 @@ export class Unwrap extends ContractWrapper<IRegistryContract> {
 		}
 
 		return response;
+	}
+
+	extractRequestIdFromLog(logs?: Log[]): RequestId {
+		const logDesc = logs
+			?.filter((log) => log.address === this.contractDetails.address)
+			.map((log) => this.contract.interface.parseLog(log));
+		const response: RequestId = { requestId: undefined };
+		if (logDesc) {
+			const log = logDesc.find((log) => log.name === Events.unwrap);
+			if (log) response.requestId = log.args.requestId.toString();
+		}
+
+		return response;
+	}
+
+	private async prepareRequest(
+		id: BigNumberish,
+		amount: BigNumberish,
+		offchainAccount: string
+	): Promise<RelayerRequest> {
+		const owner = await getAddress(this.providerOrSigner as Signer);
+
+		const vccSig = await permit(this.providerOrSigner as Signer, this.network, {
+			token: "ERC1155",
+			spender: this.contractDetails.address
+		});
+
+		const unwrapSig = await this.unwrapWithSig(id, amount, offchainAccount, owner);
+
+		const encodedData = this.contract.interface.encodeFunctionData("unwrapWithSig", [
+			id,
+			amount,
+			offchainAccount,
+			owner,
+			unwrapSig,
+			vccSig
+		]);
+
+		return { to: this.contractDetails.address, data: encodedData };
+	}
+
+	private async unwrapWithSig(
+		id: BigNumberish,
+		amount: BigNumberish,
+		offchainAccount: string,
+		owner: string
+	): Promise<EIP712Signature> {
+		const domain = {
+			name: "TheaRegistry",
+			version: "1",
+			chainId: this.network,
+			verifyingContract: this.contractDetails.address
+		};
+
+		const types = {
+			UnwrapWithSig: [
+				{ name: "id", type: "uint256" },
+				{ name: "amount", type: "uint256" },
+				{ name: "offchainAccount", type: "string" },
+				{ name: "owner", type: "address" },
+				{ name: "nonce", type: "uint256" },
+				{ name: "deadline", type: "uint256" }
+			]
+		};
+
+		const nonce = await this.contract.sigNonces(owner);
+		const deadline = Math.floor(Date.now() / 1000) + 20 * 60;
+
+		const value = {
+			id,
+			amount,
+			offchainAccount,
+			owner,
+			nonce,
+			deadline
+		};
+
+		const rawSignature = await (this.providerOrSigner as TypedDataSigner)._signTypedData(domain, types, value);
+
+		const ecSignature = parseRawSignature(rawSignature);
+
+		return { ...ecSignature, deadline };
 	}
 }
