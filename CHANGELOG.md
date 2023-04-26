@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/thea-protocol/thea-sdk/compare/v3.1.1...v3.1.2) (2023-04-26)
+
+
+### Bug Fixes
+
+* getCurrentStrikeAndPremium return type ([08f3afe](https://github.com/thea-protocol/thea-sdk/commit/08f3afe96f56d040e31f63e37d7b147ef91e9abe))
+
 ## [3.1.1](https://github.com/thea-protocol/thea-sdk/compare/v3.1.0...v3.1.1) (2023-04-24)
 
 
