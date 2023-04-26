@@ -102,7 +102,7 @@ export class Options {
 	 * Returns current options strike and premium
 	 * @returns OptionsProduct @see OptionsProduct
 	 */
-	async getCurrentStrikeAndPremium(): Promise<[OptionsProduct | undefined, OptionsProduct | undefined]> {
+	async getCurrentStrikeAndPremium(): Promise<OptionsProduct[]> {
 		return this.httpClient
 			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
 			.then((response) =>
@@ -114,7 +114,10 @@ export class Options {
 				const callOption = activeProducts.find((option) => option.optionType === OptionType.Call);
 				const putOption = activeProducts.find((option) => option.optionType === OptionType.Put);
 
-				return [callOption, putOption];
+				const products = [];
+				if (callOption) products.push(callOption);
+				if (putOption) products.push(putOption);
+				return products;
 			});
 	}
 
