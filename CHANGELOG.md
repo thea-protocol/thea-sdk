@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.3](https://github.com/thea-protocol/thea-sdk/compare/v3.1.2...v3.1.3) (2023-05-22)
+
+
+### Bug Fixes
+
+* choose strike closest to spot ([2f5451d](https://github.com/thea-protocol/thea-sdk/commit/2f5451d7d23c940b0ea19716053d3ded69c536cc))
+
 ## [3.1.2](https://github.com/thea-protocol/thea-sdk/compare/v3.1.1...v3.1.2) (2023-04-26)
 
 
