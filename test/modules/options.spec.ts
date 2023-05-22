@@ -65,6 +65,16 @@ jest.mock("../../src/modules/shared", () => {
 	};
 });
 
+jest.mock("../../src/modules/fungibleTrading/quoter", () => {
+	return {
+		Quoter: jest.fn().mockImplementation(() => {
+			return {
+				quoteBestPrice: jest.fn().mockResolvedValue(BigNumber.from(200))
+			};
+		})
+	};
+});
+
 describe("Options", () => {
 	const signer = new Wallet(PRIVATE_KEY, new JsonRpcProvider());
 	const network = TheaNetwork.GANACHE;

@@ -1,6 +1,6 @@
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Contract, ContractReceipt } from "@ethersproject/contracts";
-import { parseFixed } from "@ethersproject/bignumber";
+import { formatFixed, parseFixed } from "@ethersproject/bignumber";
 import {
 	OrderRecord,
 	OrderCreateRequest,
@@ -12,17 +12,28 @@ import {
 	HttpResponseIn,
 	OptionType
 } from "../types";
-import { amountShouldBeGTZero, consts, getAddress, signerRequired, TheaError, typedDataSignerRequired } from "../utils";
+import {
+	amountShouldBeGTZero,
+	consts,
+	getAddress,
+	getERC20ContractAddress,
+	signerRequired,
+	TheaError,
+	typedDataSignerRequired
+} from "../utils";
 import { execute, HttpClient, TheaERC20 } from "./shared";
 import TheaOptions_ABI from "../abi/TheaOptions_ABI.json";
 import TheaOptionsVault_ABI from "../abi/TheaOptionsVault_ABI.json";
+import { Quoter } from "./fungibleTrading";
 
 export class Options {
+	readonly quoter: Quoter;
 	readonly httpClient: HttpClient;
 	readonly network: TheaNetwork;
 	readonly signer: ProviderOrSigner;
 
 	constructor(signer: ProviderOrSigner, network: TheaNetwork) {
+		this.quoter = new Quoter(signer, network);
 		this.httpClient = new HttpClient(consts[`${network}`].theaApiBaseUrl);
 		this.network = network;
 		this.signer = signer;
@@ -104,15 +115,21 @@ export class Options {
 	 */
 	async getCurrentStrikeAndPremium(): Promise<OptionsProduct[]> {
 		return this.httpClient
-			.post<Record<string, never>, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {})
-			.then((response) =>
-				response.result
-					.filter(({ enabled, expiry }) => enabled && Date.parse(expiry) > Date.now())
-					.sort((a, b) => Date.parse(a.expiry) - Date.parse(b.expiry))
-			)
-			.then((activeProducts) => {
-				const callOption = activeProducts.find((option) => option.optionType === OptionType.Call);
-				const putOption = activeProducts.find((option) => option.optionType === OptionType.Put);
+			.post<{ dtFrom: string }, HttpResponseIn<OptionsProduct[]>>("/bt_options/list", {
+				dtFrom: new Date().toISOString()
+			})
+			.then((response) => response.result.filter(({ enabled }) => enabled).sort((a, b) => a.strike - b.strike))
+			.then(async (activeProducts) => {
+				const { tokenIn, tokenOut } = this.getTokenInAndOutAddress();
+				const spot = await this.quoter.quoteBestPrice(tokenIn, tokenOut, 1e4);
+				const callOption = this.closestStrike(
+					parseFloat(formatFixed(spot, 6)),
+					activeProducts.filter((option) => option.optionType === OptionType.Call)
+				);
+				const putOption = this.closestStrike(
+					parseFloat(formatFixed(spot, 6)),
+					activeProducts.filter((option) => option.optionType === OptionType.Put)
+				);
 
 				const products = [];
 				if (callOption) products.push(callOption);
@@ -182,5 +199,35 @@ export class Options {
 		const rawSignatureFromEoaWallet = await signer._signTypedData(domain, types, value);
 
 		return rawSignatureFromEoaWallet;
+	}
+
+	private closestStrike(target: number, products: OptionsProduct[]): OptionsProduct {
+		let closestProduct = products[0];
+		let closestDifference = Math.abs(target - closestProduct.strike);
+
+		products.forEach((product) => {
+			const currentDifference = Math.abs(target - product.strike);
+
+			if (currentDifference < closestDifference) {
+				closestProduct = product;
+				closestDifference = currentDifference;
+			}
+		});
+
+		return closestProduct;
+	}
+
+	/**
+	 * Determines tokenIn and tokenOut address for querying current NBT price.
+	 * @returns tokenIn and tokenOut address
+	 */
+	private getTokenInAndOutAddress(): {
+		tokenIn: string;
+		tokenOut: string;
+	} {
+		const stableTokenAddress = consts[`${this.network}`].stableTokenContract;
+		const tokenInAddress = getERC20ContractAddress("CurrentNBT", this.network);
+		const tokenOutAddress = stableTokenAddress;
+		return { tokenIn: tokenInAddress, tokenOut: tokenOutAddress };
 	}
 }
