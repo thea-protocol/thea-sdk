@@ -94,8 +94,7 @@ export class FungibleTrading {
 			recipient,
 			deadline,
 			amountIn: options.amountIn,
-			amountOutMinimum,
-			sqrtPriceLimitX96: 0
+			amountOutMinimum
 		};
 
 		return this.swapRouter.swap(swapParams, options.tokenIn);

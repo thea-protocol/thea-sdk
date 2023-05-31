@@ -39,11 +39,6 @@
 							"internalType": "uint256",
 							"name": "amountOutMinimum",
 							"type": "uint256"
-						},
-						{
-							"internalType": "uint160",
-							"name": "sqrtPriceLimitX96",
-							"type": "uint160"
 						}
 					],
 					"internalType": "struct ISwapRouter.ExactInputSingleParams",

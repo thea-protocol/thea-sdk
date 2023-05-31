@@ -100,8 +100,8 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 		baseTokenManagerContract: "0x0aA2d82e03Bc4fd092ba0dd105119Ec46aED2f76",
 		baseTokenManagerDeployerContract: "0xd741ea92ada5cc18bfde2c27ad64dc48860a4f15",
 		stableTokenContract: "0x1D6DBfb520ee332bc14e800A832389F731820787",
-		quoterContract: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
-		swapRouterContract: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+		quoterContract: "0x0212e50da5443A87aE156F6C4002E38333139A13",
+		swapRouterContract: "0x0212e50da5443A87aE156F6C4002E38333139A13",
 		theaApiBaseUrl: "https://client.dev.thea.earth/cli",
 		exchangeProxyAddress: "0x4fb72262344034e034fce3d9c701fd9213a55260",
 		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.1.2"

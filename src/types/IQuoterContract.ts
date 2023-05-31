@@ -7,8 +7,7 @@ export interface IQuoterContract extends Contract {
 			tokenIn: string,
 			tokenOut: string,
 			fee: BigNumberish,
-			amountIn: BigNumberish,
-			sqrtPriceLimitX96: BigNumberish
+			amountIn: BigNumberish
 		): Promise<BigNumber>;
 	};
 }

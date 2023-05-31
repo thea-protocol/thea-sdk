@@ -39,7 +39,6 @@ export type ExactInputSingleParams = {
 	deadline: BigNumberish;
 	amountIn: BigNumberish;
 	amountOutMinimum: BigNumberish;
-	sqrtPriceLimitX96: BigNumberish;
 };
 
 export type FungibleERC20Options = {
