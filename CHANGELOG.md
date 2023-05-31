@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/thea-protocol/thea-sdk/compare/v3.1.3...v3.2.0) (2023-05-31)
+
+
+### Features
+
+* use thea exchange ([8d61d0c](https://github.com/thea-protocol/thea-sdk/commit/8d61d0c17168ae1b279355f7cfd6dab2bf6040d6))
+
 ## [3.1.3](https://github.com/thea-protocol/thea-sdk/compare/v3.1.2...v3.1.3) (2023-05-22)
 
 
