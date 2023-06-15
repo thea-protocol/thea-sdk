@@ -33,7 +33,15 @@ import { SwapRouter } from "./swapRouter";
 export const swapsQuery = (recipient: string, token0: string, token1: string) => ({
 	query: `
 			query ($recipient: String!, $token0: String!, $token1: String!){
-        swaps(where: {recipient: $recipient, token0: $token0, token1: $token1}) {
+        uniswap: swaps(where: {recipient: $recipient, token0: $token0, token1: $token1}) {
+          amount0
+          amount1
+          recipient {
+            id
+          }
+          timestamp
+        }
+        theaExchange: swaps(where: {recipient: $recipient, token0: $token1, token1: $token0}) {
           amount0
           amount1
           recipient {
@@ -120,15 +128,15 @@ export class FungibleTrading {
 	async transactionHistory(walletAddress: string): Promise<SwapTransaction[]> {
 		const currentNBT = getERC20ContractAddress("CurrentNBT", this.network).toLowerCase();
 		const stable = getERC20ContractAddress("Stable", this.network).toLowerCase();
-		const response = await this.httpClient.post<GraphqlQuery, QueryResponse<{ swaps: Swap[] }> | QueryErrorResponse>(
-			"",
-			swapsQuery(walletAddress, stable, currentNBT)
-		);
+		const response = await this.httpClient.post<
+			GraphqlQuery,
+			QueryResponse<{ uniswap: Swap[]; theaExchange: Swap[] }> | QueryErrorResponse
+		>("", swapsQuery(walletAddress.toLowerCase(), stable, currentNBT));
 
 		if ("errors" in response)
 			throw new TheaSubgraphError(`Subgraph call error when trying to query swaps`, response.errors as QueryError[]);
 
-		const swaps = response.data.swaps;
+		const swaps = [...response.data.uniswap, ...response.data.theaExchange];
 
 		const history = this.getTransactionHistory(swaps);
 		return history;

@@ -588,6 +588,7 @@ const transactionReceipt = await theaSDK.nftOrderbook.fillOrder(order, amount);
 ## Carbon informations
 
 - Estimate footprint - estimates footprint and returns summary and details about co2 emission for each year per country
+  year of birth and country are required to estimate footprint. Optionally details about family members and village adoption can also be provided
 
 ```js
 const footprint = theaSDK.carbonInfo.estimateFootprint(1996, [
@@ -603,7 +604,27 @@ const footprint = theaSDK.carbonInfo.estimateFootprint(1996, [
       isoCode: "GBR",
       year: null,
     },
-  ]);
+  ],
+  {
+    familyMembers: [
+      {
+        yearOfBirth: 2008,
+        query: {
+          {
+            isoCode: "USA",
+            year: null,
+          },
+        }
+      }
+    ],
+    villages: [
+      {
+        villageId: 1,
+        adoptionYears: 2
+      }
+    ]
+  }
+  );
 
 // Sample output
 {
@@ -645,11 +666,195 @@ const footprint = theaSDK.carbonInfo.estimateFootprint(1996, [
             "isoCode": "USA"
         }
         ...
-    ]
+    ],
+    "bespokeAddOns": {
+      "familyMembers": [10.43543],
+      "villages": [
+        {
+          "id": 1,
+          "name": "Sto. Bosa (La Trinidad)",
+          "population": 137404,
+          "description":
+            "Offset estimated forward carbon footprint of an energy poor community. Enable a typical village in the Philippines to embark on a brighter future.",
+          "image": urlToImage,
+          "footprint": 45643.4543
+        }
+      ],
+      "total": 45653.88973
+    }
 }
 
 // Get list of all country codes
 const countries = theaSDK.carbonInfo.countries()
+```
+
+- Estimate Advance footprint - gives a granular estimate of Carbon Footprint based on historical lifestyle choices using a variety of data inputs, such as energy usage, transportation choices, food consumption, and waste management practices.
+
+```js
+const footprint = theaSDK.carbonInfo.estimateAdvancedFootprint(
+  {
+    "house": {
+        "people": {
+            "amount": 10,
+            "unit": "count"
+        },
+        "coal": {
+            "amount": 450,
+            "unit": "kWh"
+        },
+        "electricity": {
+            "amount": 5460,
+            "unit": "kWh"
+        },
+        "heatingOil": {
+            "amount": 5637,
+            "unit": "kWh"
+        },
+        "lpg": {
+            "amount": 4560,
+            "unit": "kWh"
+        },
+        "naturalGas": {
+            "amount": 4560,
+            "unit": "kWh"
+        },
+        "propane": {
+            "amount": 450,
+            "unit": "litres"
+        },
+        "woodenPellets": {
+            "amount": 8757,
+            "unit": "metric tons"
+        }
+    },
+    "flights": [
+        {
+            "isReturn": false,
+            "from": "LIS",
+            "to": "RAI",
+            "includeRad": false,
+            "trips": 48,
+            "travelClass": "Economy class"
+        }
+    ],
+    "cars": [
+        {
+            "carType": "Car",
+            "subType": "Petrol Hybrid Car",
+            "model": "Medium petrol hybrid car",
+            "amount": 560,
+            "isMiles": false
+        }
+    ],
+    "motorbikes": [
+        {
+            "type": "> 500cc",
+            "amount": 560,
+            "isMiles": false
+        }
+    ],
+    "bus": {
+        "consumption": {
+            "bus": 6450,
+            "coach": 6450,
+            "localOrCommuterTrain": 640,
+            "longDistanceTrain": 6450,
+            "tram": 6450,
+            "subway": 6450,
+            "taxi": 240
+        },
+        "isMiles": false
+    },
+    "secondary": {
+        "currency": "USD",
+        "duration": "per year",
+        "dietStyle": "Heavy meat eater",
+        "consumption": {
+            "food": "670",
+            "pharma": "640",
+            "clothes": "7560",
+            "paperBased": "4668",
+            "it": "6760",
+            "tv": "540",
+            "motorVehicles": "6780",
+            "furniture": "3240",
+            "hotels": "76",
+            "phone": "350",
+            "finance": "867",
+            "insurance": "670",
+            "education": "350",
+            "recreational": "860"
+        }
+    },
+    "bespokeAddOns": {
+        "villages": [
+            {
+                "villageId": 1,
+                "adoptionYears": 2
+            }
+        ],
+        "familyMembers": []
+    }
+  }
+);
+
+// Sample output
+{
+    "advanceFootprint": 168857.38945135658,
+    "summary": {
+        "house": 448.9029499199999,
+        "flights": 10.71813514178153,
+        "cars": 0.061594399999999994,
+        "motorbikes": 0.07417199999999999,
+        "bus": 2.0112689,
+        "secondary": 14503.141330994777,
+        "bespokeAddOns": {
+            "villages": [
+                {
+                    "id": 1,
+                    "name": "Sto. Bosa (La Trinidad)",
+                    "population": 137404,
+                    "description": "Offset estimated forward carbon footprint of an energy poor community. Enable a typical village in the Philippines to embark on a brighter future.",
+                    "image": "",
+                    "footprint": 153892.48
+                }
+            ],
+            "total": 153892.48
+        }
+    }
+}
+
+// Constants for advance calculator input options
+
+// Get list of all country codes
+const countries = theaSDK.carbonInfo.countries()
+
+// Get list of flight class options
+import { classEmissionFactorOptions } from "@thea-protocol/sdk";
+
+// Get list of bike type options
+import { bikeTypeOptions } from "@thea-protocol/sdk";
+
+// Get bike emission unit options
+import { emissionFactorOptions } from "@thea-protocol/sdk";
+
+// Get secondary consumption duration options
+import { durationFactorOptions } from "@thea-protocol/sdk";
+
+// Get secondary consumption currency options
+import { currencyFactorOptions } from "@thea-protocol/sdk";
+
+// Get diet style options
+import { dietStyleOptions } from "@thea-protocol/sdk";
+
+// Get list of available bespoke add-ons
+import { bespokeAddOns } from "@thea-protocol/sdk";
+
+// Get list of available household factors and units
+import { householdEmissionFactorOptions } from "@thea-protocol/sdk";
+
+// Get list of vehicle types, sub types and models
+import { carEfficiencyOptions } from "@thea-protocol/sdk";
 ```
 
 - Tokenization informations - returns history or stats informations about tokenization

@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { TheaNetwork } from "src/types";
+import { BespokeAddOn, CarEfficiency, HouseholdEmissionFactors, TheaNetwork } from "src/types";
+import { carEfficiency, householdEmissionFactors, villages } from "./datasets";
 
 export const RATE_VCC_TO_BT = 10;
 export const STABLE_TOKEN_DECIMALS_MULTIPLIER = 10 ** 18;
@@ -104,7 +105,7 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 		swapRouterContract: "0x0212e50da5443A87aE156F6C4002E38333139A13",
 		theaApiBaseUrl: "https://client.dev.thea.earth/cli",
 		exchangeProxyAddress: "0x4fb72262344034e034fce3d9c701fd9213a55260",
-		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.1.2"
+		subGraphUrl: "https://api.studio.thegraph.com/query/43315/thea-subgraph/v0.1.4"
 	},
 	[TheaNetwork.POLYGON]: {
 		networkName: "POLYGON",
@@ -358,3 +359,77 @@ export type ISO_CODES =
 	| "YEM"
 	| "ZMB"
 	| "ZWE";
+
+export const classEmissionFactorOptions = [
+	"Economy class",
+	"Premium economy",
+	"Business class",
+	"First class",
+	"Average (unknown class)"
+] as const;
+
+export const bikeTypeOptions = ["<= 125cc", "> 125cc and <= 500cc", "> 500cc"] as const;
+
+export const emissionFactorOptions = ["g/km", "L/100km", "mpg(UK)", "mpg(US)"] as const;
+
+export const durationFactorOptions = ["per year", "per month", "per week"] as const;
+
+export const currencyFactorOptions = ["GBP", "EUR", "USD", "CAD", "AUD", "NZD", "ZAR", "CNY", "HKD", "INR"] as const;
+
+export const dietStyleOptions = [
+	"Heavy meat eater",
+	"Medium meat eater",
+	"Low meat eater",
+	"Pescatarian",
+	"Vegetarian",
+	"Vegan"
+] as const;
+
+export const bespokeAddOns: BespokeAddOn[] = [
+	{
+		title: "Offset Estimated Forward Carbon Footprint of an energy-poor Community",
+		description:
+			"Offset Estimated Forward Carbon Footprint of an energy-poor Community. For the foreseeable future, fossil fuels may still constitute the pathway for energy poor communities to graduate towards a more prosperous future. Enable a community of your choice to embark on a brighter future.",
+		image: "",
+		disabledOnAdv: false,
+		options: villages
+	},
+	{
+		title: "Offset Basic Carbon Footprint of Family & Friends",
+		description:
+			"Climate Positive Action, made easy for your family & friends. Offset the estimated average lifetime Carbon Footprint of important people in your life.",
+		image: "",
+		disabledOnAdv: true
+	}
+];
+
+export const householdEmissionFactorOptions: {
+	[category in keyof HouseholdEmissionFactors]: string[];
+} = Object.entries(householdEmissionFactors).reduce(
+	(acc, [category, factors]) => ({ ...acc, [category]: Object.keys(factors) }),
+	{} as { [category in keyof HouseholdEmissionFactors]: string[] }
+);
+
+export const carEfficiencyOptions: {
+	[type in keyof CarEfficiency]: {
+		[subType in keyof CarEfficiency[type]]: string[];
+	};
+} = Object.entries(carEfficiency).reduce(
+	(acc, [category, categoryValues]) => ({
+		...acc,
+		[category]: Object.entries(
+			categoryValues as {
+				[subType: string]: {
+					[model: string]: {
+						"average value": number;
+					};
+				};
+			}
+		).reduce((subAcc, [car, carValues]) => ({ ...subAcc, [car]: Object.keys(carValues) }), {})
+	}),
+	{} as {
+		[type in keyof CarEfficiency]: {
+			[subType in keyof CarEfficiency[type]]: string[];
+		};
+	}
+);

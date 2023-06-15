@@ -685,7 +685,7 @@ export const mockOffsetOrders: Record<"commited" | "retired", OffsetOrder[]> = {
 	]
 };
 
-export const swaps: Swap[] = [
+export const uniswapSwaps: Swap[] = [
 	{
 		amount0: "-5.974908",
 		amount1: "1",
@@ -717,7 +717,10 @@ export const swaps: Swap[] = [
 			id: WALLET_ADDRESS
 		},
 		timestamp: "1679749787"
-	},
+	}
+];
+
+export const theaExchangeSwaps: Swap[] = [
 	{
 		amount0: "5.974745",
 		amount1: "-0.994",

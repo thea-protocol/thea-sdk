@@ -49,8 +49,7 @@ describe("Swap Router", () => {
 			recipient: WALLET_ADDRESS,
 			deadline: 1620000000,
 			amountIn: "1000000000000000000",
-			amountOutMinimum: "1000000000000000000",
-			sqrtPriceLimitX96: 0
+			amountOutMinimum: "1000000000000000000"
 		};
 	});
 

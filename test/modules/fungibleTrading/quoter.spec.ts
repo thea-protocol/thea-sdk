@@ -27,7 +27,7 @@ describe("Quoter", () => {
 			const quoteExactInputSingleSpy = jest.spyOn(quoter.contract.callStatic, "quoteExactInputSingle");
 			const result = await quoter.quoteBestPrice(tokenIn, tokenOut, amountIn);
 			expect(result.toString()).toBe(amountOut.toString());
-			expect(quoteExactInputSingleSpy).toBeCalledWith(tokenIn, tokenOut, POOL_FEE, amountIn, 0);
+			expect(quoteExactInputSingleSpy).toBeCalledWith(tokenIn, tokenOut, POOL_FEE, amountIn);
 		});
 
 		it("should fail if token contract address is invalid", async () => {

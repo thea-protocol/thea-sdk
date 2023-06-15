@@ -1,14 +1,24 @@
+/* eslint-disable security/detect-object-injection */
 import { consts, getERC20ContractAddress, ISO_CODES, TheaError, TheaSubgraphError } from "../utils";
 import co2dataset from "../co2dataset.json";
+import airportDataset from "../airportDataset.json";
 import {
+	AdvancedFootprint,
+	AirportDataSet,
+	BespokeAddOnDetails,
+	CarDetails,
 	ClientProfile,
 	Co2DataSet,
+	EnergyConsumptionDetails,
 	EstimatedFootprint,
+	FlightDetails,
 	FootprintDetail,
 	FootprintQuery,
 	FootprintSummary,
 	GraphqlQuery,
+	HouseholdEmissionFactors,
 	HttpResponseIn,
+	MotorbikeDetails,
 	OffsetHistory,
 	OffsetStats,
 	OptionsVaultBalance,
@@ -16,15 +26,32 @@ import {
 	QueryError,
 	QueryErrorResponse,
 	QueryResponse,
+	SecondaryConsumption,
+	SecondaryDetails,
 	TheaERC1155Balance,
 	TheaERC20Token,
 	TheaNetwork,
 	TokenInfoList,
 	TokenizationHistory,
 	TokenizationStats,
-	UserBalance
+	UserBalance,
+	Village
 } from "../types";
 import { HttpClient, TheaERC20 } from "./shared";
+import {
+	householdEmissionFactors,
+	busEmissionFactors,
+	classEmissionFactors,
+	RADIATIVE_FORCING_FACTOR,
+	carEfficiency,
+	bikeTypes,
+	emissionFactors,
+	durationFactors,
+	currencyFactors,
+	emissionFactors_DOLLAR,
+	villages,
+	ruralCommunityFootPrint
+} from "src/utils/datasets";
 
 export const tokenizationHistoryQuery: GraphqlQuery = {
 	query: `{
@@ -120,11 +147,13 @@ export const theaERC1155BalancesQuery = (owner: string) => ({
 /* eslint-disable  @typescript-eslint/no-non-null-assertion */
 export class CarbonInfo {
 	private dataSet: Co2DataSet;
+	private airportDataset: AirportDataSet[];
 	private lastYearInDataset: number;
 	readonly httpClient: HttpClient;
 	readonly apiClient: HttpClient;
 	constructor(readonly providerOrSigner: ProviderOrSigner, readonly network: TheaNetwork) {
 		this.dataSet = co2dataset as Co2DataSet;
+		this.airportDataset = airportDataset as AirportDataSet[];
 		this.lastYearInDataset = this.dataSet["USA"].data[this.dataSet["USA"].data.length - 1].year;
 		this.httpClient = new HttpClient(consts[`${network}`].subGraphUrl, false);
 		this.apiClient = new HttpClient(consts[`${network}`].theaApiBaseUrl);
@@ -320,22 +349,32 @@ export class CarbonInfo {
 	}
 
 	/**
-	 * Estimates foorprint based on co2 emission per capita using co2 emission dataset
+	 * Estimates footprint based on co2 emission per capita using co2 emission dataset
 	 * It accepts a ordered list (array) of countries and years.
 	 * @param yearOfBirth Year of birth of the person for which we are calculating co2 emission
 	 * @param query Array of countries and years
 	 * @param query.year Year of specified country to which we are calculating co2 emission. If null, it will use the last year in the dataset
 	 * @param query.isoCode ISO code of the country @see ISO_CODES
+	 * @param bespokeAddOns ISO code of the country @see BespokeAddOnDetails
 	 * @returns
 	 */
-	estimateFootprint(yearOfBirth: number, query: FootprintQuery[]): EstimatedFootprint {
-		if (query.length === 0) return { footprint: 0, summary: [], details: [] };
+	estimateFootprint(
+		yearOfBirth: number,
+		query: FootprintQuery[],
+		bespokeAddOns?: BespokeAddOnDetails
+	): EstimatedFootprint {
+		const estimate: EstimatedFootprint = {
+			footprint: 0,
+			summary: [],
+			details: [],
+			bespokeAddOns: { familyMembers: [], villages: [], total: 0 }
+		};
+		if (query.length === 0) return estimate;
 		this.validateYear(yearOfBirth);
 		this.validateFootprintQuery(yearOfBirth, query);
 
 		const summaries: FootprintSummary[] = [];
 		const details: FootprintDetail[] = [];
-		let footprint = 0;
 		for (let i = 0; i < query.length; i++) {
 			const isoCode = query[`${i}`].isoCode;
 			const to = query[`${i}`].year;
@@ -348,9 +387,104 @@ export class CarbonInfo {
 
 			summaries.push(summary as FootprintSummary);
 			details.push(...countryDetails);
-			footprint += summary.co2Emission;
+			estimate.footprint += summary.co2Emission;
 		}
-		return { footprint, summary: summaries, details };
+		estimate.summary = summaries;
+		estimate.details = details;
+		if (bespokeAddOns) {
+			bespokeAddOns?.villages?.forEach(({ villageId, adoptionYears }) => {
+				const { footprint: villageFootprint, village } = this.calculateVillageFootprint(villageId, adoptionYears);
+				estimate.bespokeAddOns.villages.push({ ...village, footprint: villageFootprint });
+				estimate.bespokeAddOns.total += villageFootprint;
+				estimate.footprint += villageFootprint;
+			});
+
+			bespokeAddOns?.familyMembers?.forEach(({ yearOfBirth, query }) => {
+				const familyFootprint = this.estimateFootprint(yearOfBirth, query).footprint;
+				estimate.bespokeAddOns.familyMembers.push(familyFootprint);
+				estimate.bespokeAddOns.total += familyFootprint;
+				estimate.footprint += familyFootprint;
+			});
+		}
+		return estimate;
+	}
+
+	estimateAdvancedFootprint({
+		house,
+		flights,
+		cars,
+		motorbikes,
+		bus,
+		secondary,
+		bespokeAddOns
+	}: EnergyConsumptionDetails): AdvancedFootprint {
+		const footprint: AdvancedFootprint = {
+			advanceFootprint: 0,
+			summary: {
+				house: 0,
+				flights: 0,
+				cars: 0,
+				motorbikes: 0,
+				bus: 0,
+				secondary: 0,
+				bespokeAddOns: {
+					villages: [],
+					total: 0
+				}
+			}
+		};
+		for (const key in house) {
+			if (Object.prototype.hasOwnProperty.call(house, key)) {
+				const { amount, unit } = house[key as keyof HouseholdEmissionFactors];
+				const houseFootprint =
+					(amount *
+						householdEmissionFactors[key as keyof HouseholdEmissionFactors][
+							unit as keyof HouseholdEmissionFactors[keyof HouseholdEmissionFactors]
+						]) /
+					1000;
+				footprint.summary.house += houseFootprint;
+				footprint.advanceFootprint += houseFootprint;
+			}
+		}
+		flights?.forEach((flight) => {
+			const flightFootprint = this.calculateFlightFootprint(flight);
+			footprint.summary.flights += flightFootprint;
+			footprint.advanceFootprint += flightFootprint;
+		});
+		cars?.forEach((car) => {
+			const carFootprint = this.calculateCarFootprint(car);
+			footprint.summary.cars += carFootprint;
+			footprint.advanceFootprint += carFootprint;
+		});
+		motorbikes?.forEach((motorbike) => {
+			const motorbikeFootprint = this.calculateMotorbikeFootprint(motorbike);
+			footprint.summary.motorbikes += motorbikeFootprint;
+			footprint.advanceFootprint += motorbikeFootprint;
+		});
+		if (bus) {
+			for (const key in bus.consumption) {
+				if (Object.prototype.hasOwnProperty.call(bus.consumption, key)) {
+					const busFootprint =
+						(bus.consumption[key as keyof typeof busEmissionFactors] *
+							busEmissionFactors[key as keyof typeof busEmissionFactors]) /
+						1000;
+					footprint.summary.bus += busFootprint;
+					footprint.advanceFootprint += busFootprint;
+				}
+			}
+		}
+		if (secondary) {
+			const secondaryFootprint = this.calculateSecondaryFootprint(secondary);
+			footprint.summary.secondary = secondaryFootprint;
+			footprint.advanceFootprint += secondaryFootprint;
+		}
+		bespokeAddOns?.villages?.forEach(({ villageId, adoptionYears }) => {
+			const { footprint: villageFootprint, village } = this.calculateVillageFootprint(villageId, adoptionYears);
+			footprint.summary.bespokeAddOns.villages.push({ ...village, footprint: villageFootprint });
+			footprint.summary.bespokeAddOns.total += villageFootprint;
+			footprint.advanceFootprint += villageFootprint;
+		});
+		return footprint;
 	}
 
 	/**
@@ -435,5 +569,101 @@ export class CarbonInfo {
 		}
 
 		return;
+	}
+
+	private calculateFlightFootprint(flight: FlightDetails): number {
+		const getAirportCoordinates = (airportCode: string) => {
+			const res = this.airportDataset.find((item) => item.code == airportCode);
+			if (!res) {
+				return [0, 0];
+			}
+			return [res.lat, res.long];
+		};
+		const toRad = (val: number) => (val * Math.PI) / 180;
+		const calcDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+			const R = 6371;
+			const dLat = toRad(lat2 - lat1);
+			const dLon = toRad(lon2 - lon1);
+			lat1 = toRad(lat1);
+			lat2 = toRad(lat2);
+			const a =
+				Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+				Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+			return R * c;
+		};
+		const findAirportDistance = (from: string, to: string) => {
+			const [lat1, lon1] = getAirportCoordinates(from);
+			const [lat2, lon2] = getAirportCoordinates(to);
+			return calcDistance(lat1, lon1, lat2, lon2);
+		};
+		const { from, includeRad, isReturn, to, travelClass, trips } = flight;
+		const distance = findAirportDistance(from, to);
+		const emissionFactor = classEmissionFactors[travelClass];
+		let emission = distance * emissionFactor * trips * (isReturn ? 2 : 1);
+		if (includeRad) {
+			emission = emission * RADIATIVE_FORCING_FACTOR;
+		}
+		return emission;
+	}
+
+	private calculateCarFootprint(car: CarDetails): number {
+		const { amount, carType, isMiles, model, subType } = car;
+		const emissionFactor = 1e-6;
+		try {
+			const efficiency = carEfficiency[carType][subType][model]["average value"];
+			const mileage = amount * (isMiles ? 1.609344 : 1);
+			return mileage * emissionFactor * efficiency;
+		} catch (error) {
+			return 0;
+		}
+	}
+
+	private calculateMotorbikeFootprint(motorbike: MotorbikeDetails): number {
+		const { amount, isMiles, type } = motorbike;
+		const milage = isMiles ? amount * 1.609344 : amount;
+		const efficiency = bikeTypes[type];
+		const unit = "g/km";
+		return milage * emissionFactors[unit] * efficiency;
+	}
+
+	private calculateSecondaryFootprint(secondary: SecondaryDetails) {
+		const { consumption, currency, dietStyle, duration } = secondary;
+		const durationFactor = durationFactors[duration];
+		const currencyFactor = currencyFactors[currency];
+		let emission = 0;
+		for (const key in consumption) {
+			if (Object.prototype.hasOwnProperty.call(consumption, key)) {
+				const amount = consumption[key as keyof SecondaryConsumption];
+				let emissionFactor = 0;
+				if (typeof emissionFactors_DOLLAR[key as keyof SecondaryConsumption] === "number") {
+					emissionFactor = emissionFactors_DOLLAR[key as keyof SecondaryConsumption] as number;
+				} else {
+					const product = emissionFactors_DOLLAR[
+						key as keyof SecondaryConsumption
+					] as (typeof emissionFactors_DOLLAR)["food"];
+					emissionFactor = product[dietStyle as keyof (typeof emissionFactors_DOLLAR)["food"]];
+				}
+				emission += (amount * currencyFactor * emissionFactor * 1e-3) / durationFactor;
+			}
+		}
+		return emission;
+	}
+
+	calculateVillageFootprint(
+		villageId: number,
+		adoptionYears: number
+	): {
+		village: Village;
+		footprint: number;
+	} {
+		const village = villages.find((village) => village.id === villageId);
+		if (!village) {
+			throw new TheaError({
+				type: "INVALID_VILLAGE_ID",
+				message: "Provided village ID is invalid"
+			});
+		}
+		return { village, footprint: village.population * adoptionYears * ruralCommunityFootPrint };
 	}
 }

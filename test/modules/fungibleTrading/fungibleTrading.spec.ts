@@ -1,4 +1,11 @@
-import { swaps, CONTRACT_ADDRESS, PRIVATE_KEY, WALLET_ADDRESS, swapTransactions } from "./../../mocks";
+import {
+	uniswapSwaps,
+	theaExchangeSwaps,
+	CONTRACT_ADDRESS,
+	PRIVATE_KEY,
+	WALLET_ADDRESS,
+	swapTransactions
+} from "./../../mocks";
 import { BigNumber } from "@ethersproject/bignumber";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
@@ -103,8 +110,7 @@ describe("Fungible Trading", () => {
 					recipient: WALLET_ADDRESS,
 					deadline: expect.any(Number),
 					amountIn: amount,
-					amountOutMinimum: BigNumber.from(199),
-					sqrtPriceLimitX96: 0
+					amountOutMinimum: BigNumber.from(199)
 				},
 				"SDG"
 			);
@@ -153,8 +159,7 @@ describe("Fungible Trading", () => {
 					recipient: swapOptions.recipient,
 					deadline: swapOptions.deadline,
 					amountIn: amount,
-					amountOutMinimum: BigNumber.from(198),
-					sqrtPriceLimitX96: 0
+					amountOutMinimum: BigNumber.from(198)
 				},
 				"SDG"
 			);
@@ -171,7 +176,9 @@ describe("Fungible Trading", () => {
 	describe("transactionHistory", () => {
 		it("should return transaction history for a given wallet address", async () => {
 			consts[`${TheaNetwork.GANACHE}`].currentNbtTokenContract = CONTRACT_ADDRESS;
-			const httpClient = jest.spyOn(fungibleTrading.httpClient, "post").mockResolvedValueOnce({ data: { swaps } });
+			const httpClient = jest
+				.spyOn(fungibleTrading.httpClient, "post")
+				.mockResolvedValueOnce({ data: { uniswap: uniswapSwaps, theaExchange: theaExchangeSwaps } });
 			const getERC20ContractAddressSpy = jest
 				.spyOn(utils, "getERC20ContractAddress")
 				.mockReturnValueOnce("0x1D6DBfb520ee332bc14e800A832389F731820787")
@@ -182,7 +189,7 @@ describe("Fungible Trading", () => {
 			expect(httpClient).toBeCalledWith(
 				"",
 				swapsQuery(
-					WALLET_ADDRESS,
+					WALLET_ADDRESS.toLowerCase(),
 					"0x5B518de3F2743A33f79f7a312e10Eeac6f778A6c".toLowerCase(),
 					"0x1D6DBfb520ee332bc14e800A832389F731820787".toLowerCase()
 				)

@@ -1,7 +1,14 @@
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Provider } from "@ethersproject/providers";
-import { ISO_CODES } from "../utils";
+import {
+	ISO_CODES,
+	bikeTypeOptions,
+	classEmissionFactorOptions,
+	currencyFactorOptions,
+	dietStyleOptions,
+	durationFactorOptions
+} from "../utils";
 
 export enum TheaNetwork {
 	GANACHE = 1337,
@@ -191,6 +198,11 @@ export type EstimatedFootprint = {
 	footprint: number;
 	summary: FootprintSummary[];
 	details: FootprintDetail[];
+	bespokeAddOns: {
+		villages: Array<Village & { footprint: number }>;
+		familyMembers: number[];
+		total: number;
+	};
 };
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export type GraphqlQuery = {
@@ -525,6 +537,213 @@ export type SwapTransaction = {
 	amount: string;
 	type: "Income" | "Outcome";
 };
+
+export interface AirportDataSet {
+	name: string;
+	code: string;
+	lat: number;
+	long: number;
+}
+
+export interface HouseholdEmissionFactorDataset {
+	people: {
+		count: number;
+	};
+	electricity: {
+		kWh: number;
+	};
+	naturalGas: {
+		kWh: number;
+		therms: number;
+		"USD ($)": number;
+	};
+	heatingOil: {
+		kWh: number;
+		litres: number;
+		"metric tons": number;
+		"US gallons": number;
+	};
+	coal: {
+		kWh: number;
+		"metric tons": number;
+		"x 10kg bags": number;
+		"x 20kg bags": number;
+		"x 25kg bags": number;
+		"x 50kg bags": number;
+	};
+	lpg: {
+		kWh: number;
+		litres: number;
+		therms: number;
+		"US gallons": number;
+	};
+	propane: {
+		litres: number;
+		"US gallons": number;
+	};
+	woodenPellets: {
+		"metric tons": number;
+	};
+}
+
+export type HouseholdEmissionFactors = {
+	[type in keyof HouseholdEmissionFactorDataset]: {
+		[unit in keyof HouseholdEmissionFactorDataset[type]]: number;
+	};
+};
+
+export type HouseDetails = {
+	[key in keyof HouseholdEmissionFactorDataset]: {
+		amount: number;
+		unit: keyof HouseholdEmissionFactorDataset[key] & string;
+	};
+};
+
+export interface FlightDetails {
+	isReturn: boolean;
+	from: string;
+	to: string;
+	travelClass: (typeof classEmissionFactorOptions)[number];
+	trips: number;
+	includeRad: boolean;
+}
+
+export interface CarEfficiency {
+	Car: {
+		[subType: string]: {
+			[model: string]: {
+				"average value": number;
+			};
+		};
+	};
+	Van: {
+		[subType: string]: {
+			[model: string]: {
+				"average value": number;
+			};
+		};
+	};
+}
+
+export interface CarDetails {
+	carType: keyof CarEfficiency & string;
+	subType: string;
+	model: string;
+	amount: number;
+	isMiles: boolean;
+}
+
+export interface MotorbikeDetails {
+	type: (typeof bikeTypeOptions)[number];
+	amount: number;
+	isMiles: boolean;
+}
+
+export interface BusEmissionFactors {
+	bus: number;
+	coach: number;
+	localOrCommuterTrain: number;
+	longDistanceTrain: number;
+	tram: number;
+	subway: number;
+	taxi: number;
+}
+
+export interface BusDetails {
+	consumption: BusConsumption;
+	isMiles: boolean;
+}
+
+export interface BusConsumption {
+	bus: number;
+	coach: number;
+	localOrCommuterTrain: number;
+	longDistanceTrain: number;
+	tram: number;
+	subway: number;
+	taxi: number;
+}
+
+export interface SecondaryDetails {
+	currency: (typeof currencyFactorOptions)[number];
+	duration: (typeof durationFactorOptions)[number];
+	dietStyle: (typeof dietStyleOptions)[number];
+	consumption: SecondaryConsumption;
+}
+
+export interface SecondaryConsumption {
+	food: number;
+	pharma: number;
+	clothes: number;
+	paperBased: number;
+	it: number;
+	tv: number;
+	motorVehicles: number;
+	furniture: number;
+	hotels: number;
+	phone: number;
+	finance: number;
+	insurance: number;
+	education: number;
+	recreational: number;
+}
+
+export interface Village {
+	id: number;
+	name: string;
+	population: number;
+	description: string;
+	image: string;
+}
+
+export interface BespokeAddOn {
+	title: string;
+	description: string;
+	image: string;
+	disabledOnAdv: boolean;
+	options?: Village[];
+}
+
+export interface CommunityAddOn {
+	villageId: number;
+	adoptionYears: number;
+}
+
+export interface FamilyMember {
+	yearOfBirth: number;
+	query: FootprintQuery[];
+}
+
+export interface BespokeAddOnDetails {
+	villages: CommunityAddOn[];
+	familyMembers: FamilyMember[];
+}
+
+export interface EnergyConsumptionDetails {
+	house?: HouseDetails;
+	flights?: FlightDetails[];
+	cars?: CarDetails[];
+	motorbikes?: MotorbikeDetails[];
+	bus?: BusDetails;
+	secondary?: SecondaryDetails;
+	bespokeAddOns?: Omit<BespokeAddOnDetails, "familyMembers">;
+}
+
+export interface AdvancedFootprint {
+	advanceFootprint: number;
+	summary: {
+		house: number;
+		flights: number;
+		cars: number;
+		motorbikes: number;
+		bus: number;
+		secondary: number;
+		bespokeAddOns: {
+			villages: Array<Village & { footprint: number }>;
+			total: number;
+		};
+	};
+}
 
 export * from "./IRegistryContract";
 export * from "./IBaseTokenManagerContract";
