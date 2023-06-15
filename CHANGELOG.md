@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/thea-protocol/thea-sdk/compare/v3.2.0...v4.0.0) (2023-06-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* advance calculator
+
+### Features
+
+* advance calculator ([8249c45](https://github.com/thea-protocol/thea-sdk/commit/8249c450d5ce2b033830c09dce4bbfe02a2276a2))
+
 ## [3.2.0](https://github.com/thea-protocol/thea-sdk/compare/v3.1.3...v3.2.0) (2023-05-31)
 
 
