@@ -609,12 +609,12 @@ const footprint = theaSDK.carbonInfo.estimateFootprint(1996, [
     familyMembers: [
       {
         yearOfBirth: 2008,
-        query: {
+        query: [
           {
             isoCode: "USA",
             year: null,
           },
-        }
+        ]
       }
     ],
     villages: [
