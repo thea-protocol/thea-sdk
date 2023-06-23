@@ -44,10 +44,16 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * Burns `amount` of VCC tokens of type `id` and emits event. Backend listens to event and retires the corresponding offchain VCCs
 	 * @param tokenId - VCC token id
 	 * @param amount - amount of VCC tokens to burn
+	 * @param partnerId - UID assigned to partner, should be 0 if offseting directly
 	 * @param receiver - address for whom VCC will be offseted
 	 * @returns Transaction receipt
 	 */
-	async offsetNFT(tokenId: BigNumberish, amount: BigNumberish, receiver?: string): Promise<ContractReceipt> {
+	async offsetNFT(
+		tokenId: BigNumberish,
+		amount: BigNumberish,
+		partnerId: BigNumberish = 0,
+		receiver?: string
+	): Promise<ContractReceipt> {
 		signerRequired(this.providerOrSigner);
 		amountShouldBeGTZero(amount);
 		await checkBalance(this.providerOrSigner as Signer, this.network, { token: "ERC1155", tokenId, amount });
@@ -60,7 +66,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		if (!receiver) receiver = await getAddress(this.providerOrSigner as Signer);
 		validateAddress(receiver);
 
-		return execute(this.contract.retire(tokenId, amount, receiver), {
+		return execute(this.contract.retire(tokenId, amount, partnerId, receiver), {
 			...this.contractDetails,
 			contractFunction: "retire"
 		});
@@ -72,12 +78,14 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 	 * function after processing and validating the recovery and retire of VCC is successful.
 	 * @param vintage - vintage of NBT token
 	 * @param amount - amount of NBT token to retire
+	 * @param partnerId - UID assigned to partner, should be 0 if offseting directly
 	 * @param tokenId - `ID` of VCC token to offset
 	 * @returns RequestId & ContractReceipt  @see RequestId
 	 */
 	async offsetFungible(
 		vintage: number,
 		amount: BigNumberish,
+		partnerId: BigNumberish = 0,
 		tokenId: BigNumberish = 0
 	): Promise<ContractReceipt & RequestId> {
 		signerRequired(this.providerOrSigner);
@@ -95,7 +103,7 @@ export class Offset extends ContractWrapper<IRegistryContract> {
 		await token.approveERC20(owner, this.contractDetails.address, amount);
 
 		return executeWithResponse<RequestId>(
-			this.contract.requestRetireFungible(vintage, amount, tokenId),
+			this.contract.requestRetireFungible(vintage, amount, tokenId, partnerId),
 			{
 				...this.contractDetails,
 				contractFunction: "requestRetireFungible"

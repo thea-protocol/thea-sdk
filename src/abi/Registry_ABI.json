@@ -103,6 +103,11 @@
 					"type": "uint256"
 				},
 				{
+					"internalType": "uint256",
+					"name": "partnerId",
+					"type": "uint256"
+				},
+				{
 					"internalType": "address",
 					"name": "receiver",
 					"type": "address"
@@ -158,6 +163,11 @@
 					"internalType": "uint256",
 					"name": "tokenId",
 					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "partnerId",
+					"type": "uint256"
 				}
 			],
 			"name": "requestRetireFungible",
@@ -178,6 +188,12 @@
 					"indexed": true,
 					"internalType": "uint256",
 					"name": "requestId",
+					"type": "uint256"
+				},
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "partnerId",
 					"type": "uint256"
 				},
 				{

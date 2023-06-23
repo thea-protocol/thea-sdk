@@ -114,7 +114,7 @@ describe("Offset", () => {
 				token: "ERC1155",
 				spender: contractAddress
 			});
-			expect(retireSpy).toHaveBeenCalledWith(tokenId, amount, WALLET_ADDRESS);
+			expect(retireSpy).toHaveBeenCalledWith(tokenId, amount, 0, WALLET_ADDRESS);
 			expect(executeSpy).toHaveBeenCalledWith(txPromise, {
 				name: Registry_ABI.contractName,
 				address: contractAddress,
@@ -129,7 +129,7 @@ describe("Offset", () => {
 			const executeSpy = jest.spyOn(shared, "executeWithResponse");
 
 			const result = await offSet.offsetFungible(vintage, amount);
-			expect(retireFungibleSpy).toBeCalledWith(vintage, amount, 0);
+			expect(retireFungibleSpy).toBeCalledWith(vintage, amount, 0, 0);
 			expect(executeSpy).toHaveBeenCalled();
 			expect(result.requestId).toBe("1");
 		});

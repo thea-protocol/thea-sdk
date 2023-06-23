@@ -9,21 +9,21 @@ Depending on the platform you're using, there are different ways to initialize t
 ```js
 // Client side
 const theaSDK = await TheaSDK.init({
-	network: TheaNetwork.MUMBAI,
-	web3Provider: new ethers.providers.Web3Provider(window.ethereum)
+ network: TheaNetwork.MUMBAI,
+ web3Provider: new ethers.providers.Web3Provider(window.ethereum)
 });
 
 // Server side with private key and provider
 const theaSDK = await TheaSDK.init({
-	network: TheaNetwork.MUMBAI,
-	privateKey: "123...",
-	provider: new ethers.providers.AlchemyProvider(80001, "apiKey")
+ network: TheaNetwork.MUMBAI,
+ privateKey: "123...",
+ provider: new ethers.providers.AlchemyProvider(80001, "apiKey")
 });
 
 // Server side with signer
 const theaSDK = await TheaSDK.init({
-	network: TheaNetwork.MUMBAI,
-	signer: new Wallet(privateKey, provider)
+ network: TheaNetwork.MUMBAI,
+ signer: new Wallet(privateKey, provider)
 });
 ```
 
@@ -32,9 +32,9 @@ You can also pass in a current NBT address as an optional parameter to the SDK i
 ```js
 // Server side init with signer and current NBT address
 const theaSDK = await TheaSDK.init({
-	network: TheaNetwork.MUMBAI,
-	signer: new Wallet(privateKey, provider),
-	currentNBTokenAddress: "0x123..."
+ network: TheaNetwork.MUMBAI,
+ signer: new Wallet(privateKey, provider),
+ currentNBTokenAddress: "0x123..."
 });
 ```
 
@@ -196,12 +196,24 @@ const tokenizationState = await theaSDK.tokenization.tokenize(tokenizationId);
 ## Offset module
 
 - Offset NFT - offsets specified amount of ERC1155 token
+  Input parameters
+
+1. tokenId - VCC token id
+2. amount - amount of VCC tokens to offset
+3. partnerId - UID assigned to partner, should be 0 if offseting directly (optional)
+4. receiver - address for whom VCC will be offseted (optional)
 
 ```js
 const transactionReceipt = await theaSDK.offset.offsetNFT(1, "2000");
 ```
 
 - Offset fungible - offsets specified amount of ERC20 token for specified vintage
+  Input parameters
+
+1. vintage - vintage of NBT token
+2. amount - amount of NBT token to retire
+3. partnerId - UID assigned to partner, should be 0 if offseting directly (optional)
+4. tokenId - ID of VCC token to offset, should be 0 if no preference (optional)
 
 ```js
 // Returns requestId in transaction receipt
@@ -261,13 +273,13 @@ const result = await theaSDK.offset.offsetHistory();
 
 // From ERC20 to Stable coin
 const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
-	tokenIn: "SDG"
+ tokenIn: "SDG"
 });
 
 // From Stable coin to ERC20
 const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
-	tokenIn: "Stable",
-	tokenOut: "SDG"
+ tokenIn: "Stable",
+ tokenOut: "SDG"
 });
 ```
 
@@ -277,24 +289,24 @@ const priceInWEI = await theaSDK.fungibleTrading.queryTokenPrice({
 const txHistory = await theaSDK.fungibleTrading.transactionHistory("0x123...");
 // Sample output
 [
-	{
-		action: "Buy NBT",
-		timestamp: "1679995741",
-		amount: "1",
-		type: "Income"
-	},
-	{
-		action: "Sell NBT",
-		timestamp: "1679761665",
-		amount: "-0.994",
-		type: "Outcome"
-	},
-	{
-		action: "Sell NBT",
-		timestamp: "1679994793",
-		amount: "-0.994",
-		type: "Outcome"
-	}
+ {
+  action: "Buy NBT",
+  timestamp: "1679995741",
+  amount: "1",
+  type: "Income"
+ },
+ {
+  action: "Sell NBT",
+  timestamp: "1679761665",
+  amount: "-0.994",
+  type: "Outcome"
+ },
+ {
+  action: "Sell NBT",
+  timestamp: "1679994793",
+  amount: "-0.994",
+  type: "Outcome"
+ }
 ];
 ```
 
@@ -303,15 +315,15 @@ const txHistory = await theaSDK.fungibleTrading.transactionHistory("0x123...");
 ```js
 // From ERC20 to Stable coin
 const transactionReceipt = await theaSDK.fungibleTrading.swapTokens({
-	tokenIn: "SDG",
-	amountIn: "1000000000000000000"
+ tokenIn: "SDG",
+ amountIn: "1000000000000000000"
 });
 
 // From Stable coin to ERC20
 const transactionReceipt = await theaSDK.fungibleTrading.swapTokens({
-	tokenIn: "Stable",
-	tokenOut: "SDG",
-	amountIn: "1000000000000000000"
+ tokenIn: "Stable",
+ tokenOut: "SDG",
+ amountIn: "1000000000000000000"
 });
 ```
 
@@ -393,31 +405,31 @@ const transactionReceipt = await theaSDK.nftOrderbook.queryPriceListing(tokenId,
 
 // Sample output
 [
-	{
-		"priceForOneNFT": 10,
-		"nftTokenAmount": "10",
-		"orderId": "100133271337000000000000000000000000000173830542377169720320941218856725572133",
-		"orderToBeFilled": {
-			"direction": 1,
-			"erc20Token": "0xa6cbe96c05e92a01b52f519d50541409d85ed6d6",
-			"erc20TokenAmount": "100000000000000000000",
-			"erc1155Token": "0xf37221f42678ace417f2bc5c89489d1f0c77c133",
-			"erc1155TokenId": "1",
-			"erc1155TokenAmount": "10",
-			"erc1155TokenProperties": [],
-			"expiry": "2524604400",
-			"fees": [],
-			"maker": "0xca1edbea332fe36a4164bfc85bc58de12f07f941",
-			"nonce": "100133271337000000000000000000000000000173830542377169720320941218856725572133",
-			"signature": {
-				"r": "0x004c3187cd41552901eeda3b6aa8bf1934db4cbff9e080d193b30714a62f9ead",
-				"s": "0x293711b92b8dd052bdaebd00b84f2997e67b0b6ba8cd699ad513173f2856c867",
-				"v": 28,
-				"signatureType": 2
-			},
-			"taker": "0x0000000000000000000000000000000000000000"
-		}
-	},
+ {
+  "priceForOneNFT": 10,
+  "nftTokenAmount": "10",
+  "orderId": "100133271337000000000000000000000000000173830542377169720320941218856725572133",
+  "orderToBeFilled": {
+   "direction": 1,
+   "erc20Token": "0xa6cbe96c05e92a01b52f519d50541409d85ed6d6",
+   "erc20TokenAmount": "100000000000000000000",
+   "erc1155Token": "0xf37221f42678ace417f2bc5c89489d1f0c77c133",
+   "erc1155TokenId": "1",
+   "erc1155TokenAmount": "10",
+   "erc1155TokenProperties": [],
+   "expiry": "2524604400",
+   "fees": [],
+   "maker": "0xca1edbea332fe36a4164bfc85bc58de12f07f941",
+   "nonce": "100133271337000000000000000000000000000173830542377169720320941218856725572133",
+   "signature": {
+    "r": "0x004c3187cd41552901eeda3b6aa8bf1934db4cbff9e080d193b30714a62f9ead",
+    "s": "0x293711b92b8dd052bdaebd00b84f2997e67b0b6ba8cd699ad513173f2856c867",
+    "v": 28,
+    "signatureType": 2
+   },
+   "taker": "0x0000000000000000000000000000000000000000"
+  }
+ },
     ...
 ]
 
@@ -477,12 +489,12 @@ const transactionReceipt = await theaSDK.nftOrderbook.queryOrderByNonce(nonce);
 
 ```js
 const priceInWEI = await theaSDK.nftTrading.enterNFTLimit(
-		tokenId, // token id of the NFT
-		side, // buy or sell
-		price, // price of the NFT in Stablecoins
-		quantity, // quantity of the NFT
-		chunks? // number of chunks to split the order into (default 1), each chunk will be made into a separate limit order
-	);
+  tokenId, // token id of the NFT
+  side, // buy or sell
+  price, // price of the NFT in Stablecoins
+  quantity, // quantity of the NFT
+  chunks? // number of chunks to split the order into (default 1), each chunk will be made into a separate limit order
+ );
 
 // Sample output
 {
@@ -892,35 +904,35 @@ const offsetHistory = await theaSDK.carbonInfo.queryOffsetHistory();
 
 // Sample output
 [
-	{
-		id: "1-726-0",
-		amount: "1000",
-		timestamp: "1677058856"
-	}
+ {
+  id: "1-726-0",
+  amount: "1000",
+  timestamp: "1677058856"
+ }
 ];
 
 const offsetStats = await theaSDK.carbonInfo.queryOffsetStats("1");
 
 // Sample output
 [
-	{
-		id: "1-726-0",
-		amount: "1000",
-		timestamp: "1677058856",
-		token: {
-			id: "1",
-			projectId: "1748",
-			vintage: "2019",
-			tokenURI: "1.json",
-			activeAmount: "99000",
-			mintedAmount: "100000",
-			retiredAmount: "1000",
-			unwrappedAmount: "0"
-		},
-		by: {
-			id: "0x123..."
-		}
-	}
+ {
+  id: "1-726-0",
+  amount: "1000",
+  timestamp: "1677058856",
+  token: {
+   id: "1",
+   projectId: "1748",
+   vintage: "2019",
+   tokenURI: "1.json",
+   activeAmount: "99000",
+   mintedAmount: "100000",
+   retiredAmount: "1000",
+   unwrappedAmount: "0"
+  },
+  by: {
+   id: "0x123..."
+  }
+ }
 ];
 ```
 
@@ -953,25 +965,25 @@ const profile = await theaSDK.carbonInfo.getUsersProfile();
 {
     "result": {
         "userID": "00000186c48bc47f1778c129a9bdb0a2",
-	"walletAddress": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a",
-	"uniqueReferralCode": "ZL6IY2",
-	"active": true,
-	"referrerID": null,
-	"loyalty": {
-	    "badges": [],
-	    "tier": 1
-	},
-	"bridgingBonusPaid": false,
-	"offsetBonusPaid": false,
-	"outstandingReferrals": {},
-	"currentRpBalance": {
-	    "20230310Z": 0
-	},
-	"historicRpChanges": [],
-	"historicTierChanges": [],
-	"historicPositionChanges": null,
-	"totalRetiredAmount": 0,
-	"invitations": 0
+ "walletAddress": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a",
+ "uniqueReferralCode": "ZL6IY2",
+ "active": true,
+ "referrerID": null,
+ "loyalty": {
+     "badges": [],
+     "tier": 1
+ },
+ "bridgingBonusPaid": false,
+ "offsetBonusPaid": false,
+ "outstandingReferrals": {},
+ "currentRpBalance": {
+     "20230310Z": 0
+ },
+ "historicRpChanges": [],
+ "historicTierChanges": [],
+ "historicPositionChanges": null,
+ "totalRetiredAmount": 0,
+ "invitations": 0
     },
     "error": null,
     "errorMessage": null
@@ -996,16 +1008,16 @@ const order = theaSDK.options.createOrder("00000186c510db6ba6e0a324a79792ab", 1)
 {
     "result": {
         "uuid": "1",
-	"status": "REQUESTED",
-	"txHash": "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
-	"createdAt": "2023-03-10T11:41:04.287Z",
-	"updatedAt": "2023-03-10T11:41:04.287Z",
-	"btOptionId": "00000186c510db6ba6e0a324a79792ab",
-	"quantity": 1,
-	"signature":
-	    "1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
-	"premium": 0.0005566631703711085,
-	"ethAddr": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
+ "status": "REQUESTED",
+ "txHash": "0x1d219f9f4ff80f5c1f052d5d576e80d6c06972e4a435c5b9e8a47a255d006f98",
+ "createdAt": "2023-03-10T11:41:04.287Z",
+ "updatedAt": "2023-03-10T11:41:04.287Z",
+ "btOptionId": "00000186c510db6ba6e0a324a79792ab",
+ "quantity": 1,
+ "signature":
+     "1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
+ "premium": 0.0005566631703711085,
+ "ethAddr": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
     },
     "error": null,
     "errorMessage": null
@@ -1021,17 +1033,17 @@ const orders = theaSDK.options.getOrders();
 {
     "result": [
         {
-	    "uuid": "34",
-	    "status": "PERFORMED",
-	    "txHash": "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
-	    "createdAt": "2023-03-10T11:09:45.645Z",
-	    "updatedAt": "2023-03-10T11:09:45.645Z",
-	    "btOptionId": "00000186c51111b5a3e818eae0ae9bd1",
-	    "quantity": 1,
-	    "signature":
-	        "1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
-	    "premium": 0.0005566631703711085,
-	    "ethAddr": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
+     "uuid": "34",
+     "status": "PERFORMED",
+     "txHash": "0x1d219f5f4ff80f5c1f052d5d576c80d6c06972e4a435c5b9e8a47a255d006f60",
+     "createdAt": "2023-03-10T11:09:45.645Z",
+     "updatedAt": "2023-03-10T11:09:45.645Z",
+     "btOptionId": "00000186c51111b5a3e818eae0ae9bd1",
+     "quantity": 1,
+     "signature":
+         "1C.F59AF258606198D5052B6D32A9EC0A94EC1F5B85A0B44CEB3EAA3DDE62A0D9F6.3955531DE209FFB3FE7671FC385669B489EC1E26C7C830885D19BD2222E49414",
+     "premium": 0.0005566631703711085,
+     "ethAddr": "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
         }
     ],
     "error": null,
@@ -1046,28 +1058,28 @@ const result = theaSDK.options.getCurrentStrikeAndPremium();
 
 // Sample output
 [
-	{
-		uuid: "00000186c51111b5a3e818eae0ae9bd1",
-		contractId: "00000186c4c423521c1d41a0d03c501a",
-		strike: 7,
-		optionType: "Call",
-		enabled: true,
-		updatedAt: "2023-03-09T06:31:15.637Z",
-		vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
-		contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-		premiumPrice: 0.0005566631703711085
-	},
-	{
-		uuid: "00000186c510db6ba6e0a324a79792ab",
-		contractId: "00000186c4c423521c1d41a0d03c501a",
-		strike: 7,
-		optionType: "Put",
-		enabled: true,
-		updatedAt: "2023-03-09T06:31:01.739Z",
-		vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
-		contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
-		premiumPrice: 5.800556663166686
-	}
+ {
+  uuid: "00000186c51111b5a3e818eae0ae9bd1",
+  contractId: "00000186c4c423521c1d41a0d03c501a",
+  strike: 7,
+  optionType: "Call",
+  enabled: true,
+  updatedAt: "2023-03-09T06:31:15.637Z",
+  vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+  contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+  premiumPrice: 0.0005566631703711085
+ },
+ {
+  uuid: "00000186c510db6ba6e0a324a79792ab",
+  contractId: "00000186c4c423521c1d41a0d03c501a",
+  strike: 7,
+  optionType: "Put",
+  enabled: true,
+  updatedAt: "2023-03-09T06:31:01.739Z",
+  vaultAddr: "0x185e0a8e68c58dcb6542b0a2c3d35f193ecc1437",
+  contractAddr: "0x65bf2642d5ca9b0cbc6f15ad126d7084c09dba42",
+  premiumPrice: 5.800556663166686
+ }
 ];
 ```
 
@@ -1087,19 +1099,19 @@ const user = theaSDK.auth.login();
 
 // Sample output
 {
-	result: {
-		uuid: "00000356c510db6ba6e0a324a79792ds",
-		inviterUuid: null,
-		invitationCode: "ZL6IY2",
-		profilePrecalc: `{"userID":"00000186c48bc47f1778c129a9bdb0a2","walletAddress":"0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a","uniqueReferralCode":"ZL6IY2","active":true,"referrerID":null,"loyalty":{"badges":[],"tier":1},"bridgingBonusPaid":false,"offsetBonusPaid":false,"outstandingReferrals":{},"currentRpBalance":{"20230310Z":0},"historicRpChanges":[],"historicTierChanges":[],"historicPositionChanges":null,"totalRetiredAmount":0,"invitations":0}`,
-		wallets: [
-			{
-				ethAddr: "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
-			}
-		]
-	},
-	error: null,
-	errorMessage: null
+ result: {
+  uuid: "00000356c510db6ba6e0a324a79792ds",
+  inviterUuid: null,
+  invitationCode: "ZL6IY2",
+  profilePrecalc: `{"userID":"00000186c48bc47f1778c129a9bdb0a2","walletAddress":"0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a","uniqueReferralCode":"ZL6IY2","active":true,"referrerID":null,"loyalty":{"badges":[],"tier":1},"bridgingBonusPaid":false,"offsetBonusPaid":false,"outstandingReferrals":{},"currentRpBalance":{"20230310Z":0},"historicRpChanges":[],"historicTierChanges":[],"historicPositionChanges":null,"totalRetiredAmount":0,"invitations":0}`,
+  wallets: [
+   {
+    ethAddr: "0xE63CCe5bEBF27CFa751de8A1550692d3B12b7B7a"
+   }
+  ]
+ },
+ error: null,
+ errorMessage: null
 }
 ```
 
@@ -1110,8 +1122,8 @@ const user = theaSDK.auth.logout();
 
 // Sample output
 {
-	result: "OK",
-	error: null,
-	errorMessage: null
+ result: "OK",
+ error: null,
+ errorMessage: null
 }
 ```
