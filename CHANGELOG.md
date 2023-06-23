@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/thea-protocol/thea-sdk/compare/v4.0.0...v4.1.0) (2023-06-23)
+
+
+### Features
+
+* partner integration ([d7f1974](https://github.com/thea-protocol/thea-sdk/commit/d7f1974b9df4f93e8316670d86ba55b6bd6fe394))
+
 ## [4.0.0](https://github.com/thea-protocol/thea-sdk/compare/v3.2.0...v4.0.0) (2023-06-15)
 
 
