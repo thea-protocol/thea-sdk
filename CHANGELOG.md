@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/thea-protocol/thea-sdk/compare/v4.1.0...v4.1.1) (2023-07-06)
+
+
+### Bug Fixes
+
+* path mapping ([afeac27](https://github.com/thea-protocol/thea-sdk/commit/afeac2723cd2b23c45da9b20c6433e3175b6f0d6))
+
 ## [4.1.0](https://github.com/thea-protocol/thea-sdk/compare/v4.0.0...v4.1.0) (2023-06-23)
 
 
