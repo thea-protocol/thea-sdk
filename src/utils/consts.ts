@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { BespokeAddOn, CarEfficiency, HouseholdEmissionFactors, TheaNetwork } from "src/types";
+import { BespokeAddOn, CarEfficiency, HouseholdEmissionFactors, TheaNetwork } from "../types";
 import { carEfficiency, householdEmissionFactors, villages } from "./datasets";
 
 export const RATE_VCC_TO_BT = 10;

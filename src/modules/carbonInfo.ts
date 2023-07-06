@@ -51,7 +51,7 @@ import {
 	emissionFactors_DOLLAR,
 	villages,
 	ruralCommunityFootPrint
-} from "src/utils/datasets";
+} from "../utils/datasets";
 
 export const tokenizationHistoryQuery: GraphqlQuery = {
 	query: `{

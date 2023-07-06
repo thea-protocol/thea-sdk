@@ -1,6 +1,5 @@
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { hexDataLength, hexDataSlice } from "@ethersproject/bytes";
-import { padEnd, padStart, ContractWrapper, signerRequired, TheaError, typedDataSignerRequired } from "src/utils";
 import { v4 } from "uuid";
 import {
 	ECSignature,
@@ -19,8 +18,14 @@ import {
 	TradeDirection,
 	UserFacingERC1155AssetDataSerializedV4,
 	UserFacingERC20AssetDataSerializedV4
-} from "src/types";
+} from "../../types";
 import {
+	padEnd,
+	padStart,
+	ContractWrapper,
+	signerRequired,
+	TheaError,
+	typedDataSignerRequired,
 	consts,
 	DEFAULT_APP_ID,
 	ERC1155ORDER_STRUCT_ABI,
@@ -33,7 +38,7 @@ import {
 	PROPERTY_ABI,
 	RESERVED_APP_ID_PREFIX,
 	STABLE_TOKEN_DECIMALS_MULTIPLIER
-} from "src/utils/consts";
+} from "../../utils";
 import { approve, checkBalance, execute } from "../shared";
 import { Orderbook } from "./orderbook";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";

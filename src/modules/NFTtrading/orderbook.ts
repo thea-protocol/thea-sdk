@@ -8,8 +8,8 @@ import {
 	SignedERC1155OrderStruct,
 	SignedERC1155OrderStructSerialized,
 	TheaNetwork
-} from "src/types";
-import { consts, ORDERBOOK_URL, STABLE_TOKEN_DECIMALS_MULTIPLIER } from "src/utils/consts";
+} from "../../types";
+import { consts, ORDERBOOK_URL, STABLE_TOKEN_DECIMALS_MULTIPLIER } from "../../utils";
 import { HttpClient } from "../shared/httpClient";
 
 export class Orderbook {

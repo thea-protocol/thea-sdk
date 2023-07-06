@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-loss-of-precision */
 /* eslint-disable no-loss-of-precision */
-import { BusEmissionFactors, CarEfficiency, HouseholdEmissionFactors, Village } from "src/types";
+import { BusEmissionFactors, CarEfficiency, HouseholdEmissionFactors, Village } from "../types";
 import {
 	bikeTypeOptions,
 	classEmissionFactorOptions,

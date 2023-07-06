@@ -1,6 +1,5 @@
-import { GraphqlQuery, QueryError, QueryErrorResponse, QueryResponse, TheaNetwork, TokenInfo } from "src/types";
-import { TheaSubgraphError } from "src/utils";
-import { consts } from "src/utils/consts";
+import { GraphqlQuery, QueryError, QueryErrorResponse, QueryResponse, TheaNetwork, TokenInfo } from "../../types";
+import { consts, TheaSubgraphError } from "../../utils";
 import { HttpClient } from "../shared";
 
 export const tokenInfo: GraphqlQuery = {
