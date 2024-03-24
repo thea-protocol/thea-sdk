@@ -123,6 +123,23 @@ export const consts: { [key in TheaNetwork]: EnvConfig } = {
 		theaApiBaseUrl: "https://127.0.0.1:8078/cli",
 		exchangeProxyAddress: "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
 		subGraphUrl: "http://localhost:8000/subgraphs/name/thea-protocol/thea-subgraph"
+	},
+	[TheaNetwork.HAQQ]: {
+		networkName: "HAQQ",
+		registryContract: "",
+		theaERC1155Contract: "",
+		vintageTokenContract: "",
+		sdgTokenContract: "",
+		ratingTokenContract: "",
+		currentNbtTokenContract: "",
+		baseTokenManagerContract: "",
+		baseTokenManagerDeployerContract: "",
+		stableTokenContract: "",
+		quoterContract: "",
+		swapRouterContract: "",
+		theaApiBaseUrl: "https://127.0.0.1:8078/cli",
+		exchangeProxyAddress: "",
+		subGraphUrl: "http://localhost:8000/subgraphs/name/thea-protocol/thea-subgraph"
 	}
 };
 
