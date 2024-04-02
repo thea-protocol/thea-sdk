@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/thea-protocol/thea-sdk/compare/v4.1.1...v4.2.0) (2024-04-02)
+
+
+### Features
+
+* added HAQQ config ([9a94433](https://github.com/thea-protocol/thea-sdk/commit/9a944330ba9bc03d02b97a0a572a6ebdf797e532))
+* haqq in progress ([6aa3525](https://github.com/thea-protocol/thea-sdk/commit/6aa35259bbf74bf8362c6f4a7c8a8f88968d642b))
+
 ## [4.1.1](https://github.com/thea-protocol/thea-sdk/compare/v4.1.0...v4.1.1) (2023-07-06)
 
 
