@@ -4,3 +4,4 @@ coverage/
 examples/
 docs/
 .env
+.idea

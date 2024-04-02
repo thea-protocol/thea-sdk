@@ -13,7 +13,8 @@ import {
 export enum TheaNetwork {
 	GANACHE = 1337,
 	MUMBAI = 80001,
-	POLYGON = 137
+	POLYGON = 137,
+	HAQQ_TESTNET = 54211 // TESTNET
 }
 
 export type ProviderOrSigner = Provider | Signer | (Signer & TypedDataSigner);
